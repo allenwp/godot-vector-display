@@ -1,1 +1,2 @@
-# godot-vector-display
+# Godot for Vector Displays
+This is a port of my 3D [Vector Engine](https://github.com/allenwp/vector-engine) to the [Godot game engine](https://github.com/godotengine/godot). When I wrote the original Vector Engine, the rendering was quite good, but the game engine and editor was horrible. This new version takes the lessons learned from the first Vector Engine version and re-impliments them in the Godot game engine to give a better game development experience.
