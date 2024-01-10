@@ -29,11 +29,18 @@ This sampler system should be recreated as a server, similar to the rendering se
 Post processing should be implemented the same way as it was in the original Vector Engine:
 - Post processing on individual `VDShape3D` and `VDShape2D` nodes (in object space)
 - Post processing in 3D or 2D world space before camera transformations
-- Post processing in 2D "screen" on near-final sample stream
+- Post processing in 2D screen space on each camera's sample stream
+- Post processing in 2D screen space on final sample stream (Is this really necessary? Is the previous one good enough on its own?)
 
 `Camera`
 
 This entire camera class, including the concept of `Filter` and `Priority` can be discarded in favour if Godot camera classes. The unique properites of this class were only used to do things that the Godot camera systems are capable of.
+
+`FrameOutput`
+
+`TargetFramesPerSecond` should be renamed to `MaxFramesPerSecond` to match convention in other game engines. This has some additional implications to a rendering engine like this one, but it is effectively the same concept.
+
+
 
 ## Other Notes
 Maybe untyped arrays or `Vector4`/`Vector3` could be implemented with a static helper class that extracts properties? This would give some `struct`-like functionality.
