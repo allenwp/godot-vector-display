@@ -20,15 +20,23 @@ Helper functions should be implemented in a static class.
 
 `SamplerSystem`
 
-This sampler system should be recreated as a server, similar to the rendering server(?)
+This sampler system should be named `VDRenderer` and will be a node that must be the last node in the main scene tree because it will handle all rendering of the sample stream in its `_process` func. Only one of these can exist and it will contain a number of debug output options that render to the desktop game viewport, as well as configuration options for ASIO ouptut and vector display configuration, etc.
+
+This should likely be written in C++ with theading similar to the original `SamplerSystem`.
 
 `Post Processing`
 
-Post processing should be implemented the same way as it was in the original Vector Engine:
-- Post processing on individual `VDShape3D` and `VDShape2D` nodes (in object space)
+Post processing should be implemented the same way as it was in the original Vector Engine, with a few additions:
+- Post processing on individual `VDShape3D` and `VDShape2D` nodes (in object space and world space)
 - Post processing in 3D or 2D world space before camera transformations
 - Post processing in 2D screen space on each camera's sample stream
-- Post processing in 2D screen space on final sample stream (Is this really necessary? Is the previous one good enough on its own?)
+- Post processing in 2D screen space on final sample stream
+
+Because the Godot engine is generally designed with inheritance, post processors will be added as an array of post processor resources to a `VDShape3D` or `VDShape2D`. These post processors can run in object space or world space.
+
+Post processors can also be added to a new `VDCamera3D` and `VDCamera2D` class, which inherit from `Camera3D` and `Camera2D`. They will be added as an array of post processor resources, similar to the `VDShape` classes, and can be run in world space or screen space.
+
+Post processing on the final sample stream can be done in screen space via an array of post processors attatched to the `VDRenderer` object.
 
 `Camera`
 
