@@ -8,9 +8,7 @@ Additionally, a new `VDShape2D` should be added. This object type doesn't exist 
 
 `Sample3D`
 
-This struct should be implemented in Godot as a struct... but structs are not yet implemented. Instead, it should be a `Vector4` and have the only two of the three properties (Position, Brightness). The `w` component of the `Vector4` will hold the brightness. When structs are implemented in Godot, this `Vector4` could be reimplemented as a `VDSample3D` with the brightness can be a separate bool property.
-
-The `Disabled` property can be discarded entirely and be replaced with `Brightness == 0`. This can be treated as "clipping" by the sampler just the same as the old property was. For certianty, the old VectorEngine project could be updated with this change to verify no ill effects would come of this.
+This struct should be implemented in Godot as a struct... but structs are not yet implemented. Instead, it should be a `Vector4` and the `w` component will hold the brightness. When structs are implemented in Godot, this `Vector4` could be reimplemented as a `VDSample3D` with the brightness can be a separate bool property.
 
 Additionally, a `Vector3` can be used for a 2D sample with brightness in Godot 2D space. This object type doesn't exist in the original Vector Engine.
 
@@ -38,9 +36,7 @@ This entire camera class, including the concept of `Filter` and `Priority` can b
 
 `FrameOutput`
 
-`TargetFramesPerSecond` should be renamed to `MaxFramesPerSecond` to match convention in other game engines. This has some additional implications to a rendering engine like this one, but it is effectively the same concept.
-
-
+(no comments)
 
 ## Other Notes
 Maybe untyped arrays or `Vector4`/`Vector3` could be implemented with a static helper class that extracts properties? This would give some `struct`-like functionality.
