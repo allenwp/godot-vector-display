@@ -3,6 +3,7 @@
 using namespace godot;
 
 VDASIOOutput::VDASIOOutput() {
+	asioDrivers = new AsioDrivers();
 }
 
 VDASIOOutput::~VDASIOOutput() {
