@@ -7,11 +7,9 @@ void VectorDisplay::_bind_methods() {
 }
 
 VectorDisplay::VectorDisplay() {
-	// Initialize any variables here.
 }
 
 VectorDisplay::~VectorDisplay() {
-	// Add your cleanup here.
 }
 
 void VectorDisplay::_process(double delta) {

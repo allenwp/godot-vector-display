@@ -15,10 +15,16 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\register_types.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="src\vector_display.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\register_types.h">
+    <ClInclude Include="src\vd_renderer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\output\vd_asio_output.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -27,6 +33,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\register_types.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\vd_renderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\output\vd_asio_output.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
