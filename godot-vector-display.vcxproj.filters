@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\gdexample.h">
+    <ClInclude Include="src\vector_display.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\register_types.h">
@@ -23,7 +23,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\gdexample.cpp">
+    <ClCompile Include="src\vector_display.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\register_types.cpp">

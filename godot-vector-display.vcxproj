@@ -129,11 +129,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="src\gdexample.h" />
+    <ClInclude Include="src\vector_display.h" />
     <ClInclude Include="src\register_types.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\gdexample.cpp" />
+    <ClCompile Include="src\vector_display.cpp" />
     <ClCompile Include="src\register_types.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
