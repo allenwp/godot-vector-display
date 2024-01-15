@@ -3,3 +3,5 @@
 *.exp
 *.lib
 *.obj
+*.ilk
+*.pdb
