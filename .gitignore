@@ -5,3 +5,12 @@
 *.obj
 *.ilk
 *.pdb
+
+# Visual studio files
+.vs
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.userprefs
