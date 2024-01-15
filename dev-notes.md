@@ -18,9 +18,9 @@ This struct should be implemented in Godot as a struct... but structs are not ye
 
 Helper functions should be implemented in a static class.
 
-`SamplerSystem`
+`SamplerSystem` and `GameLoop`
 
-This sampler system should be named `VDRenderer` and will be a node that must be the last node in the main scene tree because it will handle all rendering of the sample stream in its `_process` func. Only one of these can exist and it will contain a number of debug output options that render to the desktop game viewport, as well as configuration options for ASIO ouptut and vector display configuration, etc.
+This sampler system should be named `VDRenderer`. Additionaly there should be a new Godot `Node` class called `VectorDisplay`. The `VectorDisplay` node will give a warning when it is not the last node in the main scene tree because it will call on the VDRenderer in its `_process` func. It will produce a number of debug output options that render to the desktop game viewport as children of its node, as well as host configuration options for ASIO ouptut and vector display configuration, etc.
 
 This should likely be written in C++ with theading similar to the original `SamplerSystem`.
 
