@@ -4,15 +4,27 @@
 using namespace godot;
 
 void VectorDisplay::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("start_asio_output"), &VectorDisplay::start_asio_output);
 }
 
 VectorDisplay::VectorDisplay() {
-	output = new VDASIOOutput();
+	
 }
 
 VectorDisplay::~VectorDisplay() {
+	if (output) {
+		delete output;
+	}
 }
 
+double value = 0;
 void VectorDisplay::_process(double delta) {
-	printf(output->driverName);
+
+}
+
+void VectorDisplay::start_asio_output() {
+	if (output) {
+		delete output;
+	}
+	output = new VDASIOOutput();
 }

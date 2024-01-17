@@ -13,13 +13,15 @@ private:
 
 protected:
 	static void _bind_methods();
-	VDASIOOutput* output;
+	VDASIOOutput* output = nullptr;
 
 public:
 	VectorDisplay();
 	~VectorDisplay();
 
 	void _process(double delta) override;
+
+	void start_asio_output();
 };
 
 }

@@ -14,6 +14,7 @@
 *.userosscache
 *.sln.docstates
 *.userprefs
+x64/
 
 # ASIO SDK
 thirdparty/asio/common
