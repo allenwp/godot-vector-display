@@ -2,6 +2,7 @@
 #define VECTORDISPLAY_H
 
 #include <godot_cpp/classes/node.hpp>
+#include "output/vd_asio_output.h"
 
 namespace godot {
 
@@ -12,6 +13,7 @@ private:
 
 protected:
 	static void _bind_methods();
+	VDASIOOutput* output;
 
 public:
 	VectorDisplay();
