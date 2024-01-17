@@ -26,14 +26,14 @@ env["LIBS"].extend(["odbc32", "odbccp32", "winmm", "kernel32", "user32", "gdi32"
 
 if env["platform"] == "macos":
     library = env.SharedLibrary(
-        "demo/bin/libgdexample.{}.{}.framework/libgdexample.{}.{}".format(
+        "demo/bin/libvectordisplay.{}.{}.framework/libvectordisplay.{}.{}".format(
             env["platform"], env["target"], env["platform"], env["target"]
         ),
         source=sources,
     )
 else:
     library = env.SharedLibrary(
-        "demo/bin/libgdexample{}{}".format(env["suffix"], env["SHLIBSUFFIX"]),
+        "demo/bin/libvectordisplay{}{}".format(env["suffix"], env["SHLIBSUFFIX"]),
         source=sources,
     )
 
