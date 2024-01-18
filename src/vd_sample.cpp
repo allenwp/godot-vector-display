@@ -2,12 +2,8 @@
 
 using namespace vector_display;
 
-VDSample VDSampleHelper::Blank() {
-	VDSample blank;
-	// TODO: blank.x = -1.0f * FrameOutput.DisplayProfile.AspectRatio;
-	blank.y = -1.0f;
-	blank.z = 0.0f;
-	return blank;
+VDSample VDSampleHelper::GetBlankingSample() {
+	return VDSample(-1.0f * FrameOutput.DisplayProfile.AspectRatio, -1.0f, 0.0f);
 }
 
 /// <summary>

@@ -25,7 +25,7 @@ typedef Vector3 VDSample;
 
 class VDSampleHelper {
 public:
-	static VDSample Blank();
+	static VDSample GetBlankingSample();
 	
 	/// <summary>
 	/// Clamps the sample to (-1, -1) and (1, 1)

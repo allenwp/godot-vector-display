@@ -130,6 +130,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="src\output\vd_asio_output.h" />
+    <ClInclude Include="src\vd_frame_output.h" />
     <ClInclude Include="src\vd_renderer.h" />
     <ClInclude Include="src\vd_sample.h" />
     <ClInclude Include="src\vector_display.h" />
@@ -137,6 +138,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\output\vd_asio_output.cpp" />
+    <ClCompile Include="src\vd_frame_output.cpp" />
     <ClCompile Include="src\vd_renderer.cpp" />
     <ClCompile Include="src\vd_sample.cpp" />
     <ClCompile Include="src\vector_display.cpp" />
