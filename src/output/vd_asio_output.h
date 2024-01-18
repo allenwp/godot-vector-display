@@ -4,8 +4,9 @@
 #include "asio/common/asiosys.h"
 #include "asio/common/asio.h"
 #include "asio/host/asiodrivers.h"
+#include "vd_sample.h"
 
-namespace godot {
+namespace vector_display {
 
 class VDASIOOutput {
 private:
@@ -90,6 +91,7 @@ protected:
 	void _cleanup();
 
 	void FeedFloatBuffers(float *xOutput, float *yOutput, float *brightnessOutput, int bufferSize, int startIndex);
+	static VDSample PrepareSampleForScreen(VDSample sample);
 	void ApplyBlankingChannelDelay(float *blankingChannel, int bufferLength);
 	static void DebugSaveBuffersToFile(float *x, float *y, float *z, const char *path);
 
@@ -116,6 +118,6 @@ public:
 	void CompleteFrame();
 };
 
-} // namespace godot
+} // namespace vector_display
 
 #endif

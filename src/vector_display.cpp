@@ -2,6 +2,7 @@
 #include <godot_cpp/core/class_db.hpp>
 
 using namespace godot;
+using namespace vector_display;
 
 void VectorDisplay::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("start_asio_output"), &VectorDisplay::start_asio_output);

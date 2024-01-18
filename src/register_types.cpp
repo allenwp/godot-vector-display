@@ -7,6 +7,7 @@
 #include <godot_cpp/godot.hpp>
 
 using namespace godot;
+using namespace vector_display;
 
 void initialize_vector_display_module(ModuleInitializationLevel p_level) {
 	if (p_level != MODULE_INITIALIZATION_LEVEL_SCENE) {

@@ -4,7 +4,7 @@
 #include <godot_cpp/classes/node.hpp>
 #include "output/vd_asio_output.h"
 
-namespace godot {
+namespace vector_display {
 
 class VectorDisplay : public Node {
 	GDCLASS(VectorDisplay, Node)

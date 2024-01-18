@@ -1,6 +1,8 @@
 #include "vd_asio_output.h"
+#include "godot_cpp/core/math.hpp"
 
 using namespace godot;
+using namespace vector_display;
 
 extern AsioDrivers *asioDrivers;
 
@@ -621,18 +623,18 @@ unsigned long VDASIOOutput::get_sys_reference_time() { // get the system referen
 }
 
 void VDASIOOutput::FeedFloatBuffers(float *xOutput, float *yOutput, float *brightnessOutput, int bufferSize, int startIndex) {
-	//Sample[] currentFrameBuffer = ReadState == ReadStateEnum.Buffer1 ? FrameOutput.Buffer1 : FrameOutput.Buffer2;
+	//VDSample *currentFrameBuffer = nullptr; // TODO: ReadState == ReadStateEnum::Buffer1 ? FrameOutput.Buffer1 : FrameOutput.Buffer2;
 
-	//if (currentFrameBuffer == null) {
+	//if (currentFrameBuffer == nullptr) {
 	//	int blankedSampleCount = bufferSize - startIndex;
 	//	FrameOutput.StarvedSamples += blankedSampleCount;
 	//	Console.WriteLine("AUDIO BUFFER IS STARVED FOR FRAMES! Blanking for " + blankedSampleCount);
 	//	// Clear the rest of the buffer with blanking frames
 	//	for (int i = startIndex; i < bufferSize; i++) {
 	//		// TODO: this should probably just pause on the last position instead (which might be blanking position, but might not be)
-	//		xOutput[i] = -1f;
-	//		yOutput[i] = -1f;
-	//		brightnessOutput[i] = 1f; // no brightness is 1
+	//		xOutput[i] = -1.0f;
+	//		yOutput[i] = -1.0f;
+	//		brightnessOutput[i] = FrameOutput.DisplayProfile.ZeroBrightnessOutput;
 	//	}
 	//	return;
 	//}
@@ -641,14 +643,14 @@ void VDASIOOutput::FeedFloatBuffers(float *xOutput, float *yOutput, float *brigh
 	//	// Move to the next buffer if needed by recursively calling this method:
 	//	if (frameIndex >= currentFrameBuffer.Length) {
 	//		CompleteFrame();
-	//		FeedAsioBuffers(xOutput, yOutput, brightnessOutput, i);
+	//		FeedFloatBuffers(xOutput, yOutput, brightnessOutput, bufferSize, i);
 	//		return;
 	//	}
 
-	//	Sample adjustedSample = PrepareSampleForScreen(currentFrameBuffer[frameIndex]);
-	//	xOutput[i] = adjustedSample.X;
-	//	yOutput[i] = adjustedSample.Y;
-	//	brightnessOutput[i] = adjustedSample.Brightness;
+	//	VDSample adjustedSample = PrepareSampleForScreen(currentFrameBuffer[frameIndex]);
+	//	xOutput[i] = adjustedSample.x;
+	//	yOutput[i] = adjustedSample.y;
+	//	brightnessOutput[i] = VD_SAMPLE_BRIGHTNESS(adjustedSample);
 
 	//	frameIndex++;
 	//}
@@ -678,21 +680,21 @@ void CompleteFrame() {
 	//}
 }
 
-//Sample PrepareSampleForScreen(Sample sample) {
-//	float aspectRatio = FrameOutput.DisplayProfile.AspectRatio;
-//	if (aspectRatio > 1f) {
-//		sample.X /= aspectRatio;
-//		sample.Y /= aspectRatio;
-//	} else {
-//		// Nothing to do with a portrait or square aspect ratio
-//		// In these cases, Y is already in range of -1 to 1 and
-//		// X is whatever range it needs to be to match the aspect ratio.
-//	}
-//
-//	sample.Brightness = MathHelper.Lerp(FrameOutput.DisplayProfile.ZeroBrightnessOutput, FrameOutput.DisplayProfile.FullBrightnessOutput, MathHelper.Clamp(sample.Brightness, 0, 1));
-//
-//	return sample;
-//}
+VDSample VDASIOOutput::PrepareSampleForScreen(VDSample sample) {
+	//float aspectRatio = FrameOutput.DisplayProfile.AspectRatio;
+	//if (aspectRatio > 1.0f) {
+	//	sample.x /= aspectRatio;
+	//	sample.y /= aspectRatio;
+	//} else {
+	//	// Nothing to do with a portrait or square aspect ratio
+	//	// In these cases, Y is already in range of -1 to 1 and
+	//	// X is whatever range it needs to be to match the aspect ratio.
+	//}
+
+	//VD_SAMPLE_BRIGHTNESS(sample) = Math::lerp(FrameOutput.DisplayProfile.ZeroBrightnessOutput, FrameOutput.DisplayProfile.FullBrightnessOutput, Math::clamp(VD_SAMPLE_BRIGHTNESS(sample), 0.0f, 1.0f));
+
+	return sample;
+}
 
 void VDASIOOutput::ApplyBlankingChannelDelay(float *blankingChannel, int bufferLength) {
 	float* originalStream = new float[bufferLength];

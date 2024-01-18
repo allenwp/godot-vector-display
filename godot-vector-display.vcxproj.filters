@@ -27,6 +27,9 @@
     <ClInclude Include="src\output\vd_asio_output.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\vd_sample.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\vector_display.cpp">
@@ -39,6 +42,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\output\vd_asio_output.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\vd_sample.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

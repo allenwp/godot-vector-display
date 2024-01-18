@@ -3,7 +3,7 @@
 
 #include <godot_cpp/classes/resource.hpp>
 
-namespace godot {
+namespace vector_display {
 
 class VDRenderer  {
 
@@ -15,6 +15,6 @@ public:
 	~VDRenderer();
 };
 
-} // namespace godot
+} // namespace vector_display
 
 #endif
