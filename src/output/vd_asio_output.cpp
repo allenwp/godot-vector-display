@@ -1,10 +1,10 @@
 #include "vd_asio_output.h"
 
-using namespace godot; 
-
-VDASIOOutput* VDASIOOutput::_static_instance = nullptr;
+using namespace godot;
 
 extern AsioDrivers *asioDrivers;
+
+VDASIOOutput* VDASIOOutput::_static_instance = nullptr;
 
 VDASIOOutput::VDASIOOutput() {
 	if (_static_instance != nullptr) {
@@ -15,6 +15,10 @@ VDASIOOutput::VDASIOOutput() {
 	asioDrivers = new AsioDrivers();
 	char *driverName = new char[32];
 	asioDrivers->getDriverNames(&driverName, 1);
+
+	// TODO: blankingChannelDelayBufferLength = FrameOutput.BLANKING_CHANNEL_DELAY;
+	blankingChannelDelayBuffer = new float[blankingChannelDelayBufferLength];
+	ReadState = ReadStateEnum::Buffer1;
 
 	// TODO: This could spin on a different thread to monitor ASIO driver state,
 	// similar to the SDK sample's while loop.
@@ -83,6 +87,10 @@ void VDASIOOutput::_cleanup() {
 		delete asioDrivers;
 		asioDrivers = nullptr;
 	}
+	if (blankingChannelDelayBuffer) {
+		delete blankingChannelDelayBuffer;
+		blankingChannelDelayBuffer = nullptr;
+	}
 }
 
 long VDASIOOutput::init_asio_static_data(DriverInfo *asioDriverInfo) { // collect the informational data of the driver
@@ -139,10 +147,13 @@ const double twoRaisedTo32 = 4294967296.;
 #define ASIO64toDouble(a) ((a).lo + (a).hi * twoRaisedTo32)
 #endif
 
-ASIOTime* VDASIOOutput::bufferSwitchTimeInfo(ASIOTime *timeInfo, long index, ASIOBool processNow) { // the actual processing callback.
+ASIOTime *VDASIOOutput::bufferSwitchTimeInfo(ASIOTime *timeInfo, long index, ASIOBool processNow) { // the actual processing callback.
 	// Beware that this is normally in a seperate thread, hence be sure that you take care
 	// about thread synchronization. This is omitted here for simplicity.
-	static long processedSamples = 0;
+
+	if (!processNow) {
+		throw "This ASIO driver does not support direct processing in its buffer fill callback thread. This is not currently supported by the Vector Display library, but might actually be fine. (It needs testing!)";
+	}
 
 	// store the timeInfo for later use
 	_static_instance->asioDriverInfo.tInfo = *timeInfo;
@@ -181,25 +192,193 @@ ASIOTime* VDASIOOutput::bufferSwitchTimeInfo(ASIOTime *timeInfo, long index, ASI
 	// buffer size in samples
 	long buffSize = _static_instance->asioDriverInfo.preferredSize;
 
-	// perform the processing
+	float *xOutput = new float[buffSize];
+	float *yOutput = new float[buffSize];
+	float *zOutput = new float[buffSize];
+
+	_static_instance->FeedFloatBuffers(xOutput, yOutput, zOutput, buffSize, 0);
+
+	if (_static_instance->DebugSaveThisFrame) {
+		DebugSaveBuffersToFile(xOutput, yOutput, zOutput, "ASIO Frame Snapshot (float).csv");
+	}
+
+	_static_instance->ApplyBlankingChannelDelay(zOutput, buffSize);
+
+	if (_static_instance->DebugSaveThisFrame) {
+		DebugSaveBuffersToFile(xOutput, yOutput, zOutput, "ASIO Frame Snapshot (Blanking Delay Applied) (float).csv");
+		_static_instance->DebugSaveThisFrame = false;
+	}
+
+#if DEBUG_CODE
+	// Currently in C#; still needs to be transcoded:
+	// checking for delays between channels
+	//for (int i = 0; i < xOutput.BufferSize; i++)
+	//{
+	//    yOutput[i] = xOutput[i];
+	//    zOutput[i] = xOutput[i];
+	//}
+
+	// Code for a test tone to make sure ASIO device is working well:
+	//for (int index = 0; index < xOutput.BufferSize; index++)
+	//{
+	//	t += 0.03;
+	//	xOutput[index] = (float)Math.Sin(t);
+	//	yOutput[index] = (float)Math.Sin(t);
+	//	zOutput[index] = (float)Math.Sin(t);
+	//}
+
+	// Code for testing blanking:
+	//for (int index = 0; index < xOutput.BufferSize; index++)
+	//{
+	//	t = Microsoft.Xna.Framework.MathHelper.Lerp(0, (float)Math.PI, (float)index / xOutput.BufferSize);
+	//	xOutput[index] = (float)Math.Sin(t);
+	//	yOutput[index] = (float)Math.Cos(t);
+
+	//	if (yOutput[index] > 0.5f || yOutput[index] < -0.5f)
+	//	{
+	//		zOutput[index] = 1f;// (float)Math.Sin(t);
+	//	}
+	//	else
+	//	{
+	//		zOutput[index] = 0f;// (float)Math.Sin(t);
+	//	}
+	//}
+
+	// Code for debugging flicker to 0,0:
+	//for (int i = 0; i < xOutput.BufferSize; i++)
+	//{
+	//	double threshold = 0.01;
+	//	if (Math.Abs((double)xOutput[i]) < threshold && Math.Abs((double)yOutput[i]) < threshold)
+	//	{
+	//		Console.WriteLine("output is 0");
+	//	}
+	//}
+
+	//// Code for debugging oscilloscope faulty(?) X input that looks like it's not properly DC Coupled
+	//frameCount++;
+	//if (frameCount % 300 == 0)
+	//{
+	//	high = !high;
+	//}
+	//for (int i = 0; i < xOutput.BufferSize; i++)
+	//{
+	//	float value;
+	//	if (i < xOutput.BufferSize / 2)
+	//	{
+	//		value = high ? 0.65f : -0.65f;
+	//	}
+	//	else
+	//	{
+	//		value = high ? 0.1f : -0.1f;
+	//	}
+	//	xOutput[i] = value;
+	//	yOutput[i] = value;
+	//	zOutput[i] = 0f;
+	//}
+
+	//// Alternative code for debugging oscilloscope faulty(?) X input that looks like it's not properly DC Coupled
+	//frameCount++;
+	//if (frameCount % 50 == 0)
+	//{
+	//	high = !high;
+	//}
+	//for (int i = 0; i < xOutput.BufferSize; i++)
+	//{
+	//	float value;
+	//	value = high ? 0.1f : -0.1f;
+	//	xOutput[i] = value;
+	//	yOutput[i] = value;
+	//	zOutput[i] = 0f;
+	//}
+
+	//// Alternative code for debugging oscilloscope faulty(?) X input that looks like it's not properly DC Coupled
+	//frameCount++;
+	//if (frameCount % 50 == 0)
+	//{
+	//	high = !high;
+	//}
+	//for (int i = 0; i < xOutput.BufferSize; i++)
+	//{
+	//	float value = -0.5f;
+	//	if (high && i > xOutput.BufferSize / 3 && i < (xOutput.BufferSize / 3) * 2)
+	//	{
+	//		value = 0.5f;
+	//	}
+	//	xOutput[i] = value;
+	//	zOutput[i] = 0f;
+	//}
+	//for (int i = 0; i < yOutput.BufferSize; i++)
+	//{
+	//	yOutput[i] = (float)i / (yOutput.BufferSize - 1);
+	//	yOutput[i] = yOutput[i] * 2f - 1f;
+	//	zOutput[i] = 0f;
+	//}
+#endif
+
+	// fill the final output buffers
+	int outputIndex = 0;
 	for (int i = 0; i < _static_instance->asioDriverInfo.inputBuffers + _static_instance->asioDriverInfo.outputBuffers; i++) {
 		if (_static_instance->asioDriverInfo.bufferInfos[i].isInput == false) {
-			// OK do processing for the outputs only
+			void *driverBuffer = _static_instance->asioDriverInfo.bufferInfos[i].buffers[index];
+
+			float *floatBuffer = nullptr;
+			switch (outputIndex) {
+				case 0:
+					floatBuffer = zOutput;
+					break;
+				case 2:
+					floatBuffer = xOutput;
+					break;
+				case 3:
+					floatBuffer = yOutput;
+					break;
+				case 1:
+					floatBuffer = xOutput; // Just for demo purposes. This line can be removed.
+				default:
+					// leave the buffer nullptr to indicate that this channel should be filled with silence
+					break;
+			}
+
 			switch (_static_instance->asioDriverInfo.channelInfos[i].type) {
 				case ASIOSTInt16LSB:
-					memset(_static_instance->asioDriverInfo.bufferInfos[i].buffers[index], 0, buffSize * 2);
+					if (floatBuffer) {
+						// TODO when needed
+					} else {
+						memset(driverBuffer, 0, buffSize * 2);
+					}
 					break;
 				case ASIOSTInt24LSB: // used for 20 bits as well
-					memset(_static_instance->asioDriverInfo.bufferInfos[i].buffers[index], 0, buffSize * 3);
+					if (floatBuffer) {
+						// TODO when needed
+					} else {
+						memset(driverBuffer, 0, buffSize * 3);
+					}
 					break;
 				case ASIOSTInt32LSB:
-					memset(_static_instance->asioDriverInfo.bufferInfos[i].buffers[index], 0, buffSize * 4);
+					if (floatBuffer) {
+						long *castBuffer = static_cast<long *>(driverBuffer);
+						const double fScaler32 = (double)0x7fffffffL;
+						double sc = fScaler32 + .49999;
+						for (int sampleIndex = 0; sampleIndex < buffSize; sampleIndex++) {
+							castBuffer[sampleIndex] = (long)((double)floatBuffer[sampleIndex] * sc);
+						}
+					} else {
+						memset(driverBuffer, 0, buffSize * 4);
+					}
 					break;
 				case ASIOSTFloat32LSB: // IEEE 754 32 bit float, as found on Intel x86 architecture
-					memset(_static_instance->asioDriverInfo.bufferInfos[i].buffers[index], 0, buffSize * 4);
+					if (floatBuffer) {
+						// TODO when needed
+					} else {
+						memset(driverBuffer, 0, buffSize * 4);
+					}
 					break;
 				case ASIOSTFloat64LSB: // IEEE 754 64 bit double float, as found on Intel x86 architecture
-					memset(_static_instance->asioDriverInfo.bufferInfos[i].buffers[index], 0, buffSize * 8);
+					if (floatBuffer) {
+						// TODO when needed
+					} else {
+						memset(driverBuffer, 0, buffSize * 8);
+					}
 					break;
 
 					// these are used for 32 bit data buffer, with different alignment of the data inside
@@ -208,23 +387,53 @@ ASIOTime* VDASIOOutput::bufferSwitchTimeInfo(ASIOTime *timeInfo, long index, ASI
 				case ASIOSTInt32LSB18: // 32 bit data with 18 bit alignment
 				case ASIOSTInt32LSB20: // 32 bit data with 20 bit alignment
 				case ASIOSTInt32LSB24: // 32 bit data with 24 bit alignment
-					memset(_static_instance->asioDriverInfo.bufferInfos[i].buffers[index], 0, buffSize * 4);
+					if (floatBuffer) {
+						// TODO when needed
+					} else {
+						memset(driverBuffer, 0, buffSize * 4);
+					}
 					break;
 
 				case ASIOSTInt16MSB:
-					memset(_static_instance->asioDriverInfo.bufferInfos[i].buffers[index], 0, buffSize * 2);
+					if (floatBuffer) {
+						// TODO when needed
+					} else {
+						memset(driverBuffer, 0, buffSize * 2);
+					}
 					break;
 				case ASIOSTInt24MSB: // used for 20 bits as well
-					memset(_static_instance->asioDriverInfo.bufferInfos[i].buffers[index], 0, buffSize * 3);
+					if (floatBuffer) {
+						// TODO when needed
+					} else {
+						memset(driverBuffer, 0, buffSize * 3);
+					}
 					break;
 				case ASIOSTInt32MSB:
-					memset(_static_instance->asioDriverInfo.bufferInfos[i].buffers[index], 0, buffSize * 4);
+					if (floatBuffer) {
+						// TODO when needed
+					} else {
+						memset(driverBuffer, 0, buffSize * 4);
+					}
 					break;
 				case ASIOSTFloat32MSB: // IEEE 754 32 bit float, as found on Intel x86 architecture
-					memset(_static_instance->asioDriverInfo.bufferInfos[i].buffers[index], 0, buffSize * 4);
+					if (floatBuffer) {
+						float *castBuffer = static_cast<float*>(driverBuffer);
+						for (int sampleIndex = 0; sampleIndex < buffSize; sampleIndex++) {
+							castBuffer[sampleIndex] = floatBuffer[sampleIndex];
+						}
+					} else {
+						memset(driverBuffer, 0, buffSize * 4);
+					}
 					break;
 				case ASIOSTFloat64MSB: // IEEE 754 64 bit double float, as found on Intel x86 architecture
-					memset(_static_instance->asioDriverInfo.bufferInfos[i].buffers[index], 0, buffSize * 8);
+					if (floatBuffer) {
+						double *castBuffer = static_cast<double *>(driverBuffer);
+						for (int sampleIndex = 0; sampleIndex < buffSize; sampleIndex++) {
+							castBuffer[sampleIndex] = (double)floatBuffer[sampleIndex];
+						}
+					} else {
+						memset(driverBuffer, 0, buffSize * 8);
+					}
 					break;
 
 					// these are used for 32 bit data buffer, with different alignment of the data inside
@@ -233,9 +442,14 @@ ASIOTime* VDASIOOutput::bufferSwitchTimeInfo(ASIOTime *timeInfo, long index, ASI
 				case ASIOSTInt32MSB18: // 32 bit data with 18 bit alignment
 				case ASIOSTInt32MSB20: // 32 bit data with 20 bit alignment
 				case ASIOSTInt32MSB24: // 32 bit data with 24 bit alignment
-					memset(_static_instance->asioDriverInfo.bufferInfos[i].buffers[index], 0, buffSize * 4);
+					if (floatBuffer) {
+						// TODO when needed
+					} else {
+						memset(driverBuffer, 0, buffSize * 4);
+					}
 					break;
 			}
+			outputIndex++;
 		}
 	}
 
@@ -243,10 +457,9 @@ ASIOTime* VDASIOOutput::bufferSwitchTimeInfo(ASIOTime *timeInfo, long index, ASI
 	if (_static_instance->asioDriverInfo.postOutput)
 		ASIOOutputReady();
 
-	//if (processedSamples >= asioDriverInfo.sampleRate * TEST_RUN_TIME) // roughly measured
-	//	asioDriverInfo.stopped = true;
-	//else
-	//	processedSamples += buffSize;
+	delete xOutput;
+	delete yOutput;
+	delete zOutput;
 
 	return 0L;
 }
@@ -395,7 +608,7 @@ ASIOError VDASIOOutput::create_asio_buffers(DriverInfo *asioDriverInfo) { // cre
 	return result;
 }
 
-unsigned long VDASIOOutput:: get_sys_reference_time() { // get the system reference time
+unsigned long VDASIOOutput::get_sys_reference_time() { // get the system reference time
 #if WINDOWS
 	return timeGetTime();
 #elif MAC
@@ -405,4 +618,102 @@ unsigned long VDASIOOutput:: get_sys_reference_time() { // get the system refere
 	double r = ((double)ys.hi * twoRaisedTo32 + (double)ys.lo);
 	return (unsigned long)(r / 1000.);
 #endif
+}
+
+void VDASIOOutput::FeedFloatBuffers(float *xOutput, float *yOutput, float *brightnessOutput, int bufferSize, int startIndex) {
+	//Sample[] currentFrameBuffer = ReadState == ReadStateEnum.Buffer1 ? FrameOutput.Buffer1 : FrameOutput.Buffer2;
+
+	//if (currentFrameBuffer == null) {
+	//	int blankedSampleCount = bufferSize - startIndex;
+	//	FrameOutput.StarvedSamples += blankedSampleCount;
+	//	Console.WriteLine("AUDIO BUFFER IS STARVED FOR FRAMES! Blanking for " + blankedSampleCount);
+	//	// Clear the rest of the buffer with blanking frames
+	//	for (int i = startIndex; i < bufferSize; i++) {
+	//		// TODO: this should probably just pause on the last position instead (which might be blanking position, but might not be)
+	//		xOutput[i] = -1f;
+	//		yOutput[i] = -1f;
+	//		brightnessOutput[i] = 1f; // no brightness is 1
+	//	}
+	//	return;
+	//}
+
+	//for (int i = startIndex; i < bufferSize; i++) {
+	//	// Move to the next buffer if needed by recursively calling this method:
+	//	if (frameIndex >= currentFrameBuffer.Length) {
+	//		CompleteFrame();
+	//		FeedAsioBuffers(xOutput, yOutput, brightnessOutput, i);
+	//		return;
+	//	}
+
+	//	Sample adjustedSample = PrepareSampleForScreen(currentFrameBuffer[frameIndex]);
+	//	xOutput[i] = adjustedSample.X;
+	//	yOutput[i] = adjustedSample.Y;
+	//	brightnessOutput[i] = adjustedSample.Brightness;
+
+	//	frameIndex++;
+	//}
+
+	//if (frameIndex >= currentFrameBuffer.Length) {
+	//	CompleteFrame();
+	//}
+}
+
+void CompleteFrame() {
+	//switch (ReadState) {
+	//	case ReadStateEnum.Buffer1:
+	//		FrameOutput.Buffer1 = null;
+	//		ReadState = ReadStateEnum.Buffer2;
+	//		break;
+	//	case ReadStateEnum.Buffer2:
+	//		FrameOutput.Buffer2 = null;
+	//		ReadState = ReadStateEnum.Buffer1;
+	//		break;
+	//}
+
+	//frameIndex = 0;
+
+	//if (DebugSaveNextFrame) {
+	//	DebugSaveNextFrame = false;
+	//	DebugSaveThisFrame = true;
+	//}
+}
+
+//Sample PrepareSampleForScreen(Sample sample) {
+//	float aspectRatio = FrameOutput.DisplayProfile.AspectRatio;
+//	if (aspectRatio > 1f) {
+//		sample.X /= aspectRatio;
+//		sample.Y /= aspectRatio;
+//	} else {
+//		// Nothing to do with a portrait or square aspect ratio
+//		// In these cases, Y is already in range of -1 to 1 and
+//		// X is whatever range it needs to be to match the aspect ratio.
+//	}
+//
+//	sample.Brightness = MathHelper.Lerp(FrameOutput.DisplayProfile.ZeroBrightnessOutput, FrameOutput.DisplayProfile.FullBrightnessOutput, MathHelper.Clamp(sample.Brightness, 0, 1));
+//
+//	return sample;
+//}
+
+void VDASIOOutput::ApplyBlankingChannelDelay(float *blankingChannel, int bufferLength) {
+	float* originalStream = new float[bufferLength];
+	for (int i = 0; i < bufferLength; i++) {
+		originalStream[i] = blankingChannel[i];
+	}
+	for (int i = 0; i < bufferLength; i++) {
+		if (i < blankingChannelDelayBufferLength) {
+			blankingChannel[i] = blankingChannelDelayBuffer[i];
+		} else {
+			blankingChannel[i] = originalStream[i - blankingChannelDelayBufferLength];
+		}
+	}
+	// TODO: Array.Copy(originalStream, originalStream.Length - blankingChannelDelayBufferLength, blankingChannelDelayBuffer, 0, blankingChannelDelayBufferLength);
+}
+
+void VDASIOOutput::DebugSaveBuffersToFile(float *x, float *y, float *z, const char* path) {
+	//StringBuilder sb = new StringBuilder();
+	//sb.AppendLine("X,Y,Z");
+	//for (int i = 0; i < x.BufferSize; i++) {
+	//	sb.AppendLine($ "{x[i]:R},{y[i]:R},{z[i]:R}");
+	//}
+	//File.WriteAllText(path, sb.ToString());
 }

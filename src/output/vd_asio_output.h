@@ -78,15 +78,42 @@ protected:
 	bool _need_to_dispose_buffers = false;
 	bool _need_to_exit = false;
 	bool _need_to_remove_current_driver = false;
+	int frameIndex = 0;
+
+	float *blankingChannelDelayBuffer = nullptr;
+	int blankingChannelDelayBufferLength = 0;
+	bool DebugSaveThisFrame = false;
 
 	long init_asio_static_data(DriverInfo *asioDriverInfo);
 	ASIOError create_asio_buffers(DriverInfo *asioDriverInfo);
 
 	void _cleanup();
 
+	void FeedFloatBuffers(float *xOutput, float *yOutput, float *brightnessOutput, int bufferSize, int startIndex);
+	void ApplyBlankingChannelDelay(float *blankingChannel, int bufferLength);
+	static void DebugSaveBuffersToFile(float *x, float *y, float *z, const char *path);
+
 public:
+	/// <summary>
+	/// This will attempt to load and start the ASIO driver.
+	/// If it fails, either at initialization or sometime during playback,
+	/// it will generally fail silently.
+	/// 
+	/// The final game UI must have a method for restarting it in case it fails.
+	/// This can be done by simply deleting and making a new VDASIOOuput.
+	/// </summary>
 	VDASIOOutput();
 	~VDASIOOutput();
+
+	enum ReadStateEnum {
+		Buffer1,
+		Buffer2
+	};
+	ReadStateEnum ReadState = ReadStateEnum::Buffer1;
+
+	bool DebugSaveNextFrame = false;
+
+	void CompleteFrame();
 };
 
 } // namespace godot
