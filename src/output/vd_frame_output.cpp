@@ -1,11 +1,16 @@
 #include "vd_frame_output.h"
 #include "godot_cpp/core/math.hpp"
+#include "vd_display_profile_Osc_Tek_TAS_465.h"
 
 using namespace vector_display;
 
 float VDFrameOutput::MaxFramesPerSecond = 80.0f;
+VDDisplayProfile *VDFrameOutput::DisplayProfile = (VDDisplayProfile*)new VDDisplayProfileOscTekTAS465();
+
 VDSample *VDFrameOutput::Buffer1 = nullptr;
+int VDFrameOutput::Buffer1Length = 0;
 VDSample *VDFrameOutput::Buffer2 = nullptr;
+int VDFrameOutput::Buffer2Length = 0;
 int VDFrameOutput::StarvedSamples = 0;
 unsigned long VDFrameOutput::FrameCount = 0;
 bool VDFrameOutput::DebugSaveFrame = false;
@@ -51,7 +56,7 @@ VDSample* VDFrameOutput::GetCalibrationFrame(int& bufferLengthOut) {
 
 	int bufferIndex = 0;
 
-	float aspectRatio = DisplayProfile.AspectRatio;
+	float aspectRatio = DisplayProfile->AspectRatio;
 
 	bufferIndex = CalibrationDrawPoint(-aspectRatio, -1, buffer, brightestSampleCount, bufferIndex);
 	bufferIndex = CalibrationDrawPoint(-aspectRatio, 0, buffer, brightestSampleCount, bufferIndex);

@@ -2,6 +2,7 @@
 #define VD_FRAME_OUTPUT_H
 
 #include "vd_sample.h"
+#include "vd_display_profile.h"
 
 namespace vector_display {
 
@@ -26,18 +27,20 @@ public:
 	/// </summary>
 	static float MaxFramesPerSecond;
 
-	static DisplayProfile DisplayProfile = new DisplayProfileOscTekTAS465();
+	static VDDisplayProfile* DisplayProfile;
 
 	/// <summary>
 	/// GameLoop checks to see if it's null before writting.
 	/// Output should set to null when it's finished reading.
 	/// </summary>
 	static VDSample *Buffer1;
+	static int Buffer1Length;
 	/// <summary>
 	/// GameLoop checks to see if it's null before writting.
 	/// Output should set to null when it's finished reading.
 	/// </summary>
 	static VDSample *Buffer2;
+	static int Buffer2Length;
 
 	static int StarvedSamples;
 

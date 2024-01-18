@@ -30,7 +30,13 @@
     <ClInclude Include="src\vd_sample.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\vd_frame_output.h">
+    <ClInclude Include="src\output\vd_frame_output.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\output\vd_display_profile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\output\vd_display_profile_Osc_Tek_TAS_465.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -50,7 +56,10 @@
     <ClCompile Include="src\vd_sample.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\vd_frame_output.cpp">
+    <ClCompile Include="src\output\vd_frame_output.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\output\vd_display_profile_Osc_Tek_TAS_465.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
