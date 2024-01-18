@@ -16,8 +16,10 @@ VDASIOOutput::VDASIOOutput() {
 	char *driverName = new char[32];
 	asioDrivers->getDriverNames(&driverName, 1);
 
-	// TODO: This could spin on a different thread to monitor ASIO driver state
+	// TODO: This could spin on a different thread to monitor ASIO driver state,
+	// similar to the SDK sample's while loop.
 
+	bool loaded = false;
 	if (asioDrivers->loadDriver(driverName)) {
 		// initialize the driver
 		if (ASIOInit(&asioDriverInfo.driverInfo) == ASE_OK) {
@@ -38,6 +40,7 @@ VDASIOOutput::VDASIOOutput() {
 				if (create_asio_buffers(&asioDriverInfo) == ASE_OK) {
 					if (ASIOStart() == ASE_OK) {
 						_need_to_stop = true;
+						loaded = true;
 					}
 					_need_to_dispose_buffers = true;
 				}
@@ -45,6 +48,10 @@ VDASIOOutput::VDASIOOutput() {
 			_need_to_exit = true;
 		}
 		_need_to_remove_current_driver = true;
+	}
+
+	if (!loaded) {
+		_cleanup();
 	}
 
 	delete driverName;
@@ -58,18 +65,23 @@ VDASIOOutput::~VDASIOOutput() {
 void VDASIOOutput::_cleanup() {
 	if (_need_to_stop) {
 		ASIOStop();
+		_need_to_stop = false;
 	}
 	if (_need_to_dispose_buffers) {
 		ASIODisposeBuffers();
+		_need_to_dispose_buffers = false;
 	}
 	if (_need_to_exit) {
 		ASIOExit();
+		_need_to_exit = false;
 	}
 	if (_need_to_remove_current_driver) {
 		asioDrivers->removeCurrentDriver();
+		_need_to_remove_current_driver = false;
 	}
 	if (asioDrivers) {
 		delete asioDrivers;
+		asioDrivers = nullptr;
 	}
 }
 

@@ -14,6 +14,7 @@ VectorDisplay::VectorDisplay() {
 VectorDisplay::~VectorDisplay() {
 	if (output) {
 		delete output;
+		output = nullptr;
 	}
 }
 
