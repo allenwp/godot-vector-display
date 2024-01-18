@@ -150,6 +150,9 @@ const double twoRaisedTo32 = 4294967296.;
 #define ASIO64toDouble(a) ((a).lo + (a).hi * twoRaisedTo32)
 #endif
 
+//static double t = 0;
+//static ulong frameCount = 0;
+//static bool high = false;
 ASIOTime *VDASIOOutput::bufferSwitchTimeInfo(ASIOTime *timeInfo, long index, ASIOBool processNow) { // the actual processing callback.
 	// Beware that this is normally in a seperate thread, hence be sure that you take care
 	// about thread synchronization. This is omitted here for simplicity.
@@ -212,43 +215,44 @@ ASIOTime *VDASIOOutput::bufferSwitchTimeInfo(ASIOTime *timeInfo, long index, ASI
 		_static_instance->DebugSaveThisFrame = false;
 	}
 
-#if DEBUG_CODE
-	// Currently in C#; still needs to be transcoded:
+
+	// Some of this is in C# and still needs to be transcoded:
+	
 	// checking for delays between channels
-	//for (int i = 0; i < xOutput.BufferSize; i++)
+	//for (int i = 0; i < buffSize; i++)
 	//{
 	//    yOutput[i] = xOutput[i];
 	//    zOutput[i] = xOutput[i];
 	//}
 
 	// Code for a test tone to make sure ASIO device is working well:
-	//for (int index = 0; index < xOutput.BufferSize; index++)
+	//for (int index = 0; index < buffSize; index++)
 	//{
 	//	t += 0.03;
-	//	xOutput[index] = (float)Math.Sin(t);
-	//	yOutput[index] = (float)Math.Sin(t);
-	//	zOutput[index] = (float)Math.Sin(t);
+	//	xOutput[index] = (float)sin(t);
+	//	yOutput[index] = (float)sin(t);
+	//	zOutput[index] = (float)sin(t);
 	//}
 
 	// Code for testing blanking:
-	//for (int index = 0; index < xOutput.BufferSize; index++)
+	//for (int index = 0; index < buffSize; index++)
 	//{
-	//	t = Microsoft.Xna.Framework.MathHelper.Lerp(0, (float)Math.PI, (float)index / xOutput.BufferSize);
-	//	xOutput[index] = (float)Math.Sin(t);
-	//	yOutput[index] = (float)Math.Cos(t);
+	//	t = Math::lerp(0, (float)Math_PI, (float)index / buffSize);
+	//	xOutput[index] = (float)sin(t);
+	//	yOutput[index] = (float)cos(t);
 
 	//	if (yOutput[index] > 0.5f || yOutput[index] < -0.5f)
 	//	{
-	//		zOutput[index] = 1f;// (float)Math.Sin(t);
+	//		zOutput[index] = 1.0f;// (float)Math.Sin(t);
 	//	}
 	//	else
 	//	{
-	//		zOutput[index] = 0f;// (float)Math.Sin(t);
+	//		zOutput[index] = 0.0f;// (float)Math.Sin(t);
 	//	}
 	//}
 
 	// Code for debugging flicker to 0,0:
-	//for (int i = 0; i < xOutput.BufferSize; i++)
+	//for (int i = 0; i < buffSize; i++)
 	//{
 	//	double threshold = 0.01;
 	//	if (Math.Abs((double)xOutput[i]) < threshold && Math.Abs((double)yOutput[i]) < threshold)
@@ -263,10 +267,10 @@ ASIOTime *VDASIOOutput::bufferSwitchTimeInfo(ASIOTime *timeInfo, long index, ASI
 	//{
 	//	high = !high;
 	//}
-	//for (int i = 0; i < xOutput.BufferSize; i++)
+	//for (int i = 0; i < buffSize; i++)
 	//{
 	//	float value;
-	//	if (i < xOutput.BufferSize / 2)
+	//	if (i < buffSize / 2)
 	//	{
 	//		value = high ? 0.65f : -0.65f;
 	//	}
@@ -276,7 +280,7 @@ ASIOTime *VDASIOOutput::bufferSwitchTimeInfo(ASIOTime *timeInfo, long index, ASI
 	//	}
 	//	xOutput[i] = value;
 	//	yOutput[i] = value;
-	//	zOutput[i] = 0f;
+	//	zOutput[i] = 0.0f;
 	//}
 
 	//// Alternative code for debugging oscilloscope faulty(?) X input that looks like it's not properly DC Coupled
@@ -285,13 +289,13 @@ ASIOTime *VDASIOOutput::bufferSwitchTimeInfo(ASIOTime *timeInfo, long index, ASI
 	//{
 	//	high = !high;
 	//}
-	//for (int i = 0; i < xOutput.BufferSize; i++)
+	//for (int i = 0; i < buffSize; i++)
 	//{
 	//	float value;
 	//	value = high ? 0.1f : -0.1f;
 	//	xOutput[i] = value;
 	//	yOutput[i] = value;
-	//	zOutput[i] = 0f;
+	//	zOutput[i] = 0.0f;
 	//}
 
 	//// Alternative code for debugging oscilloscope faulty(?) X input that looks like it's not properly DC Coupled
@@ -300,23 +304,23 @@ ASIOTime *VDASIOOutput::bufferSwitchTimeInfo(ASIOTime *timeInfo, long index, ASI
 	//{
 	//	high = !high;
 	//}
-	//for (int i = 0; i < xOutput.BufferSize; i++)
+	//for (int i = 0; i < buffSize; i++)
 	//{
 	//	float value = -0.5f;
-	//	if (high && i > xOutput.BufferSize / 3 && i < (xOutput.BufferSize / 3) * 2)
+	//	if (high && i > buffSize / 3 && i < (buffSize / 3) * 2)
 	//	{
 	//		value = 0.5f;
 	//	}
 	//	xOutput[i] = value;
-	//	zOutput[i] = 0f;
+	//	zOutput[i] = 0.0f;
 	//}
 	//for (int i = 0; i < yOutput.BufferSize; i++)
 	//{
 	//	yOutput[i] = (float)i / (yOutput.BufferSize - 1);
-	//	yOutput[i] = yOutput[i] * 2f - 1f;
-	//	zOutput[i] = 0f;
+	//	yOutput[i] = yOutput[i] * 2f - 1.0f;
+	//	zOutput[i] = 0.0f;
 	//}
-#endif
+
 
 	// fill the final output buffers
 	int outputIndex = 0;
