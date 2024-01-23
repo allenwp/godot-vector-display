@@ -21,7 +21,7 @@ VDASIOOutput::VDASIOOutput() {
 
 	blankingChannelDelayBufferLength = VDFrameOutput::BLANKING_CHANNEL_DELAY;
 	blankingChannelDelayBuffer = new float[blankingChannelDelayBufferLength];
-	ReadState = ReadStateEnum::Buffer1;
+	ReadState.store(ReadStateEnum::Buffer1, std::memory_order_release);
 
 	// TODO: This could spin on a different thread to monitor ASIO driver state,
 	// similar to the SDK sample's while loop.
@@ -630,12 +630,14 @@ unsigned long VDASIOOutput::get_sys_reference_time() { // get the system referen
 void VDASIOOutput::FeedFloatBuffers(float *xOutput, float *yOutput, float *brightnessOutput, int bufferSize, int startIndex) {
 	VDSample *currentFrameBuffer = nullptr;
 	int currentFrameBufferLength = 0;
-	if (ReadState == ReadStateEnum::Buffer1) {
-		currentFrameBuffer = VDFrameOutput::Buffer1;
-		currentFrameBufferLength = VDFrameOutput::Buffer1Length;
+	if (ReadState.load(std::memory_order_acquire) == ReadStateEnum::Buffer1) {
+		// TODO: Since we're sycning on the ReadState, do these even need to be atomic and loaded like this?
+		currentFrameBuffer = VDFrameOutput::Buffer1.load(std::memory_order_acquire);
+		currentFrameBufferLength = VDFrameOutput::Buffer1Length.load(std::memory_order_acquire);
 	} else {
-		currentFrameBuffer = VDFrameOutput::Buffer2;
-		currentFrameBufferLength = VDFrameOutput::Buffer2Length;
+		// TODO: Since we're sycning on the ReadState, do these even need to be atomic and loaded like this?
+		currentFrameBuffer = VDFrameOutput::Buffer2.load(std::memory_order_acquire);
+		currentFrameBufferLength = VDFrameOutput::Buffer2Length.load(std::memory_order_acquire);
 	}
 
 	if (currentFrameBuffer == nullptr) {
@@ -674,14 +676,17 @@ void VDASIOOutput::FeedFloatBuffers(float *xOutput, float *yOutput, float *brigh
 }
 
 void VDASIOOutput::CompleteFrame() {
-	switch (ReadState) {
+	auto state = ReadState.load(std::memory_order_acquire);
+	switch (state) {
 		case ReadStateEnum::Buffer1:
-			VDFrameOutput::Buffer1 = nullptr;
-			ReadState = ReadStateEnum::Buffer2;
+			// TODO: Since we're sycning on the ReadState, do these even need to be atomic and loaded like this?
+			VDFrameOutput::Buffer1.store(nullptr, std::memory_order_release);
+			ReadState.store(ReadStateEnum::Buffer2, std::memory_order_release);
 			break;
 		case ReadStateEnum::Buffer2:
-			VDFrameOutput::Buffer2 = nullptr;
-			ReadState = ReadStateEnum::Buffer1;
+			// TODO: Since we're sycning on the ReadState, do these even need to be atomic and loaded like this?
+			VDFrameOutput::Buffer2.store(nullptr, std::memory_order_release);
+			ReadState.store(ReadStateEnum::Buffer1, std::memory_order_release);
 			break;
 	}
 

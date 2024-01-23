@@ -7,10 +7,10 @@ using namespace vector_display;
 float VDFrameOutput::MaxFramesPerSecond = 80.0f;
 VDDisplayProfile *VDFrameOutput::DisplayProfile = (VDDisplayProfile*)new VDDisplayProfileOscTekTAS465();
 
-VDSample *VDFrameOutput::Buffer1 = nullptr;
-int VDFrameOutput::Buffer1Length = 0;
-VDSample *VDFrameOutput::Buffer2 = nullptr;
-int VDFrameOutput::Buffer2Length = 0;
+std::atomic<VDSample *> VDFrameOutput::Buffer1 = nullptr;
+std::atomic<int> VDFrameOutput::Buffer1Length = 0;
+std::atomic<VDSample *> VDFrameOutput::Buffer2 = nullptr;
+std::atomic<int> VDFrameOutput::Buffer2Length = 0;
 int VDFrameOutput::StarvedSamples = 0;
 unsigned long VDFrameOutput::FrameCount = 0;
 bool VDFrameOutput::DebugSaveFrame = false;

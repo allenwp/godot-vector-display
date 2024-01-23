@@ -33,14 +33,14 @@ public:
 	/// GameLoop checks to see if it's null before writting.
 	/// Output should set to null when it's finished reading.
 	/// </summary>
-	static VDSample *Buffer1;
-	static int Buffer1Length;
+	static std::atomic<VDSample *> Buffer1;
+	static std::atomic<int> Buffer1Length;
 	/// <summary>
 	/// GameLoop checks to see if it's null before writting.
 	/// Output should set to null when it's finished reading.
 	/// </summary>
-	static VDSample *Buffer2;
-	static int Buffer2Length;
+	static std::atomic<VDSample *> Buffer2;
+	static std::atomic<int> Buffer2Length;
 
 	static int StarvedSamples;
 

@@ -111,7 +111,7 @@ public:
 		Buffer1,
 		Buffer2
 	};
-	ReadStateEnum ReadState = ReadStateEnum::Buffer1;
+	std::atomic<ReadStateEnum> ReadState = ReadStateEnum::Buffer1;
 
 	bool DebugSaveNextFrame = false;
 
