@@ -9,7 +9,7 @@ extern AsioDrivers *asioDrivers;
 
 VDASIOOutput* VDASIOOutput::_static_instance = nullptr;
 
-VDASIOOutput::VDASIOOutput() {
+VDASIOOutput::VDASIOOutput(int blankingDelay) {
 	if (_static_instance != nullptr) {
 		throw "Trying to create a new VDASIOOutput, but one already exists!";
 	}
@@ -19,7 +19,7 @@ VDASIOOutput::VDASIOOutput() {
 	char *driverName = new char[32];
 	asioDrivers->getDriverNames(&driverName, 1);
 
-	blankingChannelDelayBufferLength = VDFrameOutput::BLANKING_CHANNEL_DELAY;
+	blankingChannelDelayBufferLength = blankingDelay;
 	blankingChannelDelayBuffer = new float[blankingChannelDelayBufferLength];
 	ReadState.store(ReadStateEnum::Buffer1, std::memory_order_release);
 
@@ -37,7 +37,7 @@ VDASIOOutput::VDASIOOutput() {
 			//		asioDriverInfo.driverInfo.asioVersion, asioDriverInfo.driverInfo.driverVersion,
 			//		asioDriverInfo.driverInfo.name, asioDriverInfo.driverInfo.errorMessage);
 			if (init_asio_static_data(&asioDriverInfo) == 0) {
-				ASIOControlPanel(); //you might want to check wether the ASIOControlPanel() can open
+				//ASIOControlPanel(); //you might want to check wether the ASIOControlPanel() can open
 
 				// set up the asioCallback structure and create the ASIO data buffer
 				asioCallbacks.bufferSwitch = &bufferSwitch;
@@ -631,11 +631,9 @@ void VDASIOOutput::FeedFloatBuffers(float *xOutput, float *yOutput, float *brigh
 	VDSample *currentFrameBuffer = nullptr;
 	int currentFrameBufferLength = 0;
 	if (ReadState.load(std::memory_order_acquire) == ReadStateEnum::Buffer1) {
-		// TODO: Since we're sycning on the ReadState, do these even need to be atomic and loaded like this?
 		currentFrameBuffer = VDFrameOutput::Buffer1.load(std::memory_order_acquire);
 		currentFrameBufferLength = VDFrameOutput::Buffer1Length.load(std::memory_order_acquire);
 	} else {
-		// TODO: Since we're sycning on the ReadState, do these even need to be atomic and loaded like this?
 		currentFrameBuffer = VDFrameOutput::Buffer2.load(std::memory_order_acquire);
 		currentFrameBufferLength = VDFrameOutput::Buffer2Length.load(std::memory_order_acquire);
 	}
@@ -679,13 +677,15 @@ void VDASIOOutput::CompleteFrame() {
 	auto state = ReadState.load(std::memory_order_acquire);
 	switch (state) {
 		case ReadStateEnum::Buffer1:
-			// TODO: Since we're sycning on the ReadState, do these even need to be atomic and loaded like this?
+			delete (VDFrameOutput::Buffer1.load(std::memory_order_acquire));
 			VDFrameOutput::Buffer1.store(nullptr, std::memory_order_release);
+			VDFrameOutput::Buffer1Length.store(0, std::memory_order_release);
 			ReadState.store(ReadStateEnum::Buffer2, std::memory_order_release);
 			break;
 		case ReadStateEnum::Buffer2:
-			// TODO: Since we're sycning on the ReadState, do these even need to be atomic and loaded like this?
+			delete (VDFrameOutput::Buffer2.load(std::memory_order_acquire));
 			VDFrameOutput::Buffer2.store(nullptr, std::memory_order_release);
+			VDFrameOutput::Buffer2Length.store(0, std::memory_order_release);
 			ReadState.store(ReadStateEnum::Buffer1, std::memory_order_release);
 			break;
 	}
@@ -714,6 +714,7 @@ VDSample VDASIOOutput::PrepareSampleForScreen(VDSample sample) {
 	return sample;
 }
 
+// TODO: I think this is somehow backwards from what I intended it to be??
 void VDASIOOutput::ApplyBlankingChannelDelay(float *blankingChannel, int bufferLength) {
 	float* originalStream = new float[bufferLength];
 	for (int i = 0; i < bufferLength; i++) {
@@ -728,6 +729,7 @@ void VDASIOOutput::ApplyBlankingChannelDelay(float *blankingChannel, int bufferL
 	}
 	
 	memcpy(blankingChannelDelayBuffer, originalStream + bufferLength - blankingChannelDelayBufferLength, blankingChannelDelayBufferLength);
+	delete originalStream;
 }
 
 void VDASIOOutput::DebugSaveBuffersToFile(float *x, float *y, float *z, const char* path) {

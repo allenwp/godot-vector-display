@@ -53,7 +53,7 @@ public:
 
 	static int GetTargetBufferSize();
 
-	static void ClearBuffer(VDSample *buffer, int bufferLength, int startIndex = 0);
+	static void ClearBuffer(VDSample *buffer, int bufferLength, int startIndex);
 	
 	static void DebugSaveBufferToFile(VDSample *buffer, int bufferLength, const char *path);
 

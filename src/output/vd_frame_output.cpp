@@ -52,7 +52,7 @@ VDSample* VDFrameOutput::GetCalibrationFrame(int& bufferLengthOut) {
 
 	bufferLengthOut = brightestSampleCount * 8;
 	VDSample *buffer = new VDSample[bufferLengthOut];
-	ClearBuffer(buffer, bufferLengthOut);
+	ClearBuffer(buffer, bufferLengthOut, 0);
 
 	int bufferIndex = 0;
 

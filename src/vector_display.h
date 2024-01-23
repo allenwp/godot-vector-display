@@ -15,13 +15,28 @@ protected:
 	static void _bind_methods();
 	VDASIOOutput* output = nullptr;
 
+	/// <summary>
+	/// Used for determining how blanking should behave for the first sample of a new frame.
+	/// </summary>
+	VDSample previousFinalSample;
+
+	/// <param name="previousFrameEndSample">The sample that was drawn right before starting to draw this frame. (Last sample from the previous frame)</param>
+	VDSample *CreateFrameBuffer(TypedArray<Array> samples, VDSample previousFrameEndSample, int &blankingSamplesOut, int &wastedSamplesOut, int &bufferLengthOut);
+
+	static float EaseInOutPower(float progress, int power);
+
 public:
 	VectorDisplay();
 	~VectorDisplay();
 
-	void _process(double delta) override;
+	enum WriteStateEnum {
+		Buffer1,
+		Buffer2
+	};
+	WriteStateEnum WriteState = WriteStateEnum::Buffer1;
 
-	void start_asio_output();
+	void start_asio_output(int blankingDelay);
+	void _process(double delta) override;
 };
 
 }

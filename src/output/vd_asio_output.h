@@ -82,7 +82,7 @@ protected:
 	int frameIndex = 0;
 
 	float *blankingChannelDelayBuffer = nullptr;
-	int blankingChannelDelayBufferLength = 0;
+	int blankingChannelDelayBufferLength;
 	bool DebugSaveThisFrame = false;
 
 	long init_asio_static_data(DriverInfo *asioDriverInfo);
@@ -104,7 +104,7 @@ public:
 	/// The final game UI must have a method for restarting it in case it fails.
 	/// This can be done by simply deleting and making a new VDASIOOuput.
 	/// </summary>
-	VDASIOOutput();
+	VDASIOOutput(int blankingDelay);
 	~VDASIOOutput();
 
 	enum ReadStateEnum {
