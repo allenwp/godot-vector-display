@@ -48,3 +48,10 @@ This entire camera class, including the concept of `Filter` and `Priority` can b
 
 ## Other Notes
 Maybe untyped arrays or `Vector4`/`Vector3` could be implemented with a static helper class that extracts properties? This would give some `struct`-like functionality.
+
+Currently `ClassDB::add_virtual_method` is not exposed in the API. See issues:
+- <https://github.com/godotengine/godot-cpp/issues/1072>
+- <https://github.com/godotengine/godot-cpp/issues/910>
+- <https://github.com/godotengine/godot-cpp/issues/1199>
+- <https://github.com/godotengine/godot/issues/82267>
+The suggested workaround is to use `Object::call()`.
