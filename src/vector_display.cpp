@@ -2,6 +2,8 @@
 #include <godot_cpp/core/class_db.hpp>
 #include "output/vd_frame_output.h"
 #include "godot_cpp/classes/tween.hpp"
+#include "godot_cpp/classes/random_number_generator.hpp"
+#include "godot_cpp/variant/utility_functions.hpp"
 
 using namespace godot;
 using namespace vector_display;
@@ -30,29 +32,22 @@ void VectorDisplay::start_asio_output() {
 
 double value = 0;
 void VectorDisplay::_process(double delta) {
-	// dummie frames
-	TypedArray<VDSample> circle;
-	for (int i = 0; i < 1000; i++) {
-		float scale = 0.3;
-		circle.push_back(VDSample(sin(i / 20.0f) * scale, cos(i / 20.0f) * scale, 1));
-	}
-	TypedArray<Array> dummieSamples;
-	dummieSamples.push_back(circle);
+	TypedArray<Array> screenSpaceSamples = GetScreenSpaceSamples();
 
 	// Finally, prepare and fill the FrameOutput buffer:
 	int blankingSampleCount;
 	int wastedSampleCount;
 	int finalBufferLength;
-	VDSample *finalBuffer = CreateFrameBuffer(dummieSamples, previousFinalSample, blankingSampleCount, wastedSampleCount, finalBufferLength); // VDFrameOutput::GetCalibrationFrame();
+	VDSample *finalBuffer = CreateFrameBuffer(screenSpaceSamples, previousFinalSample, blankingSampleCount, wastedSampleCount, finalBufferLength); // VDFrameOutput::GetCalibrationFrame();
 	if (finalBufferLength > 0) {
 		previousFinalSample = finalBuffer[finalBufferLength - 1];
 	}
 
-	// Debug test code to simulate tricky double buffer situations
-	//if (new Random().Next(60) == 0)
-	//{
-	//    //Console.WriteLine("Sleeping to simulate a long frame time.");
-	//    Thread.Sleep(7);
+	//// Debug test code to simulate tricky double buffer situations
+	//RandomNumberGenerator rand;
+	//if (rand.randi_range(0, 60) == 0) {
+	//	UtilityFunctions::print("Sleeping to simulate a long frame time.");
+	//	Sleep(8);
 	//}
 
 	if (VDFrameOutput::DebugSaveFrame) {
@@ -73,15 +68,9 @@ void VectorDisplay::_process(double delta) {
 	}
 
 	// This part regarding the number of starved samples is not thread perfect, but I think it should be
-	// correct more than 99.9% of the time...
+	// correct more than 99.9% of the time... And if not, it doesn't really matter.
 	int starvedSamples = VDFrameOutput::StarvedSamples;
 	VDFrameOutput::StarvedSamples = 0;
-
-	// TODO: Update GameTime:
-	//GameTime.LastFrameSampleCount = finalBuffer.Length + starvedSamples;
-	//if (starvedSamples > 0) {
-	//	Console.WriteLine("Added " + starvedSamples + " starved samples to GameTime.LastFrameSampleCount.");
-	//}
 
 	VDFrameOutput::FrameCount++;
 
@@ -94,11 +83,17 @@ void VectorDisplay::_process(double delta) {
 	// If we're still waiting for the output to finish reading a buffer, delay the game's next _process loop
 	// and, more importantly, the preparations of the next frame's input states.
 	if (output && ((WriteState == WriteStateEnum::Buffer1 && VDFrameOutput::Buffer1.load(std::memory_order_acquire) != nullptr) || (WriteState == WriteStateEnum::Buffer2 && VDFrameOutput::Buffer2.load(std::memory_order_acquire) != nullptr))) {
-		// TODO: do something better with thread locks or Parallel library or something that doesn't involve spinning??
 		return;
 	}
 }
 
+TypedArray<Array> VectorDisplay::GetScreenSpaceSamples() {
+	TypedArray<Array> result;
+
+
+
+	return result;
+}
 
 VDSample *VectorDisplay::CreateFrameBuffer(TypedArray<Array> samples, VDSample previousFrameEndSample, int &blankingSamplesOut, int &wastedSamplesOut, int &bufferLengthOut) {
 	// TODO:
@@ -179,9 +174,9 @@ VDSample *VectorDisplay::CreateFrameBuffer(TypedArray<Array> samples, VDSample p
 			float tweenValue = EaseInOutPower((b + 1) / (float)blankingLength, 2);
 			tweenSample.x = Math::lerp(previousSample.x, ((VDSample)sampleArray[0]).x, tweenValue);
 			tweenSample.y = Math::lerp(previousSample.y, ((VDSample)sampleArray[0]).y, tweenValue);
-			tweenSample.z = 1.0f;
+			VD_SAMPLE_BRIGHTNESS(tweenSample) = 0.0f;
+
 			finalBuffer[destinationIndex] = tweenSample;
-			VD_SAMPLE_BRIGHTNESS(finalBuffer[destinationIndex]) = 0.0f;
 			destinationIndex++;
 		}
 

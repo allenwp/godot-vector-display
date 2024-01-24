@@ -20,6 +20,8 @@ protected:
 	/// </summary>
 	VDSample previousFinalSample;
 
+	TypedArray<Array> GetScreenSpaceSamples();
+
 	/// <param name="previousFrameEndSample">The sample that was drawn right before starting to draw this frame. (Last sample from the previous frame)</param>
 	VDSample *CreateFrameBuffer(TypedArray<Array> samples, VDSample previousFrameEndSample, int &blankingSamplesOut, int &wastedSamplesOut, int &bufferLengthOut);
 

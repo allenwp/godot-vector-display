@@ -1,6 +1,9 @@
 #include "vd_asio_output.h"
 #include "godot_cpp/core/math.hpp"
 #include "vd_frame_output.h"
+#include "godot_cpp/core/error_macros.hpp"
+#include "godot_cpp/variant/variant.hpp"
+#include "godot_cpp/variant/utility_functions.hpp"
 
 using namespace godot;
 using namespace vector_display;
@@ -641,7 +644,9 @@ void VDASIOOutput::FeedFloatBuffers(float *xOutput, float *yOutput, float *brigh
 	if (currentFrameBuffer == nullptr) {
 		int blankedSampleCount = bufferSize - startIndex;
 		VDFrameOutput::StarvedSamples += blankedSampleCount;
-		// TODO: Console.WriteLine("AUDIO BUFFER IS STARVED FOR FRAMES! Blanking for " + blankedSampleCount);
+		auto message = vformat("AUDIO BUFFER IS STARVED FOR FRAMES! Blanking for %d samples.", blankedSampleCount);
+		WARN_PRINT_ED(message);
+		UtilityFunctions::printerr(message);
 		// Clear the rest of the buffer with blanking frames
 		for (int i = startIndex; i < bufferSize; i++) {
 			// TODO: this should probably just pause on the last position instead (which might be blanking position, but might not be)
