@@ -644,9 +644,11 @@ void VDASIOOutput::FeedFloatBuffers(float *xOutput, float *yOutput, float *brigh
 	if (currentFrameBuffer == nullptr) {
 		int blankedSampleCount = bufferSize - startIndex;
 		VDFrameOutput::StarvedSamples += blankedSampleCount;
-		auto message = vformat("AUDIO BUFFER IS STARVED FOR FRAMES! Blanking for %d samples.", blankedSampleCount);
-		WARN_PRINT_ED(message);
-		UtilityFunctions::printerr(message);
+		if (!firstFrame) {
+			auto message = vformat("AUDIO BUFFER IS STARVED FOR FRAMES! Blanking for %d samples.", blankedSampleCount);
+			WARN_PRINT_ED(message);
+			UtilityFunctions::printerr(message);
+		}
 		// Clear the rest of the buffer with blanking frames
 		for (int i = startIndex; i < bufferSize; i++) {
 			// TODO: this should probably just pause on the last position instead (which might be blanking position, but might not be)
@@ -656,6 +658,8 @@ void VDASIOOutput::FeedFloatBuffers(float *xOutput, float *yOutput, float *brigh
 		}
 		return;
 	}
+
+	firstFrame = false;
 
 	for (int i = startIndex; i < bufferSize; i++) {
 		// Move to the next buffer if needed by recursively calling this method:

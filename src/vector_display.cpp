@@ -13,7 +13,7 @@ void VectorDisplay::_bind_methods() {
 }
 
 VectorDisplay::VectorDisplay() {
-	previousFinalSample = VDSampleHelper::GetBlankingSample();
+	reset_buffers();
 }
 
 VectorDisplay::~VectorDisplay() {
@@ -28,9 +28,27 @@ void VectorDisplay::start_asio_output() {
 		delete output;
 	}
 	output = new VDASIOOutput();
+
+	reset_buffers();
 }
 
-double value = 0;
+void VectorDisplay::reset_buffers() {
+	WriteState = WriteStateEnum::Buffer1;
+	previousFinalSample = VDSampleHelper::GetBlankingSample();
+	VDSample *buffer = nullptr;
+	buffer = VDFrameOutput::Buffer1.load(std::memory_order_acquire);
+	VDFrameOutput::Buffer1.store(nullptr, std::memory_order_release);
+	if (buffer != nullptr) {
+		delete buffer;
+	}
+	buffer = VDFrameOutput::Buffer2.load(std::memory_order_acquire);
+	VDFrameOutput::Buffer2.store(nullptr, std::memory_order_release);
+	if (buffer != nullptr) {
+		delete buffer;
+	}
+}
+
+//double value = 0;
 void VectorDisplay::_process(double delta) {
 	TypedArray<Array> screenSpaceSamples = GetScreenSpaceSamples();
 

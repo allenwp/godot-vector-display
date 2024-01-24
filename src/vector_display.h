@@ -26,6 +26,8 @@ protected:
 	/// </summary>
 	VDSample previousFinalSample;
 
+	void reset_buffers();
+
 	TypedArray<Array> GetScreenSpaceSamples();
 
 	/// <param name="previousFrameEndSample">The sample that was drawn right before starting to draw this frame. (Last sample from the previous frame)</param>

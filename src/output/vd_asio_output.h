@@ -86,6 +86,7 @@ protected:
 	bool _need_to_exit = false;
 	bool _need_to_remove_current_driver = false;
 	int frameIndex = 0;
+	bool firstFrame = true;
 
 	float *blankingChannelDelayBuffer = nullptr;
 	int blankingChannelDelayBufferLength;
