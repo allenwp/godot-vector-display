@@ -56,6 +56,24 @@ void VectorDisplay::_process(double delta) {
 		output->DebugSaveNextFrame = true;
 	}
 
+	// Wait for the output to be finished with the buffer we're about to write to
+	if (!output) {
+		// No need to limit the framerate if there isn't an output consuming the frames.
+		VDSample *oldBuffer = nullptr;
+		if (WriteState == WriteStateEnum::Buffer1) {
+			oldBuffer = VDFrameOutput::Buffer1.load(std::memory_order_relaxed);
+		}
+		if (WriteState == WriteStateEnum::Buffer2) {
+			oldBuffer = VDFrameOutput::Buffer2.load(std::memory_order_relaxed);
+		}
+		if (oldBuffer != nullptr) {
+			delete oldBuffer;
+		}
+	} else {
+		while ((WriteState == WriteStateEnum::Buffer1 && VDFrameOutput::Buffer1.load(std::memory_order_acquire) != nullptr) || (WriteState == WriteStateEnum::Buffer2 && VDFrameOutput::Buffer2.load(std::memory_order_acquire) != nullptr)) {
+		}
+	}
+
 	// Assign the buffer and progress the frame buffer write state
 	if (WriteState == WriteStateEnum::Buffer1) {
 		VDFrameOutput::Buffer1Length = finalBufferLength;
@@ -78,12 +96,6 @@ void VectorDisplay::_process(double delta) {
 		// TODO: write framerate?
 		//int frameRate = (int)round(1 / ((float)GameTime.LastFrameSampleCount / VDFrameOutput::SAMPLES_PER_SECOND));
 		//Console.WriteLine(" " + finalBuffer.Length + " + " + starvedSamples + " starved samples = " + frameRate + " fps (" + blankingSampleCount + " blanking between shapes, " + wastedSampleCount + " wasted) | Frame worst: " + frameTimePerf.worst + " best: " + frameTimePerf.best + " avg: " + frameTimePerf.average + " | Output Sync longest: " + syncOverheadTime.worst + " shortest: " + syncOverheadTime.best + " avg: " + syncOverheadTime.average + " | Host worst: " + hostTimePerf.worst + " best: " + hostTimePerf.best + " avg: " + hostTimePerf.average);
-	}
-
-	// If we're still waiting for the output to finish reading a buffer, delay the game's next _process loop
-	// and, more importantly, the preparations of the next frame's input states.
-	if (output && ((WriteState == WriteStateEnum::Buffer1 && VDFrameOutput::Buffer1.load(std::memory_order_acquire) != nullptr) || (WriteState == WriteStateEnum::Buffer2 && VDFrameOutput::Buffer2.load(std::memory_order_acquire) != nullptr))) {
-		return;
 	}
 }
 

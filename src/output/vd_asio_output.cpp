@@ -679,21 +679,22 @@ void VDASIOOutput::FeedFloatBuffers(float *xOutput, float *yOutput, float *brigh
 }
 
 void VDASIOOutput::CompleteFrame() {
-	auto state = ReadState;
-	switch (state) {
+	VDSample *oldBuffer = nullptr;
+	switch (ReadState) {
 		case ReadStateEnum::Buffer1:
-			delete (VDFrameOutput::Buffer1.load(std::memory_order_relaxed));
+			oldBuffer = VDFrameOutput::Buffer1.load(std::memory_order_relaxed);
 			VDFrameOutput::Buffer1Length = 0;
 			VDFrameOutput::Buffer1.store(nullptr, std::memory_order_release);
 			ReadState = ReadStateEnum::Buffer2;
 			break;
 		case ReadStateEnum::Buffer2:
-			delete (VDFrameOutput::Buffer2.load(std::memory_order_relaxed));
+			oldBuffer = VDFrameOutput::Buffer2.load(std::memory_order_relaxed);
 			VDFrameOutput::Buffer2Length = 0;
 			VDFrameOutput::Buffer2.store(nullptr, std::memory_order_release);
 			ReadState = ReadStateEnum::Buffer1;
 			break;
 	}
+	delete oldBuffer;
 
 	frameIndex = 0;
 
