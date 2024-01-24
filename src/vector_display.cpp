@@ -7,7 +7,7 @@ using namespace godot;
 using namespace vector_display;
 
 void VectorDisplay::_bind_methods() {
-	ClassDB::bind_method(D_METHOD("start_asio_output", "blankingDelay"), &VectorDisplay::start_asio_output);
+	ClassDB::bind_method(D_METHOD("start_asio_output"), &VectorDisplay::start_asio_output);
 }
 
 VectorDisplay::VectorDisplay() {
@@ -21,11 +21,11 @@ VectorDisplay::~VectorDisplay() {
 	}
 }
 
-void VectorDisplay::start_asio_output(int blankingDelay) {
+void VectorDisplay::start_asio_output() {
 	if (output) {
 		delete output;
 	}
-	output = new VDASIOOutput(blankingDelay);
+	output = new VDASIOOutput();
 }
 
 double value = 0;

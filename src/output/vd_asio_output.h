@@ -104,7 +104,7 @@ public:
 	/// The final game UI must have a method for restarting it in case it fails.
 	/// This can be done by simply deleting and making a new VDASIOOuput.
 	/// </summary>
-	VDASIOOutput(int blankingDelay);
+	VDASIOOutput();
 	~VDASIOOutput();
 
 	enum ReadStateEnum {

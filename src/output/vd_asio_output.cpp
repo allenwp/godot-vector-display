@@ -9,7 +9,7 @@ extern AsioDrivers *asioDrivers;
 
 VDASIOOutput* VDASIOOutput::_static_instance = nullptr;
 
-VDASIOOutput::VDASIOOutput(int blankingDelay) {
+VDASIOOutput::VDASIOOutput() {
 	if (_static_instance != nullptr) {
 		throw "Trying to create a new VDASIOOutput, but one already exists!";
 	}
@@ -19,7 +19,7 @@ VDASIOOutput::VDASIOOutput(int blankingDelay) {
 	char *driverName = new char[32];
 	asioDrivers->getDriverNames(&driverName, 1);
 
-	blankingChannelDelayBufferLength = blankingDelay;
+	blankingChannelDelayBufferLength = VDFrameOutput::BLANKING_CHANNEL_DELAY;
 	blankingChannelDelayBuffer = new float[blankingChannelDelayBufferLength];
 	ReadState.store(ReadStateEnum::Buffer1, std::memory_order_release);
 
@@ -714,12 +714,10 @@ VDSample VDASIOOutput::PrepareSampleForScreen(VDSample sample) {
 	return sample;
 }
 
-// TODO: I think this is somehow backwards from what I intended it to be??
 void VDASIOOutput::ApplyBlankingChannelDelay(float *blankingChannel, int bufferLength) {
 	float* originalStream = new float[bufferLength];
-	for (int i = 0; i < bufferLength; i++) {
-		originalStream[i] = blankingChannel[i];
-	}
+	memcpy(originalStream, blankingChannel, bufferLength * sizeof(float));
+
 	for (int i = 0; i < bufferLength; i++) {
 		if (i < blankingChannelDelayBufferLength) {
 			blankingChannel[i] = blankingChannelDelayBuffer[i];
@@ -727,8 +725,10 @@ void VDASIOOutput::ApplyBlankingChannelDelay(float *blankingChannel, int bufferL
 			blankingChannel[i] = originalStream[i - blankingChannelDelayBufferLength];
 		}
 	}
-	
-	memcpy(blankingChannelDelayBuffer, originalStream + bufferLength - blankingChannelDelayBufferLength, blankingChannelDelayBufferLength);
+
+	for (int i = 0; i < blankingChannelDelayBufferLength; i++) {
+		blankingChannelDelayBuffer[i] = originalStream[bufferLength - blankingChannelDelayBufferLength + i];
+	}
 	delete originalStream;
 }
 

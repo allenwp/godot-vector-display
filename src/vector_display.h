@@ -35,7 +35,7 @@ public:
 	};
 	WriteStateEnum WriteState = WriteStateEnum::Buffer1;
 
-	void start_asio_output(int blankingDelay);
+	void start_asio_output();
 	void _process(double delta) override;
 };
 

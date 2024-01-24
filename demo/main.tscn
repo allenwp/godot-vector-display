@@ -13,12 +13,4 @@ script = ExtResource("1_qlhwo")
 [node name="VectorDisplay" type="VectorDisplay" parent="."]
 unique_name_in_owner = true
 
-[node name="SpinBox" type="SpinBox" parent="."]
-unique_name_in_owner = true
-offset_left = 6.0
-offset_top = 73.0
-offset_right = 144.0
-offset_bottom = 104.0
-suffix = "samples"
-
 [connection signal="pressed" from="Button" to="Button" method="_on_pressed"]
