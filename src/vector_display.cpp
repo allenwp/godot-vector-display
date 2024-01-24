@@ -58,12 +58,12 @@ void VectorDisplay::_process(double delta) {
 
 	// Assign the buffer and progress the frame buffer write state
 	if (WriteState == WriteStateEnum::Buffer1) {
+		VDFrameOutput::Buffer1Length = finalBufferLength;
 		VDFrameOutput::Buffer1.store(finalBuffer, std::memory_order_release);
-		VDFrameOutput::Buffer1Length.store(finalBufferLength, std::memory_order_release);
 		WriteState = WriteStateEnum::Buffer2;
 	} else {
+		VDFrameOutput::Buffer2Length = finalBufferLength;
 		VDFrameOutput::Buffer2.store(finalBuffer, std::memory_order_release);
-		VDFrameOutput::Buffer2Length.store(finalBufferLength, std::memory_order_release);
 		WriteState = WriteStateEnum::Buffer1;
 	}
 

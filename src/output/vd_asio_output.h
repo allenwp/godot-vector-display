@@ -75,6 +75,12 @@ protected:
 	DriverInfo asioDriverInfo = { 0 };
 	ASIOCallbacks asioCallbacks;
 
+	enum ReadStateEnum {
+		Buffer1,
+		Buffer2
+	};
+	ReadStateEnum ReadState = ReadStateEnum::Buffer1;
+
 	bool _need_to_stop = false;
 	bool _need_to_dispose_buffers = false;
 	bool _need_to_exit = false;
@@ -91,6 +97,9 @@ protected:
 	void _cleanup();
 
 	void FeedFloatBuffers(float *xOutput, float *yOutput, float *brightnessOutput, int bufferSize, int startIndex);
+
+	void CompleteFrame();
+
 	static VDSample PrepareSampleForScreen(VDSample sample);
 	void ApplyBlankingChannelDelay(float *blankingChannel, int bufferLength);
 	static void DebugSaveBuffersToFile(float *x, float *y, float *z, const char *path);
@@ -107,15 +116,7 @@ public:
 	VDASIOOutput();
 	~VDASIOOutput();
 
-	enum ReadStateEnum {
-		Buffer1,
-		Buffer2
-	};
-	std::atomic<ReadStateEnum> ReadState = ReadStateEnum::Buffer1;
-
 	bool DebugSaveNextFrame = false;
-
-	void CompleteFrame();
 };
 
 } // namespace vector_display

@@ -15,6 +15,12 @@ protected:
 	static void _bind_methods();
 	VDASIOOutput* output = nullptr;
 
+	enum WriteStateEnum {
+		Buffer1,
+		Buffer2
+	};
+	WriteStateEnum WriteState = WriteStateEnum::Buffer1;
+
 	/// <summary>
 	/// Used for determining how blanking should behave for the first sample of a new frame.
 	/// </summary>
@@ -30,12 +36,6 @@ protected:
 public:
 	VectorDisplay();
 	~VectorDisplay();
-
-	enum WriteStateEnum {
-		Buffer1,
-		Buffer2
-	};
-	WriteStateEnum WriteState = WriteStateEnum::Buffer1;
 
 	void start_asio_output();
 	void _process(double delta) override;

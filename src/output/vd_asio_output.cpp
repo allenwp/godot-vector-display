@@ -24,7 +24,7 @@ VDASIOOutput::VDASIOOutput() {
 
 	blankingChannelDelayBufferLength = VDFrameOutput::BLANKING_CHANNEL_DELAY;
 	blankingChannelDelayBuffer = new float[blankingChannelDelayBufferLength];
-	ReadState.store(ReadStateEnum::Buffer1, std::memory_order_release);
+	ReadState = ReadStateEnum::Buffer1;
 
 	// TODO: This could spin on a different thread to monitor ASIO driver state,
 	// similar to the SDK sample's while loop.
@@ -633,12 +633,12 @@ unsigned long VDASIOOutput::get_sys_reference_time() { // get the system referen
 void VDASIOOutput::FeedFloatBuffers(float *xOutput, float *yOutput, float *brightnessOutput, int bufferSize, int startIndex) {
 	VDSample *currentFrameBuffer = nullptr;
 	int currentFrameBufferLength = 0;
-	if (ReadState.load(std::memory_order_acquire) == ReadStateEnum::Buffer1) {
+	if (ReadState == ReadStateEnum::Buffer1) {
 		currentFrameBuffer = VDFrameOutput::Buffer1.load(std::memory_order_acquire);
-		currentFrameBufferLength = VDFrameOutput::Buffer1Length.load(std::memory_order_acquire);
+		currentFrameBufferLength = VDFrameOutput::Buffer1Length;
 	} else {
 		currentFrameBuffer = VDFrameOutput::Buffer2.load(std::memory_order_acquire);
-		currentFrameBufferLength = VDFrameOutput::Buffer2Length.load(std::memory_order_acquire);
+		currentFrameBufferLength = VDFrameOutput::Buffer2Length;
 	}
 
 	if (currentFrameBuffer == nullptr) {
@@ -679,19 +679,19 @@ void VDASIOOutput::FeedFloatBuffers(float *xOutput, float *yOutput, float *brigh
 }
 
 void VDASIOOutput::CompleteFrame() {
-	auto state = ReadState.load(std::memory_order_acquire);
+	auto state = ReadState;
 	switch (state) {
 		case ReadStateEnum::Buffer1:
-			delete (VDFrameOutput::Buffer1.load(std::memory_order_acquire));
+			delete (VDFrameOutput::Buffer1.load(std::memory_order_relaxed));
+			VDFrameOutput::Buffer1Length = 0;
 			VDFrameOutput::Buffer1.store(nullptr, std::memory_order_release);
-			VDFrameOutput::Buffer1Length.store(0, std::memory_order_release);
-			ReadState.store(ReadStateEnum::Buffer2, std::memory_order_release);
+			ReadState = ReadStateEnum::Buffer2;
 			break;
 		case ReadStateEnum::Buffer2:
-			delete (VDFrameOutput::Buffer2.load(std::memory_order_acquire));
+			delete (VDFrameOutput::Buffer2.load(std::memory_order_relaxed));
+			VDFrameOutput::Buffer2Length = 0;
 			VDFrameOutput::Buffer2.store(nullptr, std::memory_order_release);
-			VDFrameOutput::Buffer2Length.store(0, std::memory_order_release);
-			ReadState.store(ReadStateEnum::Buffer1, std::memory_order_release);
+			ReadState = ReadStateEnum::Buffer1;
 			break;
 	}
 
