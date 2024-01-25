@@ -4,6 +4,7 @@
 #include "godot_cpp/classes/tween.hpp"
 #include "godot_cpp/classes/random_number_generator.hpp"
 #include "godot_cpp/variant/utility_functions.hpp"
+#include "godot_cpp/classes/project_settings.hpp"
 
 using namespace godot;
 using namespace vector_display;
@@ -13,6 +14,10 @@ void VectorDisplay::_bind_methods() {
 }
 
 VectorDisplay::VectorDisplay() {
+	Variant vsync_setting = ProjectSettings::get_singleton()->get_setting("display/window/vsync/vsync_mode");
+	if (vsync_setting.get_type() != Variant::Type::INT || (int)vsync_setting != 0) {
+		ERR_PRINT_ED("V-Sync is not disabled! V-Sync must be disabled to use the VectorDisplay Node.");
+	}
 	reset_buffers();
 }
 
