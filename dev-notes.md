@@ -4,6 +4,8 @@
 
 This class should be renamed to `VDShape3D` and should inherit from Godot's `VisualInstance3D`. It should have the one abstract function: `func GetVDSamples3D(float fidelity) -> Array[Array[Vector4]]`
 
+It is a virtual class, so it should be registered with `ClassDB::register_virtual_class<MyCustomClass>()`
+
 Additionally, a new `VDShape2D` should be added. This object type doesn't exist in the original Vector Engine.
 
 `Sample3D`
