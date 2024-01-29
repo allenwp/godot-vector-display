@@ -1,6 +1,8 @@
 #include "register_types.h"
 
 #include "vector_display.h"
+#include "vd_shape_3d.h"
+#include "shapes/3d/vd_circle_3d.h"
 
 #include <gdextension_interface.h>
 #include <godot_cpp/core/defs.hpp>
@@ -15,6 +17,8 @@ void initialize_vector_display_module(ModuleInitializationLevel p_level) {
 	}
 
 	ClassDB::register_class<VectorDisplay>();
+	ClassDB::register_abstract_class<VDShape3D>();
+	ClassDB::register_class<VDCircle3D>();
 }
 
 void uninitialize_vector_display_module(ModuleInitializationLevel p_level) {

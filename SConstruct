@@ -16,6 +16,8 @@ env = SConscript("godot-cpp/SConstruct")
 env.Append(CPPPATH=["src/", "thirdparty/"])
 sources = Glob("src/*.cpp")
 sources += Glob("src/output/*.cpp")
+sources += Glob("src/shapes/2d/*.cpp")
+sources += Glob("src/shapes/3d/*.cpp")
 
 env.Append(CPPPATH=["thirdparty/asio/common/", "thirdparty/asio/host/", "thirdparty/asio/host/pc/"])
 sources += Glob("thirdparty/asio/common/asio.cpp")
