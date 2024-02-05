@@ -28,10 +28,10 @@ protected:
 
 	void reset_buffers();
 
-	TypedArray<Array> GetScreenSpaceSamples();
+	TypedArray<PackedVector3Array> GetScreenSpaceSamples();
 
 	/// <param name="previousFrameEndSample">The sample that was drawn right before starting to draw this frame. (Last sample from the previous frame)</param>
-	VDSample *CreateFrameBuffer(TypedArray<Array> samples, VDSample previousFrameEndSample, int &blankingSamplesOut, int &wastedSamplesOut, int &bufferLengthOut);
+	VDSample *CreateFrameBuffer(TypedArray<PackedVector3Array> samples, VDSample previousFrameEndSample, int &blankingSamplesOut, int &wastedSamplesOut, int &bufferLengthOut);
 
 	static float EaseInOutPower(float progress, int power);
 

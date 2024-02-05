@@ -55,7 +55,7 @@ void VectorDisplay::reset_buffers() {
 
 //double value = 0;
 void VectorDisplay::_process(double delta) {
-	TypedArray<Array> screenSpaceSamples = GetScreenSpaceSamples();
+	TypedArray<PackedVector3Array> screenSpaceSamples = GetScreenSpaceSamples();
 
 	// Finally, prepare and fill the FrameOutput buffer:
 	int blankingSampleCount;
@@ -122,15 +122,15 @@ void VectorDisplay::_process(double delta) {
 	}
 }
 
-TypedArray<Array> VectorDisplay::GetScreenSpaceSamples() {
-	TypedArray<Array> result;
+TypedArray<PackedVector3Array> VectorDisplay::GetScreenSpaceSamples() {
+	TypedArray<PackedVector3Array> result;
 
 
 
 	return result;
 }
 
-VDSample *VectorDisplay::CreateFrameBuffer(TypedArray<Array> samples, VDSample previousFrameEndSample, int &blankingSamplesOut, int &wastedSamplesOut, int &bufferLengthOut) {
+VDSample *VectorDisplay::CreateFrameBuffer(TypedArray<PackedVector3Array> samples, VDSample previousFrameEndSample, int &blankingSamplesOut, int &wastedSamplesOut, int &bufferLengthOut) {
 	// TODO:
 	// Remove all empty sample arrays
 	//samples.RemoveAll(delegate(Sample[] array) {
@@ -185,7 +185,7 @@ VDSample *VectorDisplay::CreateFrameBuffer(TypedArray<Array> samples, VDSample p
 	// Find out how many samples we have in the full set
 	int sampleCount = 0;
 	for (int i = 0; i < samples.size(); i++) {
-		TypedArray<VDSample> sampleArray = samples[i];
+		PackedVector3Array sampleArray = samples[i];
 		sampleCount += sampleArray.size();
 	}
 	int worstCaseBlankingLength = VDFrameOutput::DisplayProfile->BlankingLength(VDSample(-1.0f, -1.0f, 0.0f), VDSample(1.0f, 1.0f, 0.0f));
@@ -198,7 +198,7 @@ VDSample *VectorDisplay::CreateFrameBuffer(TypedArray<Array> samples, VDSample p
 	int destinationIndex = 0;
 	VDSample previousSample = previousFrameEndSample;
 
-	auto addSamples = [&](TypedArray<VDSample> sampleArray) {
+	auto addSamples = [&](PackedVector3Array sampleArray) {
 		int blankingLength = VDFrameOutput::DisplayProfile->BlankingLength(previousSample, sampleArray[0]);
 		// Set blanking based on the first sample:
 		for (int b = 0; b < blankingLength; b++) {
@@ -224,14 +224,14 @@ VDSample *VectorDisplay::CreateFrameBuffer(TypedArray<Array> samples, VDSample p
 	};
 
 	for (int i = 0; i < samples.size(); i++) {
-		TypedArray<VDSample> sampleArray = samples[i];
+		PackedVector3Array sampleArray = samples[i];
 		addSamples(sampleArray);
 	}
 
 	int finalSampleCount = destinationIndex;
 	if (finalSampleCount < VDFrameOutput::GetTargetBufferSize()) {
 		// Since we're going to be blanking for the end of this frame, we need to do the same easeinout blanking before we get to the rest postition.
-		TypedArray<VDSample> newSampleArray;
+		PackedVector3Array newSampleArray;
 		newSampleArray.push_back(VDSampleHelper::GetBlankingSample());
 		addSamples(newSampleArray);
 		finalSampleCount = destinationIndex;
