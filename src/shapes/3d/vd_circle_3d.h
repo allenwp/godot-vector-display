@@ -18,6 +18,8 @@ public:
 	~VDCircle3D();
 
 	void _process(double delta) override;
+	int baseSampleCount;
+	virtual TypedArray<Array> get_samples_3d(float fidelity) override;
 };
 
 } // namespace vector_display

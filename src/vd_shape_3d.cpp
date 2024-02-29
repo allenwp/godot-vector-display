@@ -15,5 +15,8 @@ VDShape3D::~VDShape3D() {
 }
 
 void VDShape3D::_process(double delta) {
-	UtilityFunctions::print("Shape");
+}
+
+TypedArray<Array> VDShape3D::get_samples_3d(float fidelity) {
+	return TypedArray<Array>();
 }
