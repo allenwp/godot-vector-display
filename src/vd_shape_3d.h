@@ -22,6 +22,11 @@ public:
 
 	void _process(double delta) override;
 
+	/// <summary>
+	/// TypedArray<Array> is a TypedArray<TypedArray<Vector4>> // TODO: change to TypedArray<PackedVector4Array>
+	/// </summary>
+	/// <param name="fidelity"></param>
+	/// <returns></returns>
 	virtual TypedArray<Array> get_samples_3d(float fidelity);
 };
 

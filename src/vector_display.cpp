@@ -5,6 +5,11 @@
 #include "godot_cpp/classes/random_number_generator.hpp"
 #include "godot_cpp/variant/utility_functions.hpp"
 #include "godot_cpp/classes/project_settings.hpp"
+#include "godot_cpp/classes/viewport.hpp"
+#include "vd_shape_3d.h"
+#include "vd_renderer.h"
+#include "godot_cpp/classes/scene_tree.hpp"
+#include "godot_cpp/classes/window.hpp"
 
 using namespace godot;
 using namespace vector_display;
@@ -122,21 +127,42 @@ void VectorDisplay::_process(double delta) {
 	}
 }
 
+// This function is similar to the original SamplerSystem::Tick() method
 TypedArray<PackedVector3Array> VectorDisplay::GetScreenSpaceSamples() {
 	TypedArray<PackedVector3Array> result;
 
+	Camera3D *camera = get_viewport()->get_camera_3d();
+	// TODO: for each camera?
+	if (camera != nullptr) {
+		Window *root = get_tree()->get_root();
+		TypedArray<Node> shapeNodes = root->find_children("*", "VDShape3D", true, false);
 
+		TypedArray<Array> worldSpaceResult = TypedArray<Array>(); // TypedArray<TypedArray<Vector4>>
+
+		for (int i = 0; i < shapeNodes.size(); i++) {
+			VDShape3D *shape = Object::cast_to<VDShape3D>(shapeNodes[i]);
+			if (shape) {
+				// TODO: multi-thread this:
+				worldSpaceResult.append_array(VDRenderer::GetSample3Ds(camera, shape));
+			}
+		}
+
+		// TODO: world space post processing
+
+		// World space samples are now ready to be translated to the screen!
+		TypedArray<PackedVector3Array> screenSpaceResult = VDRenderer::TransformSamples3DToScreen(camera, worldSpaceResult);
+
+		// TODO: screen space post processing for this camera
+
+		result.append_array(screenSpaceResult);
+	}
+
+	// TODO: Final screen space post processing
 
 	return result;
 }
 
 VDSample *VectorDisplay::CreateFrameBuffer(TypedArray<PackedVector3Array> samples, VDSample previousFrameEndSample, int &blankingSamplesOut, int &wastedSamplesOut, int &bufferLengthOut) {
-	// TODO:
-	// Remove all empty sample arrays
-	//samples.RemoveAll(delegate(Sample[] array) {
-	//	return array.Length < 1;
-	//});
-
 	// Sorting (Disabled code)
 	// Sorting has the advantage of reducing beam overshooting between shapes.
 	// It is disabled because it makes it worse! Here's why:
@@ -151,7 +177,12 @@ VDSample *VectorDisplay::CreateFrameBuffer(TypedArray<PackedVector3Array> sample
 	// the exact same order every frame, regardless of their position on the screen
 	// in order to reduce flicker and give a smooth video. This means overshooting
 	// will happen, but it's a less distracting problem than the flicker and jitter.
-
+	//
+	//// Remove all empty sample arrays
+	//samples.RemoveAll(delegate(Sample[] array) {
+	//	return array.Length < 1;
+	//});
+	//
 	//// Sort based on a starting point of Sample.Blank
 	//List<Sample[]> sortedSamples = new List<Sample[]>(samples.Count);
 	//Sample beamPosition = Sample.Blank;
@@ -179,7 +210,7 @@ VDSample *VectorDisplay::CreateFrameBuffer(TypedArray<PackedVector3Array> sample
 	//    samples.Remove(samples[0]);
 	//}
 	//sortedSamples.Add(samples[0]);
-
+	//
 	//samples = sortedSamples;
 
 	// Find out how many samples we have in the full set
@@ -199,28 +230,30 @@ VDSample *VectorDisplay::CreateFrameBuffer(TypedArray<PackedVector3Array> sample
 	VDSample previousSample = previousFrameEndSample;
 
 	auto addSamples = [&](PackedVector3Array sampleArray) {
-		int blankingLength = VDFrameOutput::DisplayProfile->BlankingLength(previousSample, sampleArray[0]);
-		// Set blanking based on the first sample:
-		for (int b = 0; b < blankingLength; b++) {
-			VDSample tweenSample;
-			// Ease in b/c the preceeding samples might have given the beam momentum
-			// Ease out b/c the following samples should start without too much momentum
-			// from movement during blanking.
-			float tweenValue = EaseInOutPower((b + 1) / (float)blankingLength, 2);
-			tweenSample.x = Math::lerp(previousSample.x, ((VDSample)sampleArray[0]).x, tweenValue);
-			tweenSample.y = Math::lerp(previousSample.y, ((VDSample)sampleArray[0]).y, tweenValue);
-			VD_SAMPLE_BRIGHTNESS(tweenSample) = 0.0f;
+		if (sampleArray.size() > 0) {
+			int blankingLength = VDFrameOutput::DisplayProfile->BlankingLength(previousSample, sampleArray[0]);
+			// Set blanking based on the first sample:
+			for (int b = 0; b < blankingLength; b++) {
+				VDSample tweenSample;
+				// Ease in b/c the preceeding samples might have given the beam momentum
+				// Ease out b/c the following samples should start without too much momentum
+				// from movement during blanking.
+				float tweenValue = EaseInOutPower((b + 1) / (float)blankingLength, 2);
+				tweenSample.x = Math::lerp(previousSample.x, ((VDSample)sampleArray[0]).x, tweenValue);
+				tweenSample.y = Math::lerp(previousSample.y, ((VDSample)sampleArray[0]).y, tweenValue);
+				VD_SAMPLE_BRIGHTNESS(tweenSample) = 0.0f;
 
-			finalBuffer[destinationIndex] = tweenSample;
-			destinationIndex++;
-		}
+				finalBuffer[destinationIndex] = tweenSample;
+				destinationIndex++;
+			}
 
-		// Then copy the samples over:
-		for (int i = 0; i < sampleArray.size(); i++) {
-			finalBuffer[destinationIndex + i] = sampleArray[i];
+			// Then copy the samples over:
+			for (int i = 0; i < sampleArray.size(); i++) {
+				finalBuffer[destinationIndex + i] = sampleArray[i];
+			}
+			destinationIndex += sampleArray.size();
+			previousSample = sampleArray[sampleArray.size() - 1];
 		}
-		destinationIndex += sampleArray.size();
-		previousSample = sampleArray[sampleArray.size() - 1];
 	};
 
 	for (int i = 0; i < samples.size(); i++) {
