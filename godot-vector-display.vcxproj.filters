@@ -45,6 +45,9 @@
     <ClInclude Include="src\shapes\3d\vd_circle_3d.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\shapes\3d\vd_dot_3d.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\vector_display.cpp">
@@ -72,6 +75,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\shapes\3d\vd_circle_3d.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\shapes\3d\vd_dot_3d.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
