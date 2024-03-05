@@ -50,9 +50,11 @@ TypedArray<Array> VDRenderer::GetSample3Ds(Camera3D *camera, VDShape3D *shape) {
 
 void VDRenderer::TransformSamples3DToWorldSpace(TypedArray<Array> samples3D, Transform3D worldTransform) {
 	for (int j = 0; j < samples3D.size(); j++) {
-		TypedArray<VDSample3D> samples3DArray = samples3D[j];
+		Array samples3DArray = samples3D[j]; // must be contained in an Array instead of a TypedArray because of https://github.com/godotengine/godot/issues/89191
 		for (int i = 0; i < samples3DArray.size(); i++) {
-			VDSample3D sample = samples3DArray[i];
+			Variant element = samples3DArray[i];
+			ERR_CONTINUE_EDMSG(element.get_type() != Variant::VECTOR4, "Element of sample array is not a Vector4.");
+			VDSample3D sample = element;
 			Vector3 position = worldTransform.xform(Vector3(sample.x, sample.y, sample.z));
 			samples3DArray[i] = VDSample3D(position.x, position.y, position.z, sample.w);
 		}
@@ -63,7 +65,7 @@ void VDRenderer::TransformSamples3DToWorldSpace(TypedArray<Array> samples3D, Tra
 TypedArray<PackedVector3Array> VDRenderer::TransformSamples3DToScreen(Camera3D *camera, TypedArray<Array> samples3D) {
 	TypedArray<PackedVector3Array> result = TypedArray<PackedVector3Array>();
 	for (int j = 0; j < samples3D.size(); j++) {
-		TypedArray<VDSample3D> samples3DArray = samples3D[j];
+		Array samples3DArray = samples3D[j]; // must be contained in an Array instead of a TypedArray because of https://github.com/godotengine/godot/issues/89191
 		int sampleLength = samples3DArray.size();
 
 		PackedVector3Array tempSampleArray = PackedVector3Array();
@@ -122,7 +124,9 @@ Vector4 VDRenderer::PerformProjectionTransform(Vector4 vertex, Projection projec
 }
 
 bool VDRenderer::Clip(Vector4 vertex) {
-	bool result = !(-vertex.w <= vertex.x && vertex.x <= vertex.w && -vertex.w <= vertex.y && vertex.y <= vertex.w && -vertex.w <= vertex.z && vertex.z <= vertex.w);
+	bool result = !(-vertex.w <= vertex.x && vertex.x <= vertex.w
+		&& -vertex.w <= vertex.y && vertex.y <= vertex.w
+		&& -vertex.w <= vertex.z && vertex.z <= vertex.w);
 	return result;
 }
 
