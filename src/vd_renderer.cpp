@@ -62,10 +62,10 @@ void VDRenderer::TransformSamples3DToWorldSpace(TypedArray<Array> samples3D, Tra
 }
 
 // samples3D is TypedArray<TypedArray<VDSample3D>> // TODO: Change to TypedArray<PackedVector4Array>
-TypedArray<PackedVector3Array> VDRenderer::TransformSamples3DToScreen(Camera3D *camera, TypedArray<Array> samples3D) {
+TypedArray<PackedVector3Array> VDRenderer::TransformSamples3DToScreen(Camera3D *camera,  const TypedArray<Array> samples3D) {
 	TypedArray<PackedVector3Array> result = TypedArray<PackedVector3Array>();
 	for (int j = 0; j < samples3D.size(); j++) {
-		Array samples3DArray = samples3D[j]; // must be contained in an Array instead of a TypedArray because of https://github.com/godotengine/godot/issues/89191
+		const Array samples3DArray = samples3D[j]; // must be contained in an Array instead of a TypedArray because of https://github.com/godotengine/godot/issues/89191
 		int sampleLength = samples3DArray.size();
 
 		PackedVector3Array tempSampleArray = PackedVector3Array();

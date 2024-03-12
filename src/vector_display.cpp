@@ -10,6 +10,8 @@
 #include "vd_renderer.h"
 #include "godot_cpp/classes/scene_tree.hpp"
 #include "godot_cpp/classes/window.hpp"
+#include "godot_cpp/classes/engine.hpp"
+#include "vd_editor_preview_3d.h"
 
 using namespace godot;
 using namespace vector_display;
@@ -60,7 +62,8 @@ void VectorDisplay::reset_buffers() {
 
 //double value = 0;
 void VectorDisplay::_process(double delta) {
-	TypedArray<PackedVector3Array> screenSpaceSamples = GetScreenSpaceSamples();
+	TypedArray<Array> worldSpaceResult = TypedArray<Array>(); // TypedArray<TypedArray<Vector4>>
+	TypedArray<PackedVector3Array> screenSpaceSamples = GetScreenSpaceSamples(worldSpaceResult);
 
 	// Finally, prepare and fill the FrameOutput buffer:
 	int blankingSampleCount;
@@ -125,10 +128,21 @@ void VectorDisplay::_process(double delta) {
 		//int frameRate = (int)round(1 / ((float)GameTime.LastFrameSampleCount / VDFrameOutput::SAMPLES_PER_SECOND));
 		//Console.WriteLine(" " + finalBuffer.Length + " + " + starvedSamples + " starved samples = " + frameRate + " fps (" + blankingSampleCount + " blanking between shapes, " + wastedSampleCount + " wasted) | Frame worst: " + frameTimePerf.worst + " best: " + frameTimePerf.best + " avg: " + frameTimePerf.average + " | Output Sync longest: " + syncOverheadTime.worst + " shortest: " + syncOverheadTime.best + " avg: " + syncOverheadTime.average + " | Host worst: " + hostTimePerf.worst + " best: " + hostTimePerf.best + " avg: " + hostTimePerf.average);
 	}
+
+	if (Engine::get_singleton()->is_editor_hint()) {
+		TypedArray<Node> children = get_children();
+		for (int i = 0; i < children.size(); i++) {
+			Node* child = (Node*)((Object*)children[i]);
+			if (child->is_class("VDEditorPreview3D")) {
+				VDEditorPreview3D *editor_preview = (VDEditorPreview3D*)child;
+				editor_preview->update_preview(worldSpaceResult);
+			}
+		}
+	}
 }
 
 // This function is similar to the original SamplerSystem::Tick() method
-TypedArray<PackedVector3Array> VectorDisplay::GetScreenSpaceSamples() {
+TypedArray<PackedVector3Array> VectorDisplay::GetScreenSpaceSamples(TypedArray<Array> &worldSpaceResult) {
 	TypedArray<PackedVector3Array> result;
 
 	Camera3D *camera = get_viewport()->get_camera_3d();
@@ -137,7 +151,7 @@ TypedArray<PackedVector3Array> VectorDisplay::GetScreenSpaceSamples() {
 		Window *root = get_tree()->get_root();
 		TypedArray<Node> shapeNodes = root->find_children("*", "VDShape3D", true, false);
 
-		TypedArray<Array> worldSpaceResult = TypedArray<Array>(); // TypedArray<TypedArray<Vector4>>
+		worldSpaceResult = TypedArray<Array>(); // TypedArray<TypedArray<Vector4>>
 
 		for (int i = 0; i < shapeNodes.size(); i++) {
 			VDShape3D *shape = Object::cast_to<VDShape3D>(shapeNodes[i]);
@@ -283,6 +297,10 @@ VDSample *VectorDisplay::CreateFrameBuffer(TypedArray<PackedVector3Array> sample
 	wastedSamplesOut = bufferLengthOut - finalSampleCount;
 
 	return finalBuffer;
+}
+
+void VectorDisplay::DrawEditorLines(TypedArray<Array> worldSpaceResult) {
+	// TODO
 }
 
 float VectorDisplay::EaseInOutPower(float progress, int power) {
