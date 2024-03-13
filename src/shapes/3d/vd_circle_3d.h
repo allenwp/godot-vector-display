@@ -12,13 +12,16 @@ private:
 
 protected:
 	static void _bind_methods();
+	int base_sample_count;
 
 public:
 	VDCircle3D();
 	~VDCircle3D();
 
+	void set_base_sample_count(const int value);
+	int get_base_sample_count() const;
+
 	void _process(double delta) override;
-	int baseSampleCount;
 	virtual TypedArray<Array> get_samples_3d(float fidelity) override;
 };
 

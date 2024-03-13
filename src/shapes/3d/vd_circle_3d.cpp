@@ -5,13 +5,24 @@ using namespace godot;
 using namespace vector_display;
 
 void VDCircle3D::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("set_base_sample_count", "value"), &VDCircle3D::set_base_sample_count);
+	ClassDB::bind_method(D_METHOD("get_base_sample_count"), &VDCircle3D::get_base_sample_count);
+	ClassDB::add_property("VDCircle3D", PropertyInfo(Variant::INT, "base_sample_count"), "set_base_sample_count", "get_base_sample_count");
 }
 
 VDCircle3D::VDCircle3D() {
-	baseSampleCount = 1000;
+	base_sample_count = 1000;
 }
 
 VDCircle3D::~VDCircle3D() {
+}
+
+void VDCircle3D::set_base_sample_count(const int value) {
+	base_sample_count = value;
+}
+
+int VDCircle3D::get_base_sample_count() const {
+	return base_sample_count;
 }
 
 void VDCircle3D::_process(double delta) {
@@ -20,7 +31,7 @@ void VDCircle3D::_process(double delta) {
 TypedArray<Array> VDCircle3D::get_samples_3d(float fidelity) {
 	TypedArray<Array> result; // TODO: Change to TypedArray<PackedVector4Array>
 
-	int sampleCount = (int)round(baseSampleCount * fidelity);
+	int sampleCount = (int)round(base_sample_count * fidelity);
 
 	TypedArray<Vector4> sample3DArray;
 	sample3DArray.resize(sampleCount);

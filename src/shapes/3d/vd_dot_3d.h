@@ -15,13 +15,16 @@ private:
 
 protected:
 	static void _bind_methods();
+	int sample_count;
 
 public:
 	VDDot3D();
 	~VDDot3D();
 
+	void set_sample_count(const int value);
+	int get_sample_count() const;
+
 	void _process(double delta) override;
-	int SampleCount = 2; // TODO: Expose this
 	virtual TypedArray<Array> get_samples_3d(float fidelity) override;
 };
 

@@ -14,7 +14,7 @@ script = ExtResource("1_qlhwo")
 [node name="Camera3D" type="Camera3D" parent="."]
 
 [node name="VDCircle3D" type="VDCircle3D" parent="."]
-transform = Transform3D(-0.66717, 0, 0.744906, 0, 0.325443, 0, -0.744906, 0, -0.66717, 2.55587, 0, -3.60429)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2.39783)
 script = ExtResource("2_dek7q")
 
 [node name="VDDot3D" type="VDDot3D" parent="."]
