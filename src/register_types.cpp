@@ -19,7 +19,7 @@ void initialize_vector_display_module(ModuleInitializationLevel p_level) {
 	}
 
 	ClassDB::register_class<VectorDisplay>();
-	ClassDB::register_abstract_class<VDShape3D>();
+	ClassDB::register_class<VDShape3D>();
 	ClassDB::register_class<VDCircle3D>();
 	ClassDB::register_class<VDDot3D>();
 	ClassDB::register_class<VDEditorPreview3D>();

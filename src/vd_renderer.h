@@ -15,7 +15,6 @@ protected:
 
 public:
 	static TypedArray<Array> GetSample3Ds(Camera3D *camera, VDShape3D *shape);
-	static void TransformSamples3DToWorldSpace(TypedArray<Array> samples3D, Transform3D worldTransform);
 	static TypedArray<PackedVector3Array> TransformSamples3DToScreen(Camera3D *camera, const TypedArray<Array> samples3D);
 
 	/// <summary>

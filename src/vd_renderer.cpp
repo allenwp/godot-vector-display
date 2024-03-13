@@ -34,6 +34,9 @@ TypedArray<Array> VDRenderer::GetSample3Ds(Camera3D *camera, VDShape3D *shape) {
 	// Now we have the fidelity for this shape. Get the samples:
 	TypedArray<Array> samples3D = shape->get_samples_3d(fidelity);
 
+	// TODO: should this post processing be done on the shape after local transform has been applied??
+	// I feel like... no???
+
 	// TODO: local shape post processing
 	//// Post process the local space samples:
 	//var shapePostProcessor3D = shape.Entity.GetComponent<PostProcessing.PostProcessingGroup3D>();
@@ -44,21 +47,8 @@ TypedArray<Array> VDRenderer::GetSample3Ds(Camera3D *camera, VDShape3D *shape) {
 	//}
 
 	// Transform the samples into world space and record them in the sample stream:
-	TransformSamples3DToWorldSpace(samples3D, shape->get_global_transform());
+	shape->apply_global_transform(samples3D);
 	return samples3D;
-}
-
-void VDRenderer::TransformSamples3DToWorldSpace(TypedArray<Array> samples3D, Transform3D worldTransform) {
-	for (int j = 0; j < samples3D.size(); j++) {
-		Array samples3DArray = samples3D[j]; // must be contained in an Array instead of a TypedArray because of https://github.com/godotengine/godot/issues/89191
-		for (int i = 0; i < samples3DArray.size(); i++) {
-			Variant element = samples3DArray[i];
-			ERR_CONTINUE_EDMSG(element.get_type() != Variant::VECTOR4, "Element of sample array is not a Vector4.");
-			VDSample3D sample = element;
-			Vector3 position = worldTransform.xform(Vector3(sample.x, sample.y, sample.z));
-			samples3DArray[i] = VDSample3D(position.x, position.y, position.z, sample.w);
-		}
-	}
 }
 
 // samples3D is TypedArray<TypedArray<VDSample3D>> // TODO: Change to TypedArray<PackedVector4Array>

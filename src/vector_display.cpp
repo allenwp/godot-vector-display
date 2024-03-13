@@ -299,10 +299,6 @@ VDSample *VectorDisplay::CreateFrameBuffer(TypedArray<PackedVector3Array> sample
 	return finalBuffer;
 }
 
-void VectorDisplay::DrawEditorLines(TypedArray<Array> worldSpaceResult) {
-	// TODO
-}
-
 float VectorDisplay::EaseInOutPower(float progress, int power) {
 	progress *= 2;
 	if (progress < 1) {

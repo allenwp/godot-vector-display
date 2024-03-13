@@ -23,11 +23,14 @@ public:
 	void _process(double delta) override;
 
 	/// <summary>
-	/// TypedArray<Array> is a TypedArray<TypedArray<Vector4>> // TODO: change to TypedArray<PackedVector4Array>
+	/// This gets the raw samples with no transforms (local or global) applied.
 	/// </summary>
 	/// <param name="fidelity"></param>
-	/// <returns></returns>
+	/// <returns>TypedArray<Array> is a TypedArray<TypedArray<Vector4>> // TODO: change to TypedArray<PackedVector4Array></returns>
 	virtual TypedArray<Array> get_samples_3d(float fidelity);
+
+	TypedArray<Array> get_samples_3d_global(float fidelity);
+	void apply_global_transform(TypedArray<Array> samples3D);
 };
 
 } // namespace vector_display
