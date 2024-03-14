@@ -1,0 +1,40 @@
+[gd_scene load_steps=7 format=3 uid="uid://jq0r67p20paq"]
+
+[ext_resource type="Script" path="res://space_canine_clone/environment_objects/environment_object.gd" id="1_k3erx"]
+[ext_resource type="Script" path="res://roate.gd" id="2_wrhd2"]
+[ext_resource type="Texture2D" uid="uid://3mhqr46ccx3" path="res://space_canine_clone/star_fox_training_ground.png" id="3_uxf0q"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_cfsro"]
+albedo_texture = ExtResource("3_uxf0q")
+uv1_scale = Vector3(0.335, 0.335, 0.335)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_3nkrn"]
+top_radius = 0.0
+height = 1.0
+radial_segments = 5
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_uho53"]
+albedo_texture = ExtResource("3_uxf0q")
+uv1_scale = Vector3(0.325, 0.325, 0.325)
+
+[node name="spire" type="Node3D"]
+script = ExtResource("1_k3erx")
+
+[node name="Node3D" type="Node3D" parent="."]
+script = ExtResource("2_wrhd2")
+speed = 0.04
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Node3D"]
+transform = Transform3D(-13, 8.74228e-07, 0, -1.1365e-06, -10, 0, 0, 0, 13, 0, 5, 0)
+material_override = SubResource("StandardMaterial3D_cfsro")
+mesh = SubResource("CylinderMesh_3nkrn")
+skeleton = NodePath("../..")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="Node3D"]
+transform = Transform3D(13, 0, 0, 0, 10, 0, 0, 0, 13, 0, 15, 0)
+material_override = SubResource("StandardMaterial3D_uho53")
+mesh = SubResource("CylinderMesh_3nkrn")
+skeleton = NodePath("../..")
+
+[node name="VDCurlySpire3D" type="VDCurlySpire3D" parent="Node3D"]
+transform = Transform3D(7.5, 0, 0, 0, 20, 0, 0, 0, 7.5, 0, 0, 0)

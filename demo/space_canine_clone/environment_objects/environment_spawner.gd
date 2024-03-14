@@ -1,9 +1,7 @@
 extends Node3D
 
-var pillar:PackedScene = preload("res://space_canine_clone/environment_objects/pillar_1.tscn")
-var sideways_block:PackedScene = preload("res://space_canine_clone/environment_objects/sideways_block_1.tscn")
 var ring:PackedScene = preload("res://space_canine_clone/environment_objects/ring.tscn")
-var arch:PackedScene = preload("res://space_canine_clone/environment_objects/arch.tscn")
+var spire:PackedScene = preload("res://space_canine_clone/environment_objects/spire.tscn")
 
 var filled_in_to: float = 0
 
@@ -20,12 +18,8 @@ func _process(_delta: float) -> void:
 			var value: float = randf()
 			var new_obj: EnvironmentObject
 
-			if value < .25:
-				new_obj = arch.instantiate()
-			elif value < 0.5:
-				new_obj = pillar.instantiate()
-			elif value < 0.75:
-				new_obj = sideways_block.instantiate()
+			if value < 0.5:
+				new_obj = spire.instantiate()
 			else:
 				new_obj = ring.instantiate()
 

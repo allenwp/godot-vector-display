@@ -10,6 +10,7 @@ func _has_gizmo(node: Node3D) -> bool:
 
 func _redraw(gizmo: EditorNode3DGizmo) -> void:
 	gizmo.clear()
+	# disable this and reload project to prevent crash:
 	GizmoUpdater.gizmo = gizmo
 	GizmoUpdater.gizmo_plugin = self
 
