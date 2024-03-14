@@ -1,0 +1,132 @@
+[gd_scene load_steps=18 format=3 uid="uid://bxiehukqiwur4"]
+
+[ext_resource type="Script" path="res://space_canine_clone/Dolly.gd" id="1_eax4q"]
+[ext_resource type="Script" path="res://space_canine_clone/player.gd" id="2_76tgx"]
+[ext_resource type="PackedScene" uid="uid://cwnl74f1xsrw3" path="res://space_canine_clone/models/player_ship.gltf" id="3_vf73p"]
+[ext_resource type="Shader" path="res://space_canine_clone/reticle.gdshader" id="4_ks4en"]
+[ext_resource type="Texture2D" uid="uid://5hh4mibxcyv1" path="res://space_canine_clone/hud/reticle.png" id="5_nms31"]
+[ext_resource type="Texture2D" uid="uid://3mhqr46ccx3" path="res://space_canine_clone/star_fox_training_ground.png" id="6_kmedv"]
+[ext_resource type="Script" path="res://space_canine_clone/uv_ground.gd" id="7_r6566"]
+[ext_resource type="PackedScene" uid="uid://10g3g7aouik1" path="res://vector_display_root.tscn" id="9_yspo7"]
+[ext_resource type="Script" path="res://space_canine_clone/environment_objects/environment_spawner.gd" id="11_nabi2"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_xxlme"]
+sky_top_color = Color(0.854902, 0.419608, 1, 1)
+sky_horizon_color = Color(0.847059, 0.788235, 0.870588, 1)
+ground_bottom_color = Color(0, 0, 0, 1)
+ground_horizon_color = Color(0.247059, 0.596078, 0.568627, 1)
+ground_curve = 0.242516
+
+[sub_resource type="Sky" id="Sky_k5f27"]
+sky_material = SubResource("ProceduralSkyMaterial_xxlme")
+
+[sub_resource type="Environment" id="Environment_u4p7m"]
+background_mode = 2
+sky = SubResource("Sky_k5f27")
+ambient_light_source = 3
+ssao_radius = 2.57
+ssao_intensity = 7.21
+sdfgi_min_cell_size = 0.976563
+sdfgi_cascade0_distance = 62.5
+sdfgi_max_distance = 1000.0
+glow_enabled = true
+fog_density = 0.0005
+fog_sky_affect = 0.208
+volumetric_fog_density = 0.0065
+
+[sub_resource type="QuadMesh" id="QuadMesh_besqc"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_0dfx8"]
+render_priority = 0
+shader = ExtResource("4_ks4en")
+shader_parameter/colour = Color(0.225823, 0.92093, 0, 1)
+shader_parameter/tex = ExtResource("5_nms31")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_63uqk"]
+albedo_color = Color(0.290196, 0.890196, 0.658824, 1)
+albedo_texture = ExtResource("6_kmedv")
+uv1_scale = Vector3(141.447, 47.149, 47.149)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_kc0i6"]
+material = SubResource("StandardMaterial3D_63uqk")
+size = Vector2(3000, 1000)
+
+[sub_resource type="BoxMesh" id="BoxMesh_jrn63"]
+size = Vector3(1, 1, 1000)
+
+[node name="Root3DScene" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_u4p7m")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="WorldEnvironment"]
+transform = Transform3D(-0.383094, -0.910728, -0.154319, 0.614379, -0.375976, 0.693672, -0.689766, 0.170931, 0.703566, 0, 0, 0)
+light_color = Color(0.697643, 0.848347, 0.82506, 1)
+light_bake_mode = 1
+shadow_enabled = true
+directional_shadow_max_distance = 251.2
+
+[node name="Dolly" type="Node3D" parent="."]
+unique_name_in_owner = true
+script = ExtResource("1_eax4q")
+speed = 40.0
+bounds = Vector2(180, 40)
+ground = -10.625
+
+[node name="Player" type="Node" parent="Dolly"]
+script = ExtResource("2_76tgx")
+max_pitch_yaw = Vector2(0.8, 0.8)
+max_rotate_speed = 0.03
+settle_pitch_yaw_tween_steps = 20.0
+translate_speed = 0.9
+camera_rotation_scale = 0.22
+camera_bounds_reduction = Vector2(25.774, 18.1)
+sawtooth_cooldown_time = 0.184
+
+[node name="PlayerShip" type="Node3D" parent="Dolly"]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -18)
+
+[node name="ShipModel" parent="Dolly/PlayerShip" instance=ExtResource("3_vf73p")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.76837e-07, 0.495178, -1.72263)
+
+[node name="ReticleFar" type="MeshInstance3D" parent="Dolly/PlayerShip"]
+transform = Transform3D(8.075, 0, 0, 0, 8.075, 0, 0, 0, 8.075, 0, 0, -72)
+mesh = SubResource("QuadMesh_besqc")
+skeleton = NodePath("../..")
+surface_material_override/0 = SubResource("ShaderMaterial_0dfx8")
+
+[node name="ReticleNear" type="MeshInstance3D" parent="Dolly/PlayerShip"]
+transform = Transform3D(8.075, 0, 0, 0, 8.075, 0, 0, 0, 8.075, 0, 0, -36)
+mesh = SubResource("QuadMesh_besqc")
+skeleton = NodePath("../..")
+surface_material_override/0 = SubResource("ShaderMaterial_0dfx8")
+
+[node name="LaserSpawnPoint" type="Node3D" parent="Dolly/PlayerShip"]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -9.46837)
+
+[node name="Ground" type="MeshInstance3D" parent="Dolly"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -15, -500)
+mesh = SubResource("PlaneMesh_kc0i6")
+script = ExtResource("7_r6566")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Dolly/Ground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 90, 0, 0)
+mesh = SubResource("BoxMesh_jrn63")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="Dolly/Ground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -90, 0, 0)
+mesh = SubResource("BoxMesh_jrn63")
+
+[node name="PlayerCamera" type="Camera3D" parent="Dolly"]
+unique_name_in_owner = true
+fov = 50.0
+
+[node name="environment_spawner" type="Node3D" parent="Dolly"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -500)
+script = ExtResource("11_nabi2")
+
+[node name="VectorDisplayRoot" parent="." instance=ExtResource("9_yspo7")]
+
+[editable path="VectorDisplayRoot"]

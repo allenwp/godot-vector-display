@@ -1,0 +1,6 @@
+[gd_resource type="StandardMaterial3D" load_steps=2 format=3 uid="uid://mlugvyn3l10q"]
+
+[ext_resource type="Texture2D" uid="uid://3mhqr46ccx3" path="res://space_canine_clone/star_fox_training_ground.png" id="1_b2r67"]
+
+[resource]
+albedo_texture = ExtResource("1_b2r67")

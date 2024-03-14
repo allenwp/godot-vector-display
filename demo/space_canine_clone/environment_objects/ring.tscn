@@ -1,0 +1,16 @@
+[gd_scene load_steps=3 format=3 uid="uid://c3thv8bbnb7y2"]
+
+[ext_resource type="Script" path="res://space_canine_clone/environment_objects/environment_object.gd" id="1_80un6"]
+
+[sub_resource type="TorusMesh" id="TorusMesh_dyjli"]
+inner_radius = 6.325
+outer_radius = 8.78
+rings = 32
+ring_segments = 10
+
+[node name="ring" type="Node3D"]
+script = ExtResource("1_80un6")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0)
+mesh = SubResource("TorusMesh_dyjli")

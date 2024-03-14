@@ -1,0 +1,9 @@
+[gd_scene load_steps=3 format=3 uid="uid://c4gafurin3xvu"]
+
+[ext_resource type="Material" uid="uid://mlugvyn3l10q" path="res://space_canine_clone/environment_objects/pillar1.tres" id="1_ge73y"]
+[ext_resource type="Script" path="res://space_canine_clone/environment_objects/environment_object.gd" id="2_gm2xu"]
+
+[node name="Pillar1" type="CSGBox3D"]
+material_override = ExtResource("1_ge73y")
+size = Vector3(20, 40, 20)
+script = ExtResource("2_gm2xu")

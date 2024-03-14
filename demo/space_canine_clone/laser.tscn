@@ -1,0 +1,53 @@
+[gd_scene load_steps=6 format=3 uid="uid://b3rjh4gbkb4dg"]
+
+[ext_resource type="Material" uid="uid://cehvck36bd4uo" path="res://space_canine_clone/laser_material.tres" id="1_4rmx2"]
+[ext_resource type="Script" path="res://space_canine_clone/laser.gd" id="1_7t61l"]
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_87j8l"]
+material = ExtResource("1_4rmx2")
+top_radius = 0.0
+radial_segments = 10
+rings = 1
+cap_top = false
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_x7urv"]
+material = ExtResource("1_4rmx2")
+radial_segments = 10
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_r6huf"]
+material = ExtResource("1_4rmx2")
+height = 1.0
+radial_segments = 10
+cap_top = false
+cap_bottom = false
+
+[node name="laser" type="Node3D"]
+script = ExtResource("1_7t61l")
+speed = 5.738
+
+[node name="Transform" type="Node3D" parent="."]
+transform = Transform3D(0.530596, 0, 0, 0, -1.56976e-07, -0.530596, 0, 3.59119, -2.31931e-08, 0, 0, -6.69649)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Transform"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+cast_shadow = 0
+mesh = SubResource("CylinderMesh_87j8l")
+skeleton = NodePath("../..")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="Transform"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.988236, 0)
+cast_shadow = 0
+mesh = SubResource("CapsuleMesh_x7urv")
+skeleton = NodePath("../..")
+
+[node name="MeshInstance3D3" type="MeshInstance3D" parent="Transform"]
+cast_shadow = 0
+mesh = SubResource("CylinderMesh_r6huf")
+skeleton = NodePath("../..")
+
+[node name="OmniLight3D" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -10.5196)
+visible = false
+light_color = Color(1, 0.8, 0.415686, 1)
+light_energy = 4.258
+omni_range = 10.583
