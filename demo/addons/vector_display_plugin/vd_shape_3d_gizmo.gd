@@ -4,15 +4,20 @@ func _init() -> void:
 	create_material("main", Color(0.5,1,0.5))
 
 func _has_gizmo(node: Node3D) -> bool:
-	return node is VDShape3D
+	return node is VDShape3D || GizmoUpdater
 
 func _redraw(gizmo: EditorNode3DGizmo) -> void:
 	gizmo.clear()
 
-	var shape := gizmo.get_node_3d() as VDShape3D
-	var world_space_samples: Array[Array] = shape.get_samples_3d(1.0);
-
-	add_samples_as_lines(world_space_samples, gizmo, get_material("main", gizmo));
+	var node3d: Node3D = gizmo.get_node_3d()
+	if node3d is GizmoUpdater:
+		var updater: GizmoUpdater = node3d as GizmoUpdater
+		updater.gizmo = gizmo
+		updater.gizmo_plugin = self
+	else:
+		var shape := node3d as VDShape3D
+		var world_space_samples: Array[Array] = shape.get_samples_3d(1.0);
+		add_samples_as_lines(world_space_samples, gizmo, get_material("main", gizmo));
 
 static func add_samples_as_lines(samples: Array[Array], gizmo: EditorNode3DGizmo, material: StandardMaterial3D) -> void:
 	var lines := PackedVector3Array()
