@@ -106,6 +106,36 @@ surface_material_override/0 = SubResource("ShaderMaterial_0dfx8")
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -9.46837)
 
+[node name="VDCircle3D" type="VDCircle3D" parent="Dolly/PlayerShip"]
+transform = Transform3D(4.739, 0, 0, 0, 0.285, 0, 0, 0, 1, 0, 0.42203, 0)
+
+[node name="VDCircle3D2" type="VDCircle3D" parent="Dolly/PlayerShip"]
+transform = Transform3D(4.379, 0, 0, 0, 0.735, 0, 0, 0, 1, 0, 0.42203, -1)
+
+[node name="VDCircle3D3" type="VDCircle3D" parent="Dolly/PlayerShip"]
+transform = Transform3D(3.569, 0, 0, 0, 1.035, 0, 0, 0, 1, 0, 0.42203, -2)
+
+[node name="VDCircle3D4" type="VDCircle3D" parent="Dolly/PlayerShip"]
+transform = Transform3D(2.654, 0, 0, 0, 0.89, 0, 0, 0, 1, 0, 0.42203, -3)
+
+[node name="VDCircle3D5" type="VDCircle3D" parent="Dolly/PlayerShip"]
+transform = Transform3D(2.144, 0, 0, 0, 0.6, 0, 0, 0, 1, 0, 0.42203, -4)
+
+[node name="VDCircle3D6" type="VDCircle3D" parent="Dolly/PlayerShip"]
+transform = Transform3D(1.599, 0, 0, 0, 0.395, 0, 0, 0, 1, 0, 0.42203, -5)
+
+[node name="VDCircle3D7" type="VDCircle3D" parent="Dolly/PlayerShip"]
+transform = Transform3D(1.319, 0, 0, 0, 0.295, 0, 0, 0, 1, 0, 0.42203, -6)
+
+[node name="VDCircle3D8" type="VDCircle3D" parent="Dolly/PlayerShip"]
+transform = Transform3D(0.889, 0, 0, 0, 0.235, 0, 0, 0, 1, 0, 0.42203, -7)
+
+[node name="VDCircle3D9" type="VDCircle3D" parent="Dolly/PlayerShip"]
+transform = Transform3D(0.554, 0, 0, 0, 0.16, 0, 0, 0, 1, 0, 0.42203, -8)
+
+[node name="VDCircle3D10" type="VDCircle3D" parent="Dolly/PlayerShip"]
+transform = Transform3D(0.299, 0, 0, 0, 0.06, 0, 0, 0, 1, 0, 0.42203, -9)
+
 [node name="Ground" type="MeshInstance3D" parent="Dolly"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -15, -500)
 mesh = SubResource("PlaneMesh_kc0i6")
@@ -128,5 +158,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -500)
 script = ExtResource("11_nabi2")
 
 [node name="VectorDisplayRoot" parent="." instance=ExtResource("9_yspo7")]
+
+[node name="VDEditorPreview3D" parent="VectorDisplayRoot/VectorDisplay" index="0"]
+visible = true
 
 [editable path="VectorDisplayRoot"]
