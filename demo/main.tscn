@@ -20,6 +20,13 @@ script = ExtResource("2_dek7q")
 [node name="VDDot3D" type="VDDot3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1)
 
+[node name="VDLine3D" type="VDLine3D" parent="."]
+end = Vector3(0, 1.165, 3.97)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -3.74427)
+
+[node name="VDCurlySpire3D" type="VDCurlySpire3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 2.58, 0, 0, 0, 1, -2.34951, 0, -3.51738)
+
 [node name="VectorDisplay" type="VectorDisplay" parent="."]
 unique_name_in_owner = true
 
