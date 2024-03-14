@@ -3,6 +3,7 @@
 
 #include <godot_cpp/classes/visual_instance3d.hpp>
 #include "vd_sample.h"
+#include <godot_cpp/core/gdvirtual.gen.inc>
 
 using namespace godot;
 
@@ -31,6 +32,9 @@ public:
 
 	TypedArray<Array> get_samples_3d_global(float fidelity);
 	void apply_global_transform(TypedArray<Array> samples3D);
+
+	
+	GDVIRTUAL1R(TypedArray<Array>, _get_samples_3d, float);
 };
 
 } // namespace vector_display

@@ -8,6 +8,8 @@ void VDShape3D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_samples_3d", "fidelity"), &VDShape3D::get_samples_3d);
 	ClassDB::bind_method(D_METHOD("get_samples_3d_global", "fidelity"), &VDShape3D::get_samples_3d_global);
 	ClassDB::bind_method(D_METHOD("apply_global_transform", "samples3D"), &VDShape3D::apply_global_transform);
+
+	GDVIRTUAL_BIND(_get_samples_3d, "fidelity");
 }
 
 VDShape3D::VDShape3D() {
@@ -21,7 +23,11 @@ void VDShape3D::_process(double delta) {
 }
 
 TypedArray<Array> VDShape3D::get_samples_3d(float fidelity) {
-	return TypedArray<Array>();
+	TypedArray<Array> ret;
+	if (GDVIRTUAL_CALL(_get_samples_3d, fidelity, ret)) {
+		return ret;
+	}
+	return ret;
 }
 
 TypedArray<Array> VDShape3D::get_samples_3d_global(float fidelity) {
