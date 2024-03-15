@@ -22,7 +22,7 @@ script = ExtResource("1_k3erx")
 
 [node name="Node3D" type="Node3D" parent="."]
 script = ExtResource("2_wrhd2")
-speed = 0.04
+speed = 0.2
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Node3D"]
 transform = Transform3D(-13, 8.74228e-07, 0, -1.1365e-06, -10, 0, 0, 0, 13, 0, 5, 0)

@@ -14,7 +14,7 @@ func _process(_delta: float) -> void:
 	if floorf(global_position.z / 100) < floorf(filled_in_to / 100):
 		filled_in_to = global_position.z
 
-		for i in range(-200, 200, 50):
+		for i in range(-200, 200, 100):
 			var value: float = randf()
 			var new_obj: EnvironmentObject
 
@@ -25,8 +25,14 @@ func _process(_delta: float) -> void:
 
 			get_tree().root.add_child(new_obj)
 			new_obj.global_position = global_position
-			new_obj.global_position.x = i + randf_range(-20, 20)
-			new_obj.global_position.y +=randf_range(-20, 20)
+			new_obj.global_position.x = i + randf_range(-40, 40)
+
+			if value < 0.5:
+				new_obj.global_position.y = -15
+				#new_obj.scale *= randf_range(0.5, 2)
+			else:
+				new_obj.global_position.y = randf_range(-15, 20)
+
 			new_obj.global_position.z +=randf_range(-20, 20)
 			new_obj.dolly = %Dolly
 

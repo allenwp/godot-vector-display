@@ -1,7 +1,6 @@
-[gd_scene load_steps=4 format=3 uid="uid://c3thv8bbnb7y2"]
+[gd_scene load_steps=3 format=3 uid="uid://c3thv8bbnb7y2"]
 
 [ext_resource type="Script" path="res://space_canine_clone/environment_objects/environment_object.gd" id="1_80un6"]
-[ext_resource type="Script" path="res://roate.gd" id="2_1fdjk"]
 
 [sub_resource type="TorusMesh" id="TorusMesh_dyjli"]
 inner_radius = 6.325
@@ -13,15 +12,13 @@ ring_segments = 10
 script = ExtResource("1_80un6")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0)
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 8.78, 0)
 mesh = SubResource("TorusMesh_dyjli")
 
-[node name="VDHelixCircle3D" type="VDHelixCircle3D" parent="."]
-base_sample_count = 200
-curl_count = 11
-thickness = 0.165
-transform = Transform3D(7.505, 0, 0, 0, 7.505, 0, 0, 0, 7.505, 0, 0, 0)
-script = ExtResource("2_1fdjk")
-speed = 0.04
-around_z = true
-metadata/_edit_lock_ = true
+[node name="VDCircle3D" type="VDCircle3D" parent="."]
+base_sample_count = 400
+transform = Transform3D(8.70793, 0, 0, 0, 8.70793, 0, 0, 0, 8.70793, 0, 8.78, 0)
+
+[node name="VDCircle3D2" type="VDCircle3D" parent="."]
+base_sample_count = 400
+transform = Transform3D(6.35269, 0, 0, 0, 6.35269, 0, 0, 0, 6.35269, 0, 8.78, 0)

@@ -13,7 +13,7 @@
 sky_top_color = Color(0.854902, 0.419608, 1, 1)
 sky_horizon_color = Color(0.847059, 0.788235, 0.870588, 1)
 ground_bottom_color = Color(0, 0, 0, 1)
-ground_horizon_color = Color(0.247059, 0.596078, 0.568627, 1)
+ground_horizon_color = Color(0.847059, 0.788235, 0.870588, 1)
 ground_curve = 0.242516
 
 [sub_resource type="Sky" id="Sky_k5f27"]
@@ -76,7 +76,7 @@ sawtooth_cooldown_time = 0.184
 
 [node name="PlayerShip" type="Node3D" parent="Dolly"]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -18)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -30)
 
 [node name="ShipModel" parent="Dolly/PlayerShip" instance=ExtResource("3_vf73p")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.76837e-07, 0.495178, -1.72263)
@@ -133,6 +133,7 @@ transform = Transform3D(0.299, 0, 0, 0, 0.06, 0, 0, 0, 1, 0, 0.42203, -9)
 
 [node name="Ground" type="MeshInstance3D" parent="Dolly"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -15, -500)
+visible = false
 mesh = SubResource("PlaneMesh_kc0i6")
 script = ExtResource("7_r6566")
 

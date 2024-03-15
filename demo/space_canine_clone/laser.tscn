@@ -27,7 +27,7 @@ script = ExtResource("1_7t61l")
 speed = 5.738
 
 [node name="VDDot3D" type="VDDot3D" parent="."]
-sample_count = 100
+sample_count = 300
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -12.7906)
 script = ExtResource("2_4pptl")
 

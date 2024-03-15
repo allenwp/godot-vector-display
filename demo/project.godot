@@ -30,8 +30,8 @@ gdscript/warnings/unsafe_call_argument=2
 
 [display]
 
-window/size/viewport_width=1068
-window/size/viewport_height=900
+window/size/viewport_width=712
+window/size/viewport_height=600
 window/vsync/vsync_mode=0
 
 [editor_plugins]
