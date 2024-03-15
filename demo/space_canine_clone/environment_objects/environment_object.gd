@@ -9,6 +9,6 @@ func _ready() -> void:
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	if dolly.global_position.z < global_position.z - 100:
 		queue_free()

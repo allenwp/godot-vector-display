@@ -4,7 +4,7 @@ var gizmo: EditorNode3DGizmo;
 var gizmo_plugin: EditorNode3DGizmoPlugin;
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	if gizmo_plugin != null \
 		&& !gizmo_plugin.is_queued_for_deletion() \
 		&& !gizmo.is_queued_for_deletion() \

@@ -1,10 +1,9 @@
-[gd_scene load_steps=18 format=3 uid="uid://bxiehukqiwur4"]
+[gd_scene load_steps=15 format=3 uid="uid://bxiehukqiwur4"]
 
 [ext_resource type="Script" path="res://space_canine_clone/Dolly.gd" id="1_eax4q"]
 [ext_resource type="Script" path="res://space_canine_clone/player.gd" id="2_76tgx"]
 [ext_resource type="PackedScene" uid="uid://cwnl74f1xsrw3" path="res://space_canine_clone/models/player_ship.gltf" id="3_vf73p"]
-[ext_resource type="Shader" path="res://space_canine_clone/reticle.gdshader" id="4_ks4en"]
-[ext_resource type="Texture2D" uid="uid://5hh4mibxcyv1" path="res://space_canine_clone/hud/reticle.png" id="5_nms31"]
+[ext_resource type="PackedScene" uid="uid://clc62406n06s8" path="res://space_canine_clone/reticle.tscn" id="6_83m18"]
 [ext_resource type="Texture2D" uid="uid://3mhqr46ccx3" path="res://space_canine_clone/star_fox_training_ground.png" id="6_kmedv"]
 [ext_resource type="Script" path="res://space_canine_clone/uv_ground.gd" id="7_r6566"]
 [ext_resource type="PackedScene" uid="uid://10g3g7aouik1" path="res://vector_display_root.tscn" id="9_yspo7"]
@@ -33,14 +32,6 @@ glow_enabled = true
 fog_density = 0.0005
 fog_sky_affect = 0.208
 volumetric_fog_density = 0.0065
-
-[sub_resource type="QuadMesh" id="QuadMesh_besqc"]
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_0dfx8"]
-render_priority = 0
-shader = ExtResource("4_ks4en")
-shader_parameter/colour = Color(0.225823, 0.92093, 0, 1)
-shader_parameter/tex = ExtResource("5_nms31")
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_63uqk"]
 albedo_color = Color(0.290196, 0.890196, 0.658824, 1)
@@ -71,7 +62,7 @@ unique_name_in_owner = true
 script = ExtResource("1_eax4q")
 speed = 40.0
 bounds = Vector2(180, 40)
-ground = -10.625
+ground = -12.41
 
 [node name="Player" type="Node" parent="Dolly"]
 script = ExtResource("2_76tgx")
@@ -90,17 +81,11 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -18)
 [node name="ShipModel" parent="Dolly/PlayerShip" instance=ExtResource("3_vf73p")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.76837e-07, 0.495178, -1.72263)
 
-[node name="ReticleFar" type="MeshInstance3D" parent="Dolly/PlayerShip"]
-transform = Transform3D(8.075, 0, 0, 0, 8.075, 0, 0, 0, 8.075, 0, 0, -72)
-mesh = SubResource("QuadMesh_besqc")
-skeleton = NodePath("../..")
-surface_material_override/0 = SubResource("ShaderMaterial_0dfx8")
+[node name="ReticleFar" parent="Dolly/PlayerShip" instance=ExtResource("6_83m18")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -72)
 
-[node name="ReticleNear" type="MeshInstance3D" parent="Dolly/PlayerShip"]
-transform = Transform3D(8.075, 0, 0, 0, 8.075, 0, 0, 0, 8.075, 0, 0, -36)
-mesh = SubResource("QuadMesh_besqc")
-skeleton = NodePath("../..")
-surface_material_override/0 = SubResource("ShaderMaterial_0dfx8")
+[node name="ReticleNear" parent="Dolly/PlayerShip" instance=ExtResource("6_83m18")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -36)
 
 [node name="LaserSpawnPoint" type="Node3D" parent="Dolly/PlayerShip"]
 unique_name_in_owner = true
@@ -158,8 +143,5 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -500)
 script = ExtResource("11_nabi2")
 
 [node name="VectorDisplayRoot" parent="." instance=ExtResource("9_yspo7")]
-
-[node name="VDEditorPreview3D" parent="VectorDisplayRoot/VectorDisplay" index="0"]
-visible = true
 
 [editable path="VectorDisplayRoot"]
