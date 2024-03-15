@@ -68,6 +68,10 @@ TypedArray<PackedVector3Array> VDRenderer::TransformSamples3DToScreen(Camera3D *
 			bool clipped = VD_SAMPLE_3D_BRIGHTNESS(worldSample) == 0.0f;
 			if (!clipped) {
 				worldPos = PerformViewTransform(worldPos, camera->get_camera_transform().inverse());
+				// TODO: temporary hack in place of post processing to make objects fade in as they approach the camera.
+				if (worldPos.z < -400) {
+					VD_SAMPLE_3D_BRIGHTNESS(worldSample) *= CLAMP((((worldPos.z + 400.0) / -100.0) - 1.0) * -1.0, 0.0, 1.0);
+				}
 				v4 = Vector4(worldPos.x, worldPos.y, worldPos.z, 1);
 				v4 = PerformProjectionTransform(v4, camera->get_camera_projection());
 				clipped = Clip(v4);
