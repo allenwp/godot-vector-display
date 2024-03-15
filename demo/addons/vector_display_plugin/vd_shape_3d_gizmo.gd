@@ -3,6 +3,9 @@ class_name VDShape3DGizmo extends EditorNode3DGizmoPlugin
 func _init() -> void:
 	create_material("main", Color(0.5,1,0.5))
 
+func _get_gizmo_name() -> String:
+	return "VDShape3D Gizmo"
+
 func _has_gizmo(node: Node3D) -> bool:
 	GizmoUpdater.gizmo = null
 	GizmoUpdater.gizmo_plugin = null

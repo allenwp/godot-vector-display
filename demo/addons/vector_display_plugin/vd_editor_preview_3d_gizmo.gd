@@ -3,9 +3,11 @@ class_name VDEditorPreview3DGizmo extends EditorNode3DGizmoPlugin
 func _init() -> void:
 	create_material("main", Color(1,0.5,0.5))
 
+func _get_gizmo_name() -> String:
+	return "VDEditorPreview3D Gizmo"
+
 func _has_gizmo(node: Node3D) -> bool:
 	return node is VDEditorPreview3D
-
 
 func _redraw(gizmo: EditorNode3DGizmo) -> void:
 	gizmo.clear()
