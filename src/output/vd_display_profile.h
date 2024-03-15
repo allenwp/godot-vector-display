@@ -26,6 +26,12 @@ public:
 	/// Usually something like 1.0 for an oscilloscope.
 	/// </summary>
 	float ZeroBrightnessOutput = 1.0f;
+
+	/// <summary>
+	/// If the display doesn't support scaling X and Y input, this can be used
+	/// to scale the output to the visible range.
+	/// </summary>
+	float XYScale = 1.0f;
 	
 	// TODO: maybe change the blanking length thing into something that actually returns
 	// the blanking array between two samples? This way the whole blanking algorithm

@@ -7,6 +7,7 @@ VDDisplayProfileOscTekTAS465::VDDisplayProfileOscTekTAS465() {
 	AspectRatio = 1.187f; // TODO
 	FullBrightnessOutput = 0.832f;
 	ZeroBrightnessOutput = 1.0f;
+	XYScale = 0.72f;
 	FidelityScale = 1.0f;
 }
 

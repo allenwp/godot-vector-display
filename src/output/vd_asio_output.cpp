@@ -719,6 +719,9 @@ VDSample VDASIOOutput::PrepareSampleForScreen(VDSample sample) {
 		// X is whatever range it needs to be to match the aspect ratio.
 	}
 
+	sample.x *= VDFrameOutput::DisplayProfile->XYScale;
+	sample.y *= VDFrameOutput::DisplayProfile->XYScale;
+
 	VD_SAMPLE_BRIGHTNESS(sample) = Math::lerp(VDFrameOutput::DisplayProfile->ZeroBrightnessOutput, VDFrameOutput::DisplayProfile->FullBrightnessOutput, Math::clamp(VD_SAMPLE_BRIGHTNESS(sample), 0.0f, 1.0f));
 
 	return sample;
