@@ -53,7 +53,7 @@ TypedArray<PackedVector4Array> VDRenderer::GetSample3Ds(Camera3D *camera, VDShap
 TypedArray<PackedVector3Array> VDRenderer::TransformSamples3DToScreen(Camera3D *camera, const TypedArray<PackedVector4Array> samples3D) {
 	TypedArray<PackedVector3Array> result = TypedArray<PackedVector3Array>();
 	for (int j = 0; j < samples3D.size(); j++) {
-		const Array samples3DArray = samples3D[j]; // must be contained in an Array instead of a TypedArray because of https://github.com/godotengine/godot/issues/89191
+		const PackedVector4Array samples3DArray = samples3D[j];
 		int sampleLength = samples3DArray.size();
 
 		PackedVector3Array tempSampleArray = PackedVector3Array();

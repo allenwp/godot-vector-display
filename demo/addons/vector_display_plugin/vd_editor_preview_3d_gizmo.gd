@@ -13,6 +13,6 @@ func _redraw(gizmo: EditorNode3DGizmo) -> void:
 	gizmo.clear()
 
 	var preview_node := gizmo.get_node_3d() as VDEditorPreview3D
-	var world_space_samples: Array[Array] = preview_node.get_latest_world_space_samples();
+	var world_space_samples: Array[PackedVector4Array] = preview_node.get_latest_world_space_samples();
 
 	VDShape3DGizmo.add_samples_as_lines(world_space_samples, gizmo, get_material("main", gizmo));
