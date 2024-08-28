@@ -4,8 +4,7 @@
 using namespace godot;
 using namespace vector_display;
 
-// returns TypedArray<TypedArray<Vector4>> // TODO: Change to TypedArray<PackedVector4Array>
-TypedArray<Array> VDRenderer::GetSample3Ds(Camera3D *camera, VDShape3D *shape) {
+TypedArray<PackedVector4Array> VDRenderer::GetSample3Ds(Camera3D *camera, VDShape3D *shape) {
 	float fidelity;
 	if (camera->get_projection() == Camera3D::PROJECTION_PERSPECTIVE) {
 		float distanceFromCamera = abs(shape->get_global_position().distance_to(camera->get_global_position()));
@@ -32,7 +31,7 @@ TypedArray<Array> VDRenderer::GetSample3Ds(Camera3D *camera, VDShape3D *shape) {
 	fidelity *= MAX(MAX(abs(shape_scale.x), abs(shape_scale.y)), abs(shape_scale.z)); // Multiply fidelity by max scale
 
 	// Now we have the fidelity for this shape. Get the samples:
-	TypedArray<Array> samples3D = shape->get_samples_3d(fidelity);
+	TypedArray<PackedVector4Array> samples3D = shape->get_samples_3d(fidelity);
 
 	// TODO: should this post processing be done on the shape after local transform has been applied??
 	// I feel like... no???
@@ -51,8 +50,7 @@ TypedArray<Array> VDRenderer::GetSample3Ds(Camera3D *camera, VDShape3D *shape) {
 	return samples3D;
 }
 
-// samples3D is TypedArray<TypedArray<VDSample3D>> // TODO: Change to TypedArray<PackedVector4Array>
-TypedArray<PackedVector3Array> VDRenderer::TransformSamples3DToScreen(Camera3D *camera,  const TypedArray<Array> samples3D) {
+TypedArray<PackedVector3Array> VDRenderer::TransformSamples3DToScreen(Camera3D *camera, const TypedArray<PackedVector4Array> samples3D) {
 	TypedArray<PackedVector3Array> result = TypedArray<PackedVector3Array>();
 	for (int j = 0; j < samples3D.size(); j++) {
 		const Array samples3DArray = samples3D[j]; // must be contained in an Array instead of a TypedArray because of https://github.com/godotengine/godot/issues/89191

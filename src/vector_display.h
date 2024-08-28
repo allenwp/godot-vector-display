@@ -28,7 +28,7 @@ protected:
 
 	void reset_buffers();
 
-	TypedArray<PackedVector3Array> GetScreenSpaceSamples(TypedArray<Array> &worldSpaceResult);
+	TypedArray<PackedVector3Array> GetScreenSpaceSamples(TypedArray<PackedVector4Array> &worldSpaceResult);
 
 	/// <param name="previousFrameEndSample">The sample that was drawn right before starting to draw this frame. (Last sample from the previous frame)</param>
 	VDSample *CreateFrameBuffer(TypedArray<PackedVector3Array> samples, VDSample previousFrameEndSample, int &blankingSamplesOut, int &wastedSamplesOut, int &bufferLengthOut);

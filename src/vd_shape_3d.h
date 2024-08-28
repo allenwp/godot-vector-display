@@ -26,15 +26,13 @@ public:
 	/// <summary>
 	/// This gets the raw samples with no transforms (local or global) applied.
 	/// </summary>
-	/// <param name="fidelity"></param>
-	/// <returns>TypedArray<Array> is a TypedArray<TypedArray<Vector4>> // TODO: change to TypedArray<PackedVector4Array></returns>
-	virtual TypedArray<Array> get_samples_3d(float fidelity);
+	virtual TypedArray<PackedVector4Array> get_samples_3d(float fidelity);
 
-	TypedArray<Array> get_samples_3d_global(float fidelity);
-	void apply_global_transform(TypedArray<Array> samples3D);
+	TypedArray<PackedVector4Array> get_samples_3d_global(float fidelity);
+	void apply_global_transform(TypedArray<PackedVector4Array> samples3D);
 
 	
-	GDVIRTUAL1R(TypedArray<Array>, _get_samples_3d, float);
+	GDVIRTUAL1R(TypedArray<PackedVector4Array>, _get_samples_3d, float);
 };
 
 } // namespace vector_display

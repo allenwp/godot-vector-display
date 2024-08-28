@@ -14,8 +14,8 @@ private:
 protected:
 
 public:
-	static TypedArray<Array> GetSample3Ds(Camera3D *camera, VDShape3D *shape);
-	static TypedArray<PackedVector3Array> TransformSamples3DToScreen(Camera3D *camera, const TypedArray<Array> samples3D);
+	static TypedArray<PackedVector4Array> GetSample3Ds(Camera3D *camera, VDShape3D *shape);
+	static TypedArray<PackedVector3Array> TransformSamples3DToScreen(Camera3D *camera, const TypedArray<PackedVector4Array> samples3D);
 
 	/// <summary>
 	/// Produces "view" coordinates (aka "eye" or "camera" coordinates)

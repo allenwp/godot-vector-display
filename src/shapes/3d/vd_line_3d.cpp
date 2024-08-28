@@ -52,12 +52,12 @@ Vector3 VDLine3D::get_end() const {
 void VDLine3D::_process(double delta) {
 }
 
-TypedArray<Array> VDLine3D::get_samples_3d(float fidelity) {
-	TypedArray<Array> result; // TODO: Change to TypedArray<PackedVector4Array>
-
+TypedArray<PackedVector4Array> VDLine3D::get_samples_3d(float fidelity) {
+	TypedArray<PackedVector4Array> result;
+	 
 	int sampleCount = (int)round(base_sample_count * fidelity);
 
-	TypedArray<Vector4> sample3DArray;
+	PackedVector4Array sample3DArray;
 	sample3DArray.resize(sampleCount);
 	for (int i = 0; i < sampleCount; i++) {
 		Vector3 point3D = start.lerp(end, (float)i / (float)(sampleCount - 1));

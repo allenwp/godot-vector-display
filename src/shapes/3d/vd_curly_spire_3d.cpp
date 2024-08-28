@@ -38,14 +38,14 @@ int VDCurlySpire3D::get_curl_count() const {
 	return curl_count;
 }
 
-TypedArray<Array> VDCurlySpire3D::get_samples_3d(float fidelity) {
+TypedArray<PackedVector4Array> VDCurlySpire3D::get_samples_3d(float fidelity) {
 	const float height = 1.0f;
 
-	TypedArray<Array> result; // TODO: Change to TypedArray<PackedVector4Array>
+	TypedArray<PackedVector4Array> result;
 
 	int sampleCount = (int)round(base_sample_count * fidelity);
 
-	TypedArray<Vector4> sample3DArray;
+	PackedVector4Array sample3DArray;
 	sample3DArray.resize(sampleCount);
 	for (int i = 0; i < sampleCount; i++) {
 		float value = (float)i / (sampleCount - 1);

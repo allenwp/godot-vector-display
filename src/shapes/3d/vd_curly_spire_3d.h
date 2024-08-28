@@ -25,7 +25,7 @@ public:
 	void set_curl_count(const int value);
 	int get_curl_count() const;
 
-	virtual TypedArray<Array> get_samples_3d(float fidelity) override;
+	virtual TypedArray<PackedVector4Array> get_samples_3d(float fidelity) override;
 };
 
 } // namespace vector_display

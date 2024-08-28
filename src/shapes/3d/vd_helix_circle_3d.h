@@ -29,9 +29,9 @@ public:
 	void set_thickness(const float value);
 	float get_thickness() const;
 
-	virtual TypedArray<Array> get_samples_3d(float fidelity) override;
+	virtual TypedArray<PackedVector4Array> get_samples_3d(float fidelity) override;
 
-	TypedArray<Vector4> get_coil(int sample_count, bool inverse);
+	PackedVector4Array get_coil(int sample_count, bool inverse);
 };
 
 } // namespace vector_display

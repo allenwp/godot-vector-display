@@ -30,7 +30,7 @@ public:
 	Vector3 get_end() const;
 
 	void _process(double delta) override;
-	virtual TypedArray<Array> get_samples_3d(float fidelity) override;
+	virtual TypedArray<PackedVector4Array> get_samples_3d(float fidelity) override;
 };
 
 } // namespace vector_display

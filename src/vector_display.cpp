@@ -62,7 +62,7 @@ void VectorDisplay::reset_buffers() {
 
 //double value = 0;
 void VectorDisplay::_process(double delta) {
-	TypedArray<Array> worldSpaceResult = TypedArray<Array>(); // TypedArray<TypedArray<Vector4>>
+	TypedArray<PackedVector4Array> worldSpaceResult = TypedArray<PackedVector4Array>();
 	TypedArray<PackedVector3Array> screenSpaceSamples = GetScreenSpaceSamples(worldSpaceResult);
 
 	// Finally, prepare and fill the FrameOutput buffer:
@@ -142,7 +142,7 @@ void VectorDisplay::_process(double delta) {
 }
 
 // This function is similar to the original SamplerSystem::Tick() method
-TypedArray<PackedVector3Array> VectorDisplay::GetScreenSpaceSamples(TypedArray<Array> &worldSpaceResult) {
+TypedArray<PackedVector3Array> VectorDisplay::GetScreenSpaceSamples(TypedArray<PackedVector4Array> &worldSpaceResult) {
 	TypedArray<PackedVector3Array> result;
 
 	Camera3D *camera = get_viewport()->get_camera_3d();
@@ -151,7 +151,7 @@ TypedArray<PackedVector3Array> VectorDisplay::GetScreenSpaceSamples(TypedArray<A
 		Window *root = get_tree()->get_root();
 		TypedArray<Node> shapeNodes = root->find_children("*", "VDShape3D", true, false);
 
-		worldSpaceResult = TypedArray<Array>(); // TypedArray<TypedArray<Vector4>>
+		worldSpaceResult = TypedArray<PackedVector4Array>();
 
 		for (int i = 0; i < shapeNodes.size(); i++) {
 			VDShape3D *shape = Object::cast_to<VDShape3D>(shapeNodes[i]);

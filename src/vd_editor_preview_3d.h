@@ -13,11 +13,11 @@ class VDEditorPreview3D : public Node3D {
 protected:
 	static void _bind_methods();
 
-	TypedArray<Array> _last_world_space_samples;
+	TypedArray<PackedVector4Array> _last_world_space_samples;
 
 public:
-	void update_preview(TypedArray<Array> worldSpaceSamples); // TypedArray<TypedArray<Vector4>>
-	TypedArray<Array> get_latest_world_space_samples(); // TypedArray<TypedArray<Vector4>>
+	void update_preview(TypedArray<PackedVector4Array> worldSpaceSamples);
+	TypedArray<PackedVector4Array> get_latest_world_space_samples();
 };
 
 } // namespace vector_display

@@ -28,12 +28,12 @@ int VDCircle3D::get_base_sample_count() const {
 void VDCircle3D::_process(double delta) {
 }
 
-TypedArray<Array> VDCircle3D::get_samples_3d(float fidelity) {
-	TypedArray<Array> result; // TODO: Change to TypedArray<PackedVector4Array>
+TypedArray<PackedVector4Array> VDCircle3D::get_samples_3d(float fidelity) {
+	TypedArray<PackedVector4Array> result;
 
 	int sampleCount = (int)round(base_sample_count * fidelity);
 
-	TypedArray<Vector4> sample3DArray;
+	PackedVector4Array sample3DArray;
 	sample3DArray.resize(sampleCount);
 	for (int i = 0; i < sampleCount; i++) {
 		auto value = Math::lerp(0, (float)(Math_PI * 2), (float)i / (float)(sampleCount - 1));
