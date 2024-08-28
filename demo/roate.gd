@@ -9,4 +9,3 @@ func _physics_process(_delta: float) -> void:
 		rotate_z(speed);
 	else:
 		rotate_y(speed);
-

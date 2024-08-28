@@ -35,4 +35,3 @@ func _process(_delta: float) -> void:
 
 			new_obj.global_position.z +=randf_range(-20, 20)
 			new_obj.dolly = %Dolly
-
