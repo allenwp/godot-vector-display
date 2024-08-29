@@ -39,13 +39,16 @@ TypedArray<PackedVector4Array> VDShape3D::get_samples_3d_global(float fidelity) 
 void VDShape3D::apply_global_transform(TypedArray<PackedVector4Array> samples3D) {
 	Transform3D worldTransform = get_global_transform();
 	for (int j = 0; j < samples3D.size(); j++) {
-		PackedVector4Array samples3DArray = samples3D[j]; // must be contained in an Array instead of a TypedArray because of https://github.com/godotengine/godot/issues/89191
-		for (int i = 0; i < samples3DArray.size(); i++) {
-			Variant element = samples3DArray[i];
+		Variant samples3DArray = samples3D[j];
+		int samples3DArraySize = samples3DArray.call("size");
+		bool valid, oob;
+		for (int i = 0; i < samples3DArraySize; i++) {
+			Variant element = samples3DArray.get_indexed(i, valid, oob);
+			ERR_CONTINUE_EDMSG(!valid || oob, "Can't access index, likely out of bounds.");
 			ERR_CONTINUE_EDMSG(element.get_type() != Variant::VECTOR4, "Element of sample array is not a Vector4.");
 			VDSample3D sample = element;
 			Vector3 position = worldTransform.xform(Vector3(sample.x, sample.y, sample.z));
-			samples3DArray[i] = VDSample3D(position.x, position.y, position.z, sample.w);
+			samples3DArray.set_indexed(i, VDSample3D(position.x, position.y, position.z, sample.w), valid, oob);
 		}
 	}
 }

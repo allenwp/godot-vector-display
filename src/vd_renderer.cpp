@@ -53,13 +53,16 @@ TypedArray<PackedVector4Array> VDRenderer::GetSample3Ds(Camera3D *camera, VDShap
 TypedArray<PackedVector3Array> VDRenderer::TransformSamples3DToScreen(Camera3D *camera, const TypedArray<PackedVector4Array> samples3D) {
 	TypedArray<PackedVector3Array> result = TypedArray<PackedVector3Array>();
 	for (int j = 0; j < samples3D.size(); j++) {
-		const PackedVector4Array samples3DArray = samples3D[j];
-		int sampleLength = samples3DArray.size();
+		Variant samples3DArray = samples3D[j];
+		int sampleLength = samples3DArray.call("size");
 
 		PackedVector3Array tempSampleArray = PackedVector3Array();
 		int currentArrayIndex = 0;
-		for (int i = 0; i < sampleLength; i++) {
-			VDSample3D worldSample = samples3DArray[i];
+		Variant iterator;
+		bool iter_valid;
+		samples3DArray.iter_init(iterator, iter_valid);
+		do {
+			VDSample3D worldSample = samples3DArray.iter_get(iterator, iter_valid);
 			Vector3 worldPos = Vector3(worldSample.x, worldSample.y, worldSample.z);
 			Vector4 v4;
 			// When samples are 0 brightness (disabled), it's the same as when they're clipped
@@ -96,7 +99,7 @@ TypedArray<PackedVector3Array> VDRenderer::TransformSamples3DToScreen(Camera3D *
 				tempSampleArray = PackedVector3Array(); // discard old one
 				currentArrayIndex = 0;
 			}
-		}
+		} while (samples3DArray.iter_next(iterator, iter_valid));
 
 		if (tempSampleArray.size() > 0 && currentArrayIndex > 0) {
 			tempSampleArray.resize(currentArrayIndex);
