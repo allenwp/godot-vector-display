@@ -230,8 +230,7 @@ VDSample *VectorDisplay::CreateFrameBuffer(TypedArray<PackedVector3Array> sample
 	// Find out how many samples we have in the full set
 	int sampleCount = 0;
 	for (int i = 0; i < samples.size(); i++) {
-		PackedVector3Array sampleArray = samples[i];
-		sampleCount += sampleArray.size();
+		sampleCount += (int)(samples[i].call("size"));
 	}
 	int worstCaseBlankingLength = VDFrameOutput::DisplayProfile->BlankingLength(VDSample(-1.0f, -1.0f, 0.0f), VDSample(1.0f, 1.0f, 0.0f));
 	int worstCaseSampleCount = sampleCount + (samples.size() * worstCaseBlankingLength) + worstCaseBlankingLength + 1; // one more on the end to return to blanking point.
@@ -243,9 +242,12 @@ VDSample *VectorDisplay::CreateFrameBuffer(TypedArray<PackedVector3Array> sample
 	int destinationIndex = 0;
 	VDSample previousSample = previousFrameEndSample;
 
-	auto addSamples = [&](PackedVector3Array sampleArray) {
-		if (sampleArray.size() > 0) {
-			int blankingLength = VDFrameOutput::DisplayProfile->BlankingLength(previousSample, sampleArray[0]);
+	auto addSamples = [&](Variant sampleArray) { // sampleArray must be of type PackedVector3Array
+		int sampleArraySize = (int)(sampleArray.call("size"));
+		if (sampleArraySize > 0) {
+			bool valid, oob;
+			VDSample firstSample = sampleArray.get_indexed(0, valid, oob);
+			int blankingLength = VDFrameOutput::DisplayProfile->BlankingLength(previousSample, firstSample);
 			// Set blanking based on the first sample:
 			for (int b = 0; b < blankingLength; b++) {
 				VDSample tweenSample;
@@ -253,8 +255,8 @@ VDSample *VectorDisplay::CreateFrameBuffer(TypedArray<PackedVector3Array> sample
 				// Ease out b/c the following samples should start without too much momentum
 				// from movement during blanking.
 				float tweenValue = EaseInOutPower((b + 1) / (float)blankingLength, 2);
-				tweenSample.x = Math::lerp(previousSample.x, ((VDSample)sampleArray[0]).x, tweenValue);
-				tweenSample.y = Math::lerp(previousSample.y, ((VDSample)sampleArray[0]).y, tweenValue);
+				tweenSample.x = Math::lerp(previousSample.x, firstSample.x, tweenValue);
+				tweenSample.y = Math::lerp(previousSample.y, firstSample.y, tweenValue);
 				VD_SAMPLE_BRIGHTNESS(tweenSample) = 0.0f;
 
 				finalBuffer[destinationIndex] = tweenSample;
@@ -262,17 +264,16 @@ VDSample *VectorDisplay::CreateFrameBuffer(TypedArray<PackedVector3Array> sample
 			}
 
 			// Then copy the samples over:
-			for (int i = 0; i < sampleArray.size(); i++) {
-				finalBuffer[destinationIndex + i] = sampleArray[i];
+			for (int i = 0; i < sampleArraySize; i++) {
+				finalBuffer[destinationIndex + i] = sampleArray.get_indexed(i, valid, oob);
 			}
-			destinationIndex += sampleArray.size();
-			previousSample = sampleArray[sampleArray.size() - 1];
+			destinationIndex += sampleArraySize;
+			previousSample = sampleArray.get_indexed(sampleArraySize - 1, valid, oob);
 		}
 	};
 
 	for (int i = 0; i < samples.size(); i++) {
-		PackedVector3Array sampleArray = samples[i];
-		addSamples(sampleArray);
+		addSamples(samples[i]);
 	}
 
 	int finalSampleCount = destinationIndex;
