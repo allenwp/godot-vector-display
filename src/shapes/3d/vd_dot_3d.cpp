@@ -31,7 +31,7 @@ void VDDot3D::_process(double delta) {
 TypedArray<PackedVector4Array> VDDot3D::get_samples_3d(float fidelity) {
 	TypedArray<PackedVector4Array> result;
 
-	TypedArray<PackedVector4Array> sample3DArray;
+	PackedVector4Array sample3DArray;
 	sample3DArray.resize(sample_count);
 	for (int i = 0; i < sample_count; i++) {
 		sample3DArray[i] = VDSample3D(0.0, 0.0, 0.0, 1.0);
