@@ -1,7 +1,10 @@
 class_name VDShape3DGizmo extends EditorNode3DGizmoPlugin
 
+var mat: StandardMaterial3D
+
 func _init() -> void:
 	create_material("main", Color(0.5,1,0.5))
+	mat = get_material("main") # saving mat to work around Godot issue #96481
 
 func _get_gizmo_name() -> String:
 	return "VDShape3D Gizmo"
@@ -20,7 +23,7 @@ func _redraw(gizmo: EditorNode3DGizmo) -> void:
 	var node3d: Node3D = gizmo.get_node_3d()
 	var shape := node3d as VDShape3D
 	var world_space_samples: Array[PackedVector4Array] = shape.get_samples_3d(1.0);
-	add_samples_as_lines(world_space_samples, gizmo, get_material("main", gizmo));
+	add_samples_as_lines(world_space_samples, gizmo, mat);
 
 static func add_samples_as_lines(samples: Array[PackedVector4Array], gizmo: EditorNode3DGizmo, material: StandardMaterial3D) -> void:
 	var lines := PackedVector3Array()
