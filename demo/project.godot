@@ -36,7 +36,7 @@ window/vsync/vsync_mode=0
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/vector_display_plugin/plugin.cfg")
+enabled=PackedStringArray("res://addons/vd_shapes/plugin.cfg", "res://addons/vector_display_plugin/plugin.cfg")
 
 [input]
 

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://h7l6gyikn66m"
-path="res://.godot/imported/vd_shape.png-a7db30a1a069ee071654aa70a0ccd37c.ctex"
+uid="uid://cooa0tlkupb8x"
+path="res://.godot/imported/vd_shape.png-9bd117b6e69e703f1fbbd6bf59e168be.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://addons/vector_display_plugin/vd_shape.png"
-dest_files=["res://.godot/imported/vd_shape.png-a7db30a1a069ee071654aa70a0ccd37c.ctex"]
+source_file="res://addons/vd_shapes/vd_shape.png"
+dest_files=["res://.godot/imported/vd_shape.png-9bd117b6e69e703f1fbbd6bf59e168be.ctex"]
 
 [params]
 
