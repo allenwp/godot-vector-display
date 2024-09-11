@@ -66,6 +66,9 @@
     <ClInclude Include="src\vd_post_processor_2d.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\output\vd_display_profile_Osc_Tek_2445.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\vector_display.cpp">
@@ -114,6 +117,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\vd_post_processor_2d.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\output\vd_display_profile_Osc_Tek_2445.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

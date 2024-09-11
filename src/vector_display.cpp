@@ -71,7 +71,7 @@ void VectorDisplay::_process(double delta) {
 	int blankingSampleCount;
 	int wastedSampleCount;
 	int finalBufferLength;
-	VDSample *finalBuffer = CreateFrameBuffer(screenSpaceSamples, previousFinalSample, blankingSampleCount, wastedSampleCount, finalBufferLength); // VDFrameOutput::GetCalibrationFrame();
+	VDSample *finalBuffer = CreateFrameBuffer(screenSpaceSamples, previousFinalSample, blankingSampleCount, wastedSampleCount, finalBufferLength); // VDFrameOutput::GetCalibrationFrame(finalBufferLength);
 	if (finalBufferLength > 0) {
 		previousFinalSample = finalBuffer[finalBufferLength - 1];
 	}

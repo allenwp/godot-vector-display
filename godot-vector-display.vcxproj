@@ -131,6 +131,7 @@
   <ItemGroup>
     <ClInclude Include="src\output\vd_asio_output.h" />
     <ClInclude Include="src\output\vd_display_profile.h" />
+    <ClInclude Include="src\output\vd_display_profile_Osc_Tek_2445.h" />
     <ClInclude Include="src\output\vd_display_profile_Osc_Tek_TAS_465.h" />
     <ClInclude Include="src\output\vd_frame_output.h" />
     <ClInclude Include="src\shapes\3d\vd_circle_3d.h" />
@@ -149,6 +150,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\output\vd_asio_output.cpp" />
+    <ClCompile Include="src\output\vd_display_profile_Osc_Tek_2445.cpp" />
     <ClCompile Include="src\output\vd_display_profile_Osc_Tek_TAS_465.cpp" />
     <ClCompile Include="src\output\vd_frame_output.cpp" />
     <ClCompile Include="src\shapes\3d\vd_circle_3d.cpp" />

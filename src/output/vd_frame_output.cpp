@@ -1,11 +1,12 @@
 #include "vd_frame_output.h"
 #include "godot_cpp/core/math.hpp"
 #include "vd_display_profile_Osc_Tek_TAS_465.h"
+#include "vd_display_profile_Osc_Tek_2445.h"
 
 using namespace vector_display;
 
 float VDFrameOutput::MaxFramesPerSecond = 80.0f;
-VDDisplayProfile *VDFrameOutput::DisplayProfile = (VDDisplayProfile*)new VDDisplayProfileOscTekTAS465();
+VDDisplayProfile *VDFrameOutput::DisplayProfile = (VDDisplayProfile*)new VDDisplayProfileOscTek2445();
 
 std::atomic<VDSample *> VDFrameOutput::Buffer1 = nullptr;
 int VDFrameOutput::Buffer1Length = 0;
