@@ -2,6 +2,8 @@
 
 #include "vector_display.h"
 #include "vd_shape_3d.h"
+#include "vd_post_processor_3d.h"
+
 #include "shapes/3d/vd_circle_3d.h"
 #include "shapes/3d/vd_dot_3d.h"
 #include "shapes/3d/vd_line_3d.h"
@@ -23,6 +25,8 @@ void initialize_vector_display_module(ModuleInitializationLevel p_level) {
 
 	ClassDB::register_class<VectorDisplay>();
 	ClassDB::register_class<VDShape3D>();
+	ClassDB::register_class<VDPostProcessor3D>();
+
 	ClassDB::register_class<VDCircle3D>();
 	ClassDB::register_class<VDDot3D>();
 	ClassDB::register_class<VDLine3D>();

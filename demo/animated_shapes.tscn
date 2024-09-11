@@ -1,6 +1,7 @@
-[gd_scene load_steps=6 format=3 uid="uid://bbc2wne4ysxp1"]
+[gd_scene load_steps=7 format=3 uid="uid://bbc2wne4ysxp1"]
 
-[ext_resource type="Script" path="res://roate.gd" id="1_6v63e"]
+[ext_resource type="Script" path="res://rotate.gd" id="1_6v63e"]
+[ext_resource type="Script" path="res://addons/vd_types/vd_strobe_post_processor.gd" id="2_iepbh"]
 [ext_resource type="PackedScene" uid="uid://10g3g7aouik1" path="res://vector_display_root.tscn" id="8_5m4yq"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_xxlme"]
@@ -49,10 +50,15 @@ thickness = 0.065
 transform = Transform3D(1.16, 0, 0, 0, 1.16, 0, 0, 0, 1.16, 0, 0, 0)
 
 [node name="Rotate" type="Node" parent="VDHelixCircle3D"]
-process_mode = 4
 script = ExtResource("1_6v63e")
-speed = 0.025
+speed = 0.295
 around_z = true
+
+[node name="VDStrobePostProcessor" type="VDPostProcessor3D" parent="VDHelixCircle3D"]
+script = ExtResource("2_iepbh")
+AnimationValue = 0.560018
+AnimationSpeed = 4.085
+Scale = 7.885
 
 [node name="VDCurlySpire3D" type="VDCurlySpire3D" parent="."]
 base_sample_count = 600
@@ -60,7 +66,7 @@ transform = Transform3D(0.617353, -0.330951, 0, 0.125602, 1.62667, 0, 0, 0, 0.63
 
 [node name="Rotate" type="Node" parent="VDCurlySpire3D"]
 script = ExtResource("1_6v63e")
-speed = 0.045
+speed = 4.5
 
 [node name="VectorDisplayRoot" parent="." instance=ExtResource("8_5m4yq")]
 

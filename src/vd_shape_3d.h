@@ -21,8 +21,6 @@ public:
 	VDShape3D();
 	~VDShape3D();
 
-	void _process(double delta) override;
-
 	/// <summary>
 	/// This gets the raw samples with no transforms (local or global) applied.
 	/// </summary>

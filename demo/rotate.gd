@@ -18,7 +18,8 @@ func _physics_process(_delta: float) -> void:
 	if node_3d == null:
 		printerr("Rotate script requires a target or parent Node3D.")
 	else:
+		var scaled_speed: float = speed / 100
 		if around_z:
-			node_3d.rotate_z(speed)
+			node_3d.rotate_z(scaled_speed)
 		else:
-			node_3d.rotate_y(speed);
+			node_3d.rotate_y(scaled_speed);

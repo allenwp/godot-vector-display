@@ -139,6 +139,7 @@
     <ClInclude Include="src\shapes\3d\vd_helix_circle_3d.h" />
     <ClInclude Include="src\shapes\3d\vd_line_3d.h" />
     <ClInclude Include="src\vd_editor_preview_3d.h" />
+    <ClInclude Include="src\vd_post_processor_3d.h" />
     <ClInclude Include="src\vd_renderer.h" />
     <ClInclude Include="src\vd_sample.h" />
     <ClInclude Include="src\vd_shape_3d.h" />
@@ -155,6 +156,7 @@
     <ClCompile Include="src\shapes\3d\vd_helix_circle_3d.cpp" />
     <ClCompile Include="src\shapes\3d\vd_line_3d.cpp" />
     <ClCompile Include="src\vd_editor_preview_3d.cpp" />
+    <ClCompile Include="src\vd_post_processor_3d.cpp" />
     <ClCompile Include="src\vd_renderer.cpp" />
     <ClCompile Include="src\vd_sample.cpp" />
     <ClCompile Include="src\vd_shape_3d.cpp" />

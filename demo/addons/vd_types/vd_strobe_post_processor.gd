@@ -7,7 +7,7 @@ class_name VDStrobePostProcessor extends VDPostProcessor3D
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _physics_process(_delta: float) -> void:
-	AnimationValue += AnimationSpeed
+	AnimationValue += AnimationSpeed / 100
 	while AnimationValue > 1:
 		AnimationValue -= 1
 

@@ -1,5 +1,6 @@
 #include "vd_renderer.h"
 #include "output/vd_frame_output.h"
+#include "vd_post_processor_3d.h"
 
 using namespace godot;
 using namespace vector_display;
@@ -33,17 +34,13 @@ TypedArray<PackedVector4Array> VDRenderer::GetSample3Ds(Camera3D *camera, VDShap
 	// Now we have the fidelity for this shape. Get the samples:
 	TypedArray<PackedVector4Array> samples3D = shape->get_samples_3d(fidelity);
 
-	// TODO: should this post processing be done on the shape after local transform has been applied??
-	// I feel like... no???
-
-	// TODO: local shape post processing
-	//// Post process the local space samples:
-	//var shapePostProcessor3D = shape.Entity.GetComponent<PostProcessing.PostProcessingGroup3D>();
-	//if (shapePostProcessor3D != null) {
-	//	foreach (var postProcessor in shapePostProcessor3D.PostProcessors.Where(comp = > comp.IsActive)) {
-	//		postProcessor.PostProcess3DFuntion(samples3D, postProcessor);
-	//	}
-	//}
+	TypedArray<Node> children = shape->get_children();
+	for (int i = 0; i < children.size(); i++) {
+		VDPostProcessor3D *pp = Object::cast_to<VDPostProcessor3D>(children[i]);
+		if (pp && pp->can_process()) {
+			pp->process_samples_3d(samples3D);
+		}
+	}
 
 	// Transform the samples into world space and record them in the sample stream:
 	shape->apply_global_transform(samples3D);

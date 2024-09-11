@@ -12,15 +12,8 @@ void VDShape3D::_bind_methods() {
 	GDVIRTUAL_BIND(_get_samples_3d, "fidelity");
 }
 
-VDShape3D::VDShape3D() {
-	
-}
-
-VDShape3D::~VDShape3D() {
-}
-
-void VDShape3D::_process(double delta) {
-}
+VDShape3D::VDShape3D() {}
+VDShape3D::~VDShape3D() {}
 
 TypedArray<PackedVector4Array> VDShape3D::get_samples_3d(float fidelity) {
 	TypedArray<PackedVector4Array> ret;
