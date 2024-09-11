@@ -1,0 +1,67 @@
+[gd_scene load_steps=6 format=3 uid="uid://bbc2wne4ysxp1"]
+
+[ext_resource type="Script" path="res://roate.gd" id="1_6v63e"]
+[ext_resource type="PackedScene" uid="uid://10g3g7aouik1" path="res://vector_display_root.tscn" id="8_5m4yq"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_xxlme"]
+sky_top_color = Color(0.854902, 0.419608, 1, 1)
+sky_horizon_color = Color(0.847059, 0.788235, 0.870588, 1)
+ground_bottom_color = Color(0, 0, 0, 1)
+ground_horizon_color = Color(0.847059, 0.788235, 0.870588, 1)
+ground_curve = 0.242516
+
+[sub_resource type="Sky" id="Sky_k5f27"]
+sky_material = SubResource("ProceduralSkyMaterial_xxlme")
+
+[sub_resource type="Environment" id="Environment_u4p7m"]
+background_mode = 2
+sky = SubResource("Sky_k5f27")
+ambient_light_source = 3
+ssao_radius = 2.57
+ssao_intensity = 7.21
+sdfgi_min_cell_size = 0.976563
+sdfgi_cascade0_distance = 62.5
+sdfgi_max_distance = 1000.0
+glow_enabled = true
+fog_density = 0.0005
+fog_sky_affect = 0.208
+volumetric_fog_density = 0.0065
+
+[node name="Root3DScene" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_u4p7m")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="WorldEnvironment"]
+transform = Transform3D(-0.383094, -0.910728, -0.154319, 0.614379, -0.375976, 0.693672, -0.689766, 0.170931, 0.703566, 0, 0, 0)
+light_color = Color(0.697643, 0.848347, 0.82506, 1)
+light_bake_mode = 1
+shadow_enabled = true
+directional_shadow_max_distance = 251.2
+
+[node name="MainCamera" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.92403)
+
+[node name="VDHelixCircle3D" type="VDHelixCircle3D" parent="."]
+base_sample_count = 700
+curl_count = 15
+thickness = 0.065
+transform = Transform3D(1.16, 0, 0, 0, 1.16, 0, 0, 0, 1.16, 0, 0, 0)
+
+[node name="Rotate" type="Node" parent="VDHelixCircle3D"]
+process_mode = 4
+script = ExtResource("1_6v63e")
+speed = 0.025
+around_z = true
+
+[node name="VDCurlySpire3D" type="VDCurlySpire3D" parent="."]
+base_sample_count = 600
+transform = Transform3D(0.617353, -0.330951, 0, 0.125602, 1.62667, 0, 0, 0, 0.63, 0, -0.858, 0)
+
+[node name="Rotate" type="Node" parent="VDCurlySpire3D"]
+script = ExtResource("1_6v63e")
+speed = 0.045
+
+[node name="VectorDisplayRoot" parent="." instance=ExtResource("8_5m4yq")]
+
+[editable path="VectorDisplayRoot"]
