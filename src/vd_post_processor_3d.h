@@ -9,6 +9,12 @@ using namespace godot;
 
 namespace vector_display {
 
+/// <summary>
+/// If applied as a child of a VDShape3D, this post-processing will occur in LOCAL space
+/// before the Shape's WorldTransform is applied.
+/// If applied as child of a Camera, this post-processing will occur in WORLD space
+/// to an entire Camera's Sample3D stream before it has been transformed to screen space.
+/// </summary>
 class VDPostProcessor3D : public godot::Node {
 	GDCLASS(VDPostProcessor3D, godot::Node)
 

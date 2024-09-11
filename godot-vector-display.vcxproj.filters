@@ -63,6 +63,9 @@
     <ClInclude Include="src\vd_post_processor_3d.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\vd_post_processor_2d.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\vector_display.cpp">
@@ -108,6 +111,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\vd_post_processor_3d.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\vd_post_processor_2d.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

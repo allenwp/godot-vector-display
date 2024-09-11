@@ -13,6 +13,7 @@
 #include "godot_cpp/classes/engine.hpp"
 #include "vd_editor_preview_3d.h"
 #include "vd_post_processor_3d.h"
+#include "vd_post_processor_2d.h"
 
 using namespace godot;
 using namespace vector_display;
@@ -175,12 +176,24 @@ TypedArray<PackedVector3Array> VectorDisplay::GetScreenSpaceSamples(TypedArray<P
 		// World space samples are now ready to be translated to the screen!
 		TypedArray<PackedVector3Array> screenSpaceResult = VDRenderer::TransformSamples3DToScreen(camera, worldSpaceResult);
 
-		// TODO: screen space post processing for this camera
+		children = camera->get_children();
+		for (int i = 0; i < children.size(); i++) {
+			VDPostProcessor2D *pp = Object::cast_to<VDPostProcessor2D>(children[i]);
+			if (pp && pp->can_process()) {
+				pp->process_samples_2d(screenSpaceResult);
+			}
+		}
 
 		result.append_array(screenSpaceResult);
 	}
 
-	// TODO: Final screen space post processing
+	TypedArray<Node> children = camera->get_children();
+	for (int i = 0; i < children.size(); i++) {
+		VDPostProcessor2D *pp = Object::cast_to<VDPostProcessor2D>(children[i]);
+		if (pp && pp->can_process()) {
+			pp->process_samples_2d(result);
+		}
+	}
 
 	return result;
 }

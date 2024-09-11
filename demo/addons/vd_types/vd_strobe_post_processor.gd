@@ -18,6 +18,5 @@ func _process_samples_3d(samples_3d: Array[PackedVector4Array]) -> void:
 			var sample: Vector4 = samples3DArray[i]
 			var sinValue: float = sin(sample.y * Scale + animationValue)
 			if sinValue < 0:
-				# TODO: does this work? samples3DArray[i].w = 0;
 				sample.w = 0
 				samples3DArray[i] = sample
