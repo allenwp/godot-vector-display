@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Godot Vector Display Demo"
-run/main_scene="res://space_canine_clone/main.tscn"
+run/main_scene="res://animated_shapes.tscn"
 config/features=PackedStringArray("4.3", "Forward Plus")
 config/icon="res://icon.svg"
 
@@ -36,7 +36,7 @@ window/vsync/vsync_mode=0
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/vd_shapes/plugin.cfg", "res://addons/vector_display_plugin/plugin.cfg")
+enabled=PackedStringArray("res://addons/vd_types/plugin.cfg", "res://addons/vector_display_plugin/plugin.cfg")
 
 [input]
 
