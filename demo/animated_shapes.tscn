@@ -43,6 +43,12 @@ directional_shadow_max_distance = 251.2
 [node name="MainCamera" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.92403)
 
+[node name="VDStrobePostProcessor" type="VDPostProcessor3D" parent="MainCamera"]
+script = ExtResource("2_iepbh")
+AnimationValue = 0.24015
+AnimationSpeed = 4.165
+Scale = 8.38
+
 [node name="VDHelixCircle3D" type="VDHelixCircle3D" parent="."]
 base_sample_count = 700
 curl_count = 15
@@ -55,8 +61,9 @@ speed = 0.295
 around_z = true
 
 [node name="VDStrobePostProcessor" type="VDPostProcessor3D" parent="VDHelixCircle3D"]
+process_mode = 4
 script = ExtResource("2_iepbh")
-AnimationValue = 0.560018
+AnimationValue = 0.352868
 AnimationSpeed = 4.085
 Scale = 7.885
 
