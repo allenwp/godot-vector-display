@@ -219,6 +219,7 @@ ASIOTime *VDASIOOutput::bufferSwitchTimeInfo(ASIOTime *timeInfo, long index, ASI
 	}
 
 
+	// The following is mostly test code for debugging things.
 	// Some of this is in C# and still needs to be transcoded:
 	
 	// checking for delays between channels

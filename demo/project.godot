@@ -73,6 +73,7 @@ move_up={
 
 [rendering]
 
+rendering_device/vsync/swapchain_image_count=2
 renderer/rendering_method="mobile"
 textures/vram_compression/import_etc2_astc=true
 lights_and_shadows/directional_shadow/size=8192
