@@ -4,6 +4,7 @@
 #include "godot_cpp/core/error_macros.hpp"
 #include "godot_cpp/variant/variant.hpp"
 #include "godot_cpp/variant/utility_functions.hpp"
+#include "godot_cpp/classes/file_access.hpp"
 
 using namespace godot;
 using namespace vector_display;
@@ -208,16 +209,10 @@ ASIOTime *VDASIOOutput::bufferSwitchTimeInfo(ASIOTime *timeInfo, long index, ASI
 	_static_instance->FeedFloatBuffers(xOutput, yOutput, zOutput, buffSize, 0);
 
 	if (_static_instance->DebugSaveThisFrame) {
-		DebugSaveBuffersToFile(xOutput, yOutput, zOutput, "ASIO Frame Snapshot (float).csv");
+		DebugSaveBuffersToFile(xOutput, yOutput, zOutput, buffSize, -1, "ASIO Frame Snapshot (float).csv");
 	}
 
 	_static_instance->ApplyBlankingChannelDelay(zOutput, buffSize);
-
-	if (_static_instance->DebugSaveThisFrame) {
-		DebugSaveBuffersToFile(xOutput, yOutput, zOutput, "ASIO Frame Snapshot (Blanking Delay Applied) (float).csv");
-		_static_instance->DebugSaveThisFrame = false;
-	}
-
 
 	// The following is mostly test code for debugging things.
 	// Some of this is in C# and still needs to be transcoded:
@@ -325,6 +320,132 @@ ASIOTime *VDASIOOutput::bufferSwitchTimeInfo(ASIOTime *timeInfo, long index, ASI
 	//	zOutput[i] = 0.0f;
 	//}
 
+	// For testing DAC behaviour:
+	//int i = 0;
+	//auto pattern = [&](float min, float max, float scale) {
+	//	xOutput[i++] = max * scale; // High
+	//	xOutput[i++] = max * scale;
+	//	xOutput[i++] = max * scale;
+	//	xOutput[i++] = max * scale;
+	//	xOutput[i++] = max * scale;
+	//	xOutput[i++] = max * scale;
+	//	xOutput[i++] = max * scale;
+	//	xOutput[i++] = max * scale;
+	//	xOutput[i++] = max * scale;
+	//	xOutput[i++] = max * scale;
+	//	xOutput[i++] = min * scale; // Low
+	//	xOutput[i++] = min * scale;
+	//	xOutput[i++] = min * scale;
+	//	xOutput[i++] = min * scale;
+	//	xOutput[i++] = min * scale;
+	//	xOutput[i++] = min * scale;
+	//	xOutput[i++] = min * scale;
+	//	xOutput[i++] = min * scale;
+	//	xOutput[i++] = min * scale;
+	//	xOutput[i++] = min * scale;
+	//	xOutput[i++] = max * scale; // Triangle * 2
+	//	xOutput[i++] = min * scale;
+	//	xOutput[i++] = max * scale;
+	//	xOutput[i++] = min * scale;
+	//	xOutput[i++] = 0; // Settle
+	//	xOutput[i++] = 0;
+	//	xOutput[i++] = 0;
+	//	xOutput[i++] = 0;
+	//	xOutput[i++] = 0;
+	//	xOutput[i++] = 0;
+	//	xOutput[i++] = 0;
+	//	xOutput[i++] = 0;
+	//	xOutput[i++] = 0;
+	//	xOutput[i++] = 0;
+	//	xOutput[i++] = max * scale; // Square * 2
+	//	xOutput[i++] = max * scale;
+	//	xOutput[i++] = max * scale;
+	//	xOutput[i++] = max * scale;
+	//	xOutput[i++] = min * scale;
+	//	xOutput[i++] = min * scale;
+	//	xOutput[i++] = min * scale;
+	//	xOutput[i++] = min * scale;
+	//	xOutput[i++] = max * scale;
+	//	xOutput[i++] = max * scale;
+	//	xOutput[i++] = max * scale;
+	//	xOutput[i++] = max * scale;
+	//	xOutput[i++] = min * scale;
+	//	xOutput[i++] = min * scale;
+	//	xOutput[i++] = min * scale;
+	//	xOutput[i++] = min * scale;
+	//	xOutput[i++] = 0; // Settle
+	//	xOutput[i++] = 0;
+	//	xOutput[i++] = 0;
+	//	xOutput[i++] = 0;
+	//	xOutput[i++] = 0;
+	//	xOutput[i++] = 0;
+	//	xOutput[i++] = 0;
+	//	xOutput[i++] = 0;
+	//	xOutput[i++] = 0;
+	//	xOutput[i++] = 0;
+	//	xOutput[i++] = (((max - min) * 1.0) + min) * scale; // Sawtooth * 2
+	//	xOutput[i++] = (((max - min) * 0.75) + min) * scale;
+	//	xOutput[i++] = (((max - min) * 0.5) + min) * scale;
+	//	xOutput[i++] = (((max - min) * 0.25) + min) * scale;
+	//	xOutput[i++] = (((max - min) * 0.0) + min) * scale;
+	//	xOutput[i++] = (((max - min) * 1.0) + min) * scale;
+	//	xOutput[i++] = (((max - min) * 0.75) + min) * scale;
+	//	xOutput[i++] = (((max - min) * 0.5) + min) * scale;
+	//	xOutput[i++] = (((max - min) * 0.25) + min) * scale;
+	//	xOutput[i++] = (((max - min) * 0.0) + min) * scale;
+	//	xOutput[i++] = 0; // Settle
+	//	xOutput[i++] = 0;
+	//	xOutput[i++] = 0;
+	//	xOutput[i++] = 0;
+	//	xOutput[i++] = 0;
+	//	xOutput[i++] = 0;
+	//	xOutput[i++] = 0;
+	//	xOutput[i++] = 0;
+	//	xOutput[i++] = 0;
+	//	xOutput[i++] = (((max - min) * 0.0) + min) * scale; // Inverse Sawtooth * 2
+	//	xOutput[i++] = (((max - min) * 0.25) + min) * scale;
+	//	xOutput[i++] = (((max - min) * 0.5) + min) * scale;
+	//	xOutput[i++] = (((max - min) * 0.75) + min) * scale;
+	//	xOutput[i++] = (((max - min) * 1.0) + min) * scale;
+	//	xOutput[i++] = (((max - min) * 0.0) + min) * scale;
+	//	xOutput[i++] = (((max - min) * 0.25) + min) * scale;
+	//	xOutput[i++] = (((max - min) * 0.5) + min) * scale;
+	//	xOutput[i++] = (((max - min) * 0.75) + min) * scale;
+	//	xOutput[i++] = (((max - min) * 1.0) + min) * scale;
+	//	xOutput[i++] = 0; // Settle
+	//	xOutput[i++] = 0;
+	//	xOutput[i++] = 0;
+	//	xOutput[i++] = 0;
+	//	xOutput[i++] = 0;
+	//	xOutput[i++] = 0;
+	//	xOutput[i++] = 0;
+	//	xOutput[i++] = 0;
+	//	xOutput[i++] = 0;
+	//	xOutput[i++] = 0; // Settle
+	//	xOutput[i++] = 0;
+	//	xOutput[i++] = 0;
+	//	xOutput[i++] = 0;
+	//	xOutput[i++] = 0;
+	//	xOutput[i++] = 0;
+	//	xOutput[i++] = 0;
+	//	xOutput[i++] = 0;
+	//	xOutput[i++] = 0;
+	//};
+	//pattern(-1, 1, 1.0);
+	//pattern(0, 1, 1.0);
+	//pattern(-1, 0, 1.0);
+	//pattern(-1, 1, 0.1);
+	//pattern(0, 1, 0.1);
+	//pattern(-1, 0, 0.1);
+	//if (i > buffSize) {
+	//	throw "Pattern was too long!";
+	//}
+	//for (; i < buffSize; i++) {
+	//	xOutput[i] = 0;
+	//}
+	//for (int i = 0; i < buffSize; i++) {
+	//	yOutput[i] = zOutput[i] = xOutput[i];
+	//}
 
 	// fill the final output buffers
 	int outputIndex = 0;
@@ -462,6 +583,11 @@ ASIOTime *VDASIOOutput::bufferSwitchTimeInfo(ASIOTime *timeInfo, long index, ASI
 			}
 			outputIndex++;
 		}
+	}
+
+	if (_static_instance->DebugSaveThisFrame) {
+		DebugSaveBuffersToFile(xOutput, yOutput, zOutput, buffSize, index, "ASIO Frame Snapshot (Blanking Delay Applied) (float and INT32).csv");
+		_static_instance->DebugSaveThisFrame = false;
 	}
 
 	// finally if the driver supports the ASIOOutputReady() optimization, do it here, all data are in place
@@ -746,11 +872,47 @@ void VDASIOOutput::ApplyBlankingChannelDelay(float *blankingChannel, int bufferL
 	delete originalStream;
 }
 
-void VDASIOOutput::DebugSaveBuffersToFile(float *x, float *y, float *z, const char* path) {
-	//StringBuilder sb = new StringBuilder();
-	//sb.AppendLine("X,Y,Z");
-	//for (int i = 0; i < x.BufferSize; i++) {
-	//	sb.AppendLine($ "{x[i]:R},{y[i]:R},{z[i]:R}");
-	//}
-	//File.WriteAllText(path, sb.ToString());
+void VDASIOOutput::DebugSaveBuffersToFile(float *x, float *y, float *z, long buffSize, long asioIndex, const char *path) {
+	Ref<FileAccess> file = FileAccess::open(path, FileAccess::ModeFlags::WRITE);
+	if (file != nullptr) {
+		file->store_line("X,Y,Z,ASIOSTInt32LSB 0,ASIOSTInt32LSB 1,ASIOSTInt32LSB 2,ASIOSTInt32LSB 3");
+		file->store_line(vformat("Min/Max Float:,%f,%f,Min/Max INT32,%d,%d,,", 1.0f, -1.0f, _I32_MAX, _I32_MIN));
+		for (int i = 0; i < buffSize; i++) {
+			INT32 ASIOSTInt32LSB_0 = 0;
+			INT32 ASIOSTInt32LSB_1 = 0;
+			INT32 ASIOSTInt32LSB_2 = 0;
+			INT32 ASIOSTInt32LSB_3 = 0;
+
+			if (asioIndex != -1) {
+				int outputIndex = 0;
+				for (int asio_buffer_idx = 0; asio_buffer_idx < _static_instance->asioDriverInfo.inputBuffers + _static_instance->asioDriverInfo.outputBuffers; asio_buffer_idx++) {
+					if (_static_instance->asioDriverInfo.bufferInfos[asio_buffer_idx].isInput == false) {
+						void *driverBuffer = _static_instance->asioDriverInfo.bufferInfos[asio_buffer_idx].buffers[asioIndex];
+						switch (_static_instance->asioDriverInfo.channelInfos[asio_buffer_idx].type) {
+							case ASIOSTInt32LSB:
+								INT32 value = static_cast<long *>(driverBuffer)[i];
+								switch (outputIndex) {
+									case 0:
+										ASIOSTInt32LSB_0 = value;
+										break;
+									case 1:
+										ASIOSTInt32LSB_1 = value;
+										break;
+									case 2:
+										ASIOSTInt32LSB_2 = value;
+										break;
+									case 3:
+										ASIOSTInt32LSB_3 = value;
+										break;
+								}
+								break;
+						}
+						outputIndex++;
+					}
+				}
+			}
+
+			file->store_line(vformat("%f,%f,%f,%d,%d,%d,%d", x[i], y[i], z[i], ASIOSTInt32LSB_0, ASIOSTInt32LSB_1, ASIOSTInt32LSB_2, ASIOSTInt32LSB_3));
+		}
+	}
 }

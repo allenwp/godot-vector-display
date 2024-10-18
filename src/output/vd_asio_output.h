@@ -103,7 +103,9 @@ protected:
 
 	static VDSample PrepareSampleForScreen(VDSample sample);
 	void ApplyBlankingChannelDelay(float *blankingChannel, int bufferLength);
-	static void DebugSaveBuffersToFile(float *x, float *y, float *z, const char *path);
+
+	/// <param name="asioIndex">If -1, INT32 buffer won't be written</param>
+	static void DebugSaveBuffersToFile(float *x, float *y, float *z, long buffSize, long asioIndex, const char *path);
 
 public:
 	/// <summary>
