@@ -64,6 +64,10 @@ void VectorDisplay::reset_buffers() {
 	}
 }
 
+void VectorDisplay::_ready() {
+	set_process_priority(INT32_MAX);
+}
+
 //double value = 0;
 void VectorDisplay::_process(double delta) {
 	TypedArray<PackedVector4Array> worldSpaceResult = TypedArray<PackedVector4Array>();

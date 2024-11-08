@@ -40,6 +40,8 @@ public:
 	~VectorDisplay();
 
 	void start_asio_output();
+
+	void _ready() override;
 	void _process(double delta) override;
 };
 
