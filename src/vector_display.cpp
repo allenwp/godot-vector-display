@@ -14,6 +14,8 @@
 #include "vd_editor_preview_3d.h"
 #include "vd_post_processor_3d.h"
 #include "vd_post_processor_2d.h"
+#include <chrono>
+#include <thread>
 
 using namespace godot;
 using namespace vector_display;
@@ -104,6 +106,7 @@ void VectorDisplay::_process(double delta) {
 		}
 	} else {
 		while ((WriteState == WriteStateEnum::Buffer1 && VDFrameOutput::Buffer1.load(std::memory_order_acquire) != nullptr) || (WriteState == WriteStateEnum::Buffer2 && VDFrameOutput::Buffer2.load(std::memory_order_acquire) != nullptr)) {
+			std::this_thread::sleep_for(std::chrono::microseconds(100)); // 100 microseconds is a reasonable amount of time to throw away
 		}
 	}
 
@@ -187,7 +190,8 @@ TypedArray<PackedVector3Array> VectorDisplay::GetScreenSpaceSamples(TypedArray<P
 		result.append_array(screenSpaceResult);
 	}
 
-	TypedArray<Node> children = camera->get_children();
+	// Final post processing applies after all per-camera post processing
+	TypedArray<Node> children = get_children();
 	for (int i = 0; i < children.size(); i++) {
 		VDPostProcessor2D *pp = Object::cast_to<VDPostProcessor2D>(children[i]);
 		if (pp && pp->can_process()) {
