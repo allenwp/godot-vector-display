@@ -111,6 +111,11 @@ long VDASIOOutput::init_asio_static_data(DriverInfo *asioDriverInfo) { // collec
 					//asioDriverInfo->minSize, asioDriverInfo->maxSize,
 					//asioDriverInfo->preferredSize, asioDriverInfo->granularity);
 
+			if (asioDriverInfo->preferredSize > VDFrameOutput::GetTargetBufferSize()) {
+				ERR_PRINT("Cannot start ASIO because buffer size is less than the target buffer size. Either change the ASIO buffer to be smaller or decrease VDFrameOutput::MaxFramesPerSecond.");
+				return -7;
+			}
+
 			// get the currently selected sample rate
 			if (ASIOGetSampleRate(&asioDriverInfo->sampleRate) == ASE_OK) {
 				//printf("ASIOGetSampleRate (sampleRate: %f);\n", asioDriverInfo->sampleRate);
@@ -122,10 +127,14 @@ long VDASIOOutput::init_asio_static_data(DriverInfo *asioDriverInfo) { // collec
 						if (ASIOGetSampleRate(&asioDriverInfo->sampleRate) == ASE_OK) {
 							//printf("ASIOGetSampleRate (sampleRate: %f);\n", asioDriverInfo->sampleRate);
 						}
-						else
+						else {
+							ERR_PRINT("Cannot start ASIO because the sample rate could not be read.");
 							return -6;
-					} else
+						}
+					} else {
+						ERR_PRINT("Cannot start ASIO because the sample rate could not be set to 192 kHz.");
 						return -5;
+					}
 				}
 
 				// check wether the driver requires the ASIOOutputReady() optimization
