@@ -2,11 +2,13 @@
 #include "godot_cpp/core/math.hpp"
 #include "vd_display_profile_Osc_Tek_TAS_465.h"
 #include "vd_display_profile_Osc_Tek_2445.h"
+#include "vd_dac_profile_presonus_studio_26c.h"
 
 using namespace vector_display;
 
 float VDFrameOutput::MaxFramesPerSecond = 80.0f;
 VDDisplayProfile *VDFrameOutput::DisplayProfile = (VDDisplayProfile*)new VDDisplayProfileOscTekTAS465();
+VDDACProfile *VDFrameOutput::DACProfile = (VDDACProfile*)new VDDACProfilePresonusStudio26c();
 
 std::atomic<VDSample *> VDFrameOutput::Buffer1 = nullptr;
 int VDFrameOutput::Buffer1Length = 0;
@@ -23,7 +25,7 @@ VDFrameOutput::~VDFrameOutput() {
 }
 
 int VDFrameOutput::GetTargetBufferSize() {
-	int result = (int)roundf(SAMPLES_PER_SECOND / MaxFramesPerSecond);
+	int result = (int)roundf(DACProfile->samples_per_second / MaxFramesPerSecond);
 	if (result < 1) {
 		result = 1;
 	}

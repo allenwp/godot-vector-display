@@ -12,8 +12,6 @@ class VDDisplayProfileOscTekTAS465 : VDDisplayProfile {
 public:
 	VDDisplayProfileOscTekTAS465();
 	~VDDisplayProfileOscTekTAS465();
-
-	int BlankingLength(VDSample sample1, VDSample sample2) override;
 };
 
 } // namespace vector_display

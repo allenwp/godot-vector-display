@@ -3,6 +3,7 @@
 
 #include "vd_sample.h"
 #include "vd_display_profile.h"
+#include "vd_dac_profile.h"
 
 namespace vector_display {
 
@@ -13,13 +14,6 @@ public:
 	VDFrameOutput();
 	~VDFrameOutput();
 
-	static int const SAMPLES_PER_SECOND = 192000;
-
-	/// <summary>
-	/// My PreSonus DAC has a delay on the channel I use for blanking -_-
-	/// </summary>
-	static int const BLANKING_CHANNEL_DELAY = 18;
-
 	/// <summary>
 	/// Recommended: 60 to 100. Default: 80.
 	/// Setting this too high may result in the CPU not being able to provide new frames fast enough.
@@ -28,6 +22,7 @@ public:
 	static float MaxFramesPerSecond;
 
 	static VDDisplayProfile* DisplayProfile;
+	static VDDACProfile *DACProfile;
 
 	/// <summary>
 	/// Output should delete and set to null when it's finished reading.

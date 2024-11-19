@@ -262,7 +262,7 @@ VDSample *VectorDisplay::CreateFrameBuffer(TypedArray<PackedVector3Array> sample
 	for (int i = 0; i < samples.size(); i++) {
 		sampleCount += (int)(samples[i].call("size"));
 	}
-	int worstCaseBlankingLength = VDFrameOutput::DisplayProfile->BlankingLength(VDSample(-1.0f, -1.0f, 0.0f), VDSample(1.0f, 1.0f, 0.0f));
+	int worstCaseBlankingLength = VDFrameOutput::DACProfile->BlankingLength(VDSample(-1.0f, -1.0f, 0.0f), VDSample(1.0f, 1.0f, 0.0f));
 	int worstCaseSampleCount = sampleCount + (samples.size() * worstCaseBlankingLength) + worstCaseBlankingLength + 1; // one more on the end to return to blanking point.
 	worstCaseSampleCount = MAX(VDFrameOutput::GetTargetBufferSize(), worstCaseSampleCount);
 
@@ -277,7 +277,7 @@ VDSample *VectorDisplay::CreateFrameBuffer(TypedArray<PackedVector3Array> sample
 		if (sampleArraySize > 0) {
 			bool valid, oob;
 			VDSample firstSample = sampleArray.get_indexed(0, valid, oob);
-			int blankingLength = VDFrameOutput::DisplayProfile->BlankingLength(previousSample, firstSample);
+			int blankingLength = VDFrameOutput::DACProfile->BlankingLength(previousSample, firstSample);
 			// Set blanking based on the first sample:
 			for (int b = 0; b < blankingLength; b++) {
 				VDSample tweenSample;

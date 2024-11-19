@@ -26,7 +26,7 @@ TypedArray<PackedVector4Array> VDRenderer::GetSample3Ds(Camera3D *camera, VDShap
 		WARN_PRINT_ED("Unsupported camera type");
 	}
 
-	fidelity *= VDFrameOutput::DisplayProfile->FidelityScale;
+	fidelity *= VDFrameOutput::DACProfile->FidelityScale;
 
 	Vector3 shape_scale = shape->get_scale();
 	fidelity *= MAX(MAX(abs(shape_scale.x), abs(shape_scale.y)), abs(shape_scale.z)); // Multiply fidelity by max scale

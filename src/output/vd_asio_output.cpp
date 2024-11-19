@@ -23,7 +23,7 @@ VDASIOOutput::VDASIOOutput() {
 	char *driverName = new char[32];
 	asioDrivers->getDriverNames(&driverName, 1);
 
-	blankingChannelDelayBufferLength = VDFrameOutput::BLANKING_CHANNEL_DELAY;
+	blankingChannelDelayBufferLength = VDFrameOutput::DACProfile->blanking_channel_delay;
 	blankingChannelDelayBuffer = new float[blankingChannelDelayBufferLength];
 	ReadState = ReadStateEnum::Buffer1;
 

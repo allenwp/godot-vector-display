@@ -32,13 +32,6 @@ public:
 	/// to scale the output to the visible range.
 	/// </summary>
 	float XYScale = 1.0f;
-	
-	// TODO: maybe change the blanking length thing into something that actually returns
-	// the blanking array between two samples? This way the whole blanking algorithm
-	// could be display specific.
-	virtual int BlankingLength(VDSample sample1, VDSample sample2) = 0;
-	
-	float FidelityScale = 1.0f;
 };
 
 } // namespace vector_display
