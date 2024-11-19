@@ -69,6 +69,12 @@
     <ClInclude Include="src\output\vd_display_profile_Osc_Tek_2445.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\output\vd_dac_profile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\output\vd_dac_profile_presonus_studio_26c.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\vector_display.cpp">
@@ -120,6 +126,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\output\vd_display_profile_Osc_Tek_2445.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\output\vd_dac_profile_presonus_studio_26c.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

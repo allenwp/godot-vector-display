@@ -15,6 +15,7 @@ protected:
 	static void _bind_methods();
 	VDASIOOutput* output = nullptr;
 	int starvedSamples = 0;
+	double previousFrameTime;
 
 	enum WriteStateEnum {
 		Buffer1,
@@ -46,6 +47,7 @@ public:
 	void _process(double delta) override;
 
 	int get_last_starved_samples();
+	int get_previous_frame_time();
 };
 
 }

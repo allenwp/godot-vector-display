@@ -23,6 +23,7 @@ using namespace vector_display;
 void VectorDisplay::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("start_asio_output"), &VectorDisplay::start_asio_output);
 	ClassDB::bind_method(D_METHOD("get_last_starved_samples"), &VectorDisplay::get_last_starved_samples);
+	ClassDB::bind_method(D_METHOD("get_previous_frame_time"), &VectorDisplay::get_previous_frame_time);
 }
 
 VectorDisplay::VectorDisplay() {
@@ -82,6 +83,7 @@ void VectorDisplay::_process(double delta) {
 	if (finalBufferLength > 0) {
 		previousFinalSample = finalBuffer[finalBufferLength - 1];
 	}
+	previousFrameTime = (double)finalBufferLength / VDFrameOutput::DACProfile->samples_per_second;
 
 	//// Debug test code to simulate tricky double buffer situations
 	//RandomNumberGenerator rand;
@@ -346,4 +348,8 @@ float VectorDisplay::EaseInOutPower(float progress, int power) {
 
 int VectorDisplay::get_last_starved_samples() {
 	return starvedSamples;
+}
+
+int VectorDisplay::get_previous_frame_time() {
+	return previousFrameTime;
 }
