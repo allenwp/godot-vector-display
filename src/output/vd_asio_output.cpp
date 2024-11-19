@@ -119,11 +119,11 @@ long VDASIOOutput::init_asio_static_data(DriverInfo *asioDriverInfo) { // collec
 			// get the currently selected sample rate
 			if (ASIOGetSampleRate(&asioDriverInfo->sampleRate) == ASE_OK) {
 				//printf("ASIOGetSampleRate (sampleRate: %f);\n", asioDriverInfo->sampleRate);
-				if (asioDriverInfo->sampleRate != 192000.0) {
+				if (asioDriverInfo->sampleRate != (double)VDFrameOutput::DACProfile->samples_per_second) {
 					// Driver does not store it's internal sample rate, so set it to a know one.
 					// Usually you should check beforehand, that the selected sample rate is valid
 					// with ASIOCanSampleRate().
-					if (ASIOSetSampleRate(192000.0) == ASE_OK) {
+					if (ASIOSetSampleRate((double)VDFrameOutput::DACProfile->samples_per_second) == ASE_OK) {
 						if (ASIOGetSampleRate(&asioDriverInfo->sampleRate) == ASE_OK) {
 							//printf("ASIOGetSampleRate (sampleRate: %f);\n", asioDriverInfo->sampleRate);
 						}
@@ -132,7 +132,7 @@ long VDASIOOutput::init_asio_static_data(DriverInfo *asioDriverInfo) { // collec
 							return -6;
 						}
 					} else {
-						ERR_PRINT("Cannot start ASIO because the sample rate could not be set to 192 kHz.");
+						ERR_PRINT("Cannot start ASIO because the sample rate could not be set to the sample rate of the current DAC profile.");
 						return -5;
 					}
 				}
