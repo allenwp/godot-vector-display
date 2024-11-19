@@ -14,6 +14,7 @@ private:
 protected:
 	static void _bind_methods();
 	VDASIOOutput* output = nullptr;
+	int starvedSamples = 0;
 
 	enum WriteStateEnum {
 		Buffer1,
@@ -43,6 +44,8 @@ public:
 
 	void _ready() override;
 	void _process(double delta) override;
+
+	int get_last_starved_samples();
 };
 
 }

@@ -22,6 +22,7 @@ using namespace vector_display;
 
 void VectorDisplay::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("start_asio_output"), &VectorDisplay::start_asio_output);
+	ClassDB::bind_method(D_METHOD("get_last_starved_samples"), &VectorDisplay::get_last_starved_samples);
 }
 
 VectorDisplay::VectorDisplay() {
@@ -125,9 +126,12 @@ void VectorDisplay::_process(double delta) {
 		WriteState = WriteStateEnum::Buffer1;
 	}
 
-	// This part regarding the number of starved samples is not thread perfect, but I think it should be
-	// correct more than 99.9% of the time... And if not, it doesn't really matter.
-	int starvedSamples = VDFrameOutput::StarvedSamples;
+	// This part regarding the number of starved samples is not thread perfect because
+	// more starvedSamples could be added when this read and write to StarvedSamples,
+	// but I think it should be correct more than 99.9% of the time... And if not, it
+	// doesn't really matter, since it's just for the in-game GUI. (Doesn't affect console
+	// logging)
+	starvedSamples = VDFrameOutput::StarvedSamples;
 	VDFrameOutput::StarvedSamples = 0;
 
 	VDFrameOutput::FrameCount++;
@@ -338,4 +342,8 @@ float VectorDisplay::EaseInOutPower(float progress, int power) {
 		int sign = power % 2 == 0 ? -1 : 1;
 		return (float)(sign / 2.0 * (Math::pow(progress - 2, power) + sign * 2));
 	}
+}
+
+int VectorDisplay::get_last_starved_samples() {
+	return starvedSamples;
 }
