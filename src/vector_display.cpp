@@ -110,7 +110,7 @@ void VectorDisplay::_process(double delta) {
 		}
 	} else {
 		while ((WriteState == WriteStateEnum::Buffer1 && VDFrameOutput::Buffer1.load(std::memory_order_acquire) != nullptr) || (WriteState == WriteStateEnum::Buffer2 && VDFrameOutput::Buffer2.load(std::memory_order_acquire) != nullptr)) {
-			std::this_thread::sleep_for(std::chrono::microseconds(100)); // 100 microseconds is a reasonable amount of time to throw away
+			YieldProcessor();
 		}
 	}
 
