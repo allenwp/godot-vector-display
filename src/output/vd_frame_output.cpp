@@ -14,7 +14,7 @@ std::atomic<VDSample *> VDFrameOutput::Buffer1 = nullptr;
 int VDFrameOutput::Buffer1Length = 0;
 std::atomic<VDSample *> VDFrameOutput::Buffer2 = nullptr;
 int VDFrameOutput::Buffer2Length = 0;
-int VDFrameOutput::StarvedSamples = 0;
+unsigned int VDFrameOutput::StarvedSamples = 0;
 unsigned long VDFrameOutput::FrameCount = 0;
 bool VDFrameOutput::DebugSaveFrame = false;
 

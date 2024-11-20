@@ -37,7 +37,7 @@ public:
 	static std::atomic<VDSample *> Buffer2;
 	static int Buffer2Length;
 
-	static int StarvedSamples;
+	static unsigned int StarvedSamples;
 
 	/// <summary>
 	/// This will eventually overflow and loop back to 0.

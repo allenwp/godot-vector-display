@@ -128,13 +128,11 @@ void VectorDisplay::_process(double delta) {
 		WriteState = WriteStateEnum::Buffer1;
 	}
 
-	// This part regarding the number of starved samples is not thread perfect because
-	// more starvedSamples could be added when this read and write to StarvedSamples,
-	// but I think it should be correct more than 99.9% of the time... And if not, it
-	// doesn't really matter, since it's just for the in-game GUI. (Doesn't affect console
-	// logging)
-	starvedSamples = VDFrameOutput::StarvedSamples;
-	VDFrameOutput::StarvedSamples = 0;
+	// VDFrameOutput::StarvedSamples is written to on a different thread, so just grab a snapshot.
+	// It doesn't matter if this is out of date because we'll grab another snapshot next frame.
+	unsigned int starvedSamplesSnapshot = VDFrameOutput::StarvedSamples;
+	thisFrameStarvedSamples = starvedSamplesSnapshot - totalStarvedSamples;
+	totalStarvedSamples = starvedSamplesSnapshot;
 
 	VDFrameOutput::FrameCount++;
 
@@ -347,7 +345,7 @@ float VectorDisplay::EaseInOutPower(float progress, int power) {
 }
 
 int VectorDisplay::get_last_starved_samples() {
-	return starvedSamples;
+	return thisFrameStarvedSamples;
 }
 
 int VectorDisplay::get_previous_frame_time() {

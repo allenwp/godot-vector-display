@@ -13,8 +13,9 @@ private:
 
 protected:
 	static void _bind_methods();
-	VDASIOOutput* output = nullptr;
-	int starvedSamples = 0;
+	VDASIOOutput *output = nullptr;
+	unsigned int thisFrameStarvedSamples = 0;
+	unsigned int totalStarvedSamples = 0;
 	double previousFrameTime;
 
 	enum WriteStateEnum {
