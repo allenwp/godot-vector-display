@@ -16,7 +16,8 @@ protected:
 	VDASIOOutput *output = nullptr;
 	unsigned int thisFrameStarvedSamples = 0;
 	unsigned int totalStarvedSamples = 0;
-	double previousFrameTime;
+	double previousFrameTime = 0;
+	double previousHeadroom = 0;
 
 	enum WriteStateEnum {
 		Buffer1,
@@ -47,8 +48,12 @@ public:
 	void _ready() override;
 	void _process(double delta) override;
 
+	bool is_output_running();
+
+	double get_previous_frame_time();
+
 	int get_last_starved_samples();
-	int get_previous_frame_time();
+	double get_previous_frame_headroom();
 };
 
 }

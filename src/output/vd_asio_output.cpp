@@ -767,6 +767,34 @@ unsigned long VDASIOOutput::get_sys_reference_time() { // get the system referen
 }
 
 void VDASIOOutput::FeedFloatBuffers(float *xOutput, float *yOutput, float *brightnessOutput, int bufferSize, int startIndex) {
+	if (frameIndex == 0) {
+		// We're about to start reading from a new buffer. This is the moment that the previous frame
+		// needs to be ready, so record the headroom at this point.
+		LARGE_INTEGER ticks;
+		if (!QueryPerformanceCounter(&ticks)) {
+			ticks.QuadPart = 0;
+		}
+		LARGE_INTEGER Frequency;
+		QueryPerformanceFrequency(&Frequency); 
+
+		int64_t completeTimeStamp;
+		if (ReadState == ReadStateEnum::Buffer1) {
+			completeTimeStamp = VDFrameOutput::Buffer1TimeStamp.load(std::memory_order_acquire);
+		} else {
+			completeTimeStamp = VDFrameOutput::Buffer2TimeStamp.load(std::memory_order_acquire);
+		}
+		int64_t headroomTicks = ticks.QuadPart - completeTimeStamp;
+		headroomTicks *= 1000000; // Guard against loss-of-precision by converting to microseconds *before* dividing by ticks-per-second.
+		int64_t headroomMicroseconds = headroomTicks / Frequency.QuadPart;
+		double headroomMilliseconds = headroomMicroseconds / (double)1000.0;
+
+		if (ReadState == ReadStateEnum::Buffer1) {
+			VDFrameOutput::Buffer1Headroom.store(headroomMilliseconds, std::memory_order_release);
+		} else {
+			VDFrameOutput::Buffer2Headroom.store(headroomMilliseconds, std::memory_order_release);
+		}
+	}
+
 	VDSample *currentFrameBuffer = nullptr;
 	int currentFrameBufferLength = 0;
 	if (ReadState == ReadStateEnum::Buffer1) {
@@ -778,9 +806,15 @@ void VDASIOOutput::FeedFloatBuffers(float *xOutput, float *yOutput, float *brigh
 	}
 
 	if (currentFrameBuffer == nullptr) {
+		if (ReadState == ReadStateEnum::Buffer1) {
+			VDFrameOutput::Buffer1Headroom.store(0, std::memory_order_release);
+		} else {
+			VDFrameOutput::Buffer2Headroom.store(0, std::memory_order_release);
+		}
+
 		int blankedSampleCount = bufferSize - startIndex;
-		VDFrameOutput::StarvedSamples += blankedSampleCount;
 		if (!firstFrame) {
+			VDFrameOutput::StarvedSamples += blankedSampleCount;
 			auto message = vformat("AUDIO BUFFER IS STARVED FOR FRAMES! Blanking for %d samples.", blankedSampleCount);
 			WARN_PRINT_ED(message);
 			UtilityFunctions::printerr(message);

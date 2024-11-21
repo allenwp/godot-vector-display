@@ -22,8 +22,10 @@ using namespace vector_display;
 
 void VectorDisplay::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("start_asio_output"), &VectorDisplay::start_asio_output);
-	ClassDB::bind_method(D_METHOD("get_last_starved_samples"), &VectorDisplay::get_last_starved_samples);
+	ClassDB::bind_method(D_METHOD("is_output_running"), &VectorDisplay::is_output_running);
 	ClassDB::bind_method(D_METHOD("get_previous_frame_time"), &VectorDisplay::get_previous_frame_time);
+	ClassDB::bind_method(D_METHOD("get_last_starved_samples"), &VectorDisplay::get_last_starved_samples);
+	ClassDB::bind_method(D_METHOD("get_previous_frame_headroom"), &VectorDisplay::get_previous_frame_headroom);
 }
 
 VectorDisplay::VectorDisplay() {
@@ -98,6 +100,16 @@ void VectorDisplay::_process(double delta) {
 		output->DebugSaveNextFrame = true;
 	}
 
+	LARGE_INTEGER ticks;
+	if (!QueryPerformanceCounter(&ticks)) {
+		ticks.QuadPart = 0;
+	}
+	if (WriteState == WriteStateEnum::Buffer1) {
+		VDFrameOutput::Buffer1TimeStamp.store(ticks.QuadPart, std::memory_order_release);
+	} else {
+		VDFrameOutput::Buffer2TimeStamp.store(ticks.QuadPart, std::memory_order_release);
+	}
+
 	// Wait for the output to be finished with the buffer we're about to write to
 	if (!output) {
 		// No need to limit the framerate if there isn't an output consuming the frames.
@@ -121,10 +133,12 @@ void VectorDisplay::_process(double delta) {
 	if (WriteState == WriteStateEnum::Buffer1) {
 		VDFrameOutput::Buffer1Length = finalBufferLength;
 		VDFrameOutput::Buffer1.store(finalBuffer, std::memory_order_release);
+		previousHeadroom = VDFrameOutput::Buffer2Headroom.load(std::memory_order_acquire);
 		WriteState = WriteStateEnum::Buffer2;
 	} else {
 		VDFrameOutput::Buffer2Length = finalBufferLength;
 		VDFrameOutput::Buffer2.store(finalBuffer, std::memory_order_release);
+		previousHeadroom = VDFrameOutput::Buffer1Headroom.load(std::memory_order_acquire);
 		WriteState = WriteStateEnum::Buffer1;
 	}
 
@@ -344,10 +358,18 @@ float VectorDisplay::EaseInOutPower(float progress, int power) {
 	}
 }
 
+bool VectorDisplay::is_output_running() {
+	return output != nullptr;
+}
+
+double VectorDisplay::get_previous_frame_time() {
+	return previousFrameTime;
+}
+
 int VectorDisplay::get_last_starved_samples() {
 	return thisFrameStarvedSamples;
 }
 
-int VectorDisplay::get_previous_frame_time() {
-	return previousFrameTime;
+double VectorDisplay::get_previous_frame_headroom() {
+	return previousHeadroom;
 }
