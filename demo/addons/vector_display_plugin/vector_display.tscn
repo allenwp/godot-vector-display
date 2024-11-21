@@ -1,0 +1,90 @@
+[gd_scene load_steps=2 format=3 uid="uid://6tc6cwnvllci"]
+
+[ext_resource type="Script" path="res://addons/vector_display_plugin/vector_display_gui.gd" id="2_1wxxt"]
+
+[node name="VectorDisplay" type="VectorDisplay"]
+process_priority = 2147483647
+
+[node name="VectorDisplayGUI" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("2_1wxxt")
+
+[node name="ColorRect" type="ColorRect" parent="VectorDisplayGUI"]
+layout_mode = 2
+offset_right = 852.0
+offset_bottom = 314.0
+color = Color(0, 0, 0, 0.501961)
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VectorDisplayGUI"]
+layout_mode = 0
+offset_right = 820.055
+offset_bottom = 285.0
+theme_override_constants/separation = 15
+
+[node name="VBoxContainer" type="VBoxContainer" parent="VectorDisplayGUI/HBoxContainer"]
+layout_mode = 2
+
+[node name="Button" type="Button" parent="VectorDisplayGUI/HBoxContainer/VBoxContainer"]
+layout_mode = 2
+text = "Start ASIO Output"
+
+[node name="Button2" type="Button" parent="VectorDisplayGUI/HBoxContainer/VBoxContainer"]
+layout_mode = 2
+text = "Hide GUI (G+H+K)"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VectorDisplayGUI/HBoxContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="VBoxContainer" type="VBoxContainer" parent="VectorDisplayGUI/HBoxContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VectorDisplayGUI/HBoxContainer/VBoxContainer/HBoxContainer/VBoxContainer"]
+layout_mode = 2
+text = "FRAME TIMES:"
+
+[node name="FrameTimesLabel" type="Label" parent="VectorDisplayGUI/HBoxContainer/VBoxContainer/HBoxContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Min:
+Avg:
+Max:
+Total Min:
+Total Avg:
+Total Max:"
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="VectorDisplayGUI/HBoxContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VectorDisplayGUI/HBoxContainer/VBoxContainer/HBoxContainer/VBoxContainer2"]
+layout_mode = 2
+text = "PROCESSING HEADROOM:"
+
+[node name="ProcessingHeadroomLabel" type="Label" parent="VectorDisplayGUI/HBoxContainer/VBoxContainer/HBoxContainer/VBoxContainer2"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Min:
+Avg:
+Max:
+Total Min:
+Total Avg:
+Total Max:"
+
+[node name="Button3" type="Button" parent="VectorDisplayGUI/HBoxContainer/VBoxContainer"]
+layout_mode = 2
+text = "Clear Logging"
+
+[node name="LogText" type="TextEdit" parent="VectorDisplayGUI/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "No starved samples yet..."
+
+[connection signal="pressed" from="VectorDisplayGUI/HBoxContainer/VBoxContainer/Button" to="VectorDisplayGUI" method="start_asio"]
+[connection signal="pressed" from="VectorDisplayGUI/HBoxContainer/VBoxContainer/Button2" to="VectorDisplayGUI" method="set_visible" binds= [false]]
+[connection signal="pressed" from="VectorDisplayGUI/HBoxContainer/VBoxContainer/Button3" to="VectorDisplayGUI" method="clear_logging" binds= [false]]

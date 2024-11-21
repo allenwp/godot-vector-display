@@ -34,8 +34,8 @@ if env["platform"] == "macos":
         source=sources,
     )
 else:
-    library = env.SharedLibrary( # demo/bin/libvectordisplay
-        "../../Games/xy-tinker/godot/bin/libvectordisplay{}{}".format(env["suffix"], env["SHLIBSUFFIX"]),
+    library = env.SharedLibrary(
+        "demo/bin/libvectordisplay{}{}".format(env["suffix"], env["SHLIBSUFFIX"]),
         source=sources,
     )
 

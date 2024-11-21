@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://bxiehukqiwur4"]
+[gd_scene load_steps=14 format=3 uid="uid://bxiehukqiwur4"]
 
 [ext_resource type="Script" path="res://space_canine_clone/Dolly.gd" id="1_eax4q"]
 [ext_resource type="Script" path="res://space_canine_clone/player.gd" id="2_76tgx"]
@@ -6,7 +6,6 @@
 [ext_resource type="PackedScene" uid="uid://clc62406n06s8" path="res://space_canine_clone/reticle.tscn" id="6_83m18"]
 [ext_resource type="Texture2D" uid="uid://3mhqr46ccx3" path="res://space_canine_clone/star_fox_training_ground.png" id="6_kmedv"]
 [ext_resource type="Script" path="res://space_canine_clone/uv_ground.gd" id="7_r6566"]
-[ext_resource type="PackedScene" uid="uid://10g3g7aouik1" path="res://vector_display_root.tscn" id="9_yspo7"]
 [ext_resource type="Script" path="res://space_canine_clone/environment_objects/environment_spawner.gd" id="11_nabi2"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_xxlme"]
@@ -152,7 +151,3 @@ fov = 50.0
 [node name="environment_spawner" type="Node3D" parent="Dolly"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -500)
 script = ExtResource("11_nabi2")
-
-[node name="VectorDisplayRoot" parent="." instance=ExtResource("9_yspo7")]
-
-[editable path="VectorDisplayRoot"]

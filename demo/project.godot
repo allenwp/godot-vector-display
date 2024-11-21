@@ -11,12 +11,13 @@ config_version=5
 [application]
 
 config/name="Godot Vector Display Demo"
-run/main_scene="res://animated_shapes.tscn"
+run/main_scene="res://space_canine_clone/main.tscn"
 config/features=PackedStringArray("4.3", "Forward Plus")
 config/icon="res://icon.svg"
 
 [autoload]
 
+GlobalVectorDisplay="*res://addons/vector_display_plugin/vector_display.tscn"
 GizmoUpdater="*res://addons/vector_display_plugin/gizmo_updater.gd"
 
 [debug]
