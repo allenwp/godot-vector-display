@@ -57,46 +57,47 @@ TypedArray<PackedVector3Array> VDRenderer::TransformSamples3DToScreen(Camera3D *
 		int currentArrayIndex = 0;
 		Variant iterator;
 		bool iter_valid;
-		samples3DArray.iter_init(iterator, iter_valid);
-		do {
-			VDSample3D worldSample = samples3DArray.iter_get(iterator, iter_valid);
-			Vector3 worldPos = Vector3(worldSample.x, worldSample.y, worldSample.z);
-			Vector4 v4;
-			// When samples are 0 brightness (disabled), it's the same as when they're clipped
-			bool clipped = VD_SAMPLE_3D_BRIGHTNESS(worldSample) == 0.0f;
-			if (!clipped) {
-				worldPos = PerformViewTransform(worldPos, camera->get_camera_transform().inverse());
-				// TODO: temporary hack in place of post processing to make objects fade in as they approach the camera.
-				if (worldPos.z < -400) {
-					VD_SAMPLE_3D_BRIGHTNESS(worldSample) *= CLAMP((((worldPos.z + 400.0) / -100.0) - 1.0) * -1.0, 0.0, 1.0);
-				}
-				v4 = Vector4(worldPos.x, worldPos.y, worldPos.z, 1);
-				v4 = PerformProjectionTransform(v4, camera->get_camera_projection());
-				clipped = Clip(v4);
-			} else {
-				v4 = Vector4(worldPos.x, worldPos.y, worldPos.z, 1);
-			}
-
-			if (!clipped) {
-				if (tempSampleArray.size() == 0) {
-					tempSampleArray.resize(sampleLength);
+		if (samples3DArray.iter_init(iterator, iter_valid) && iter_valid) {
+			do {
+				VDSample3D worldSample = samples3DArray.iter_get(iterator, iter_valid);
+				Vector3 worldPos = Vector3(worldSample.x, worldSample.y, worldSample.z);
+				Vector4 v4;
+				// When samples are 0 brightness (disabled), it's the same as when they're clipped
+				bool clipped = VD_SAMPLE_3D_BRIGHTNESS(worldSample) == 0.0f;
+				if (!clipped) {
+					worldPos = PerformViewTransform(worldPos, camera->get_camera_transform().inverse());
+					// TODO: temporary hack in place of post processing to make objects fade in as they approach the camera.
+					if (worldPos.z < -400) {
+						VD_SAMPLE_3D_BRIGHTNESS(worldSample) *= CLAMP((((worldPos.z + 400.0) / -100.0) - 1.0) * -1.0, 0.0, 1.0);
+					}
+					v4 = Vector4(worldPos.x, worldPos.y, worldPos.z, 1);
+					v4 = PerformProjectionTransform(v4, camera->get_camera_projection());
+					clipped = Clip(v4);
+				} else {
+					v4 = Vector4(worldPos.x, worldPos.y, worldPos.z, 1);
 				}
 
-				Vector2 result2D = PerformViewportTransform(v4, true, VDFrameOutput::DisplayProfile->AspectRatio);
-				tempSampleArray[currentArrayIndex] = VDSample(result2D.x, result2D.y, VD_SAMPLE_3D_BRIGHTNESS(worldSample));
+				if (!clipped) {
+					if (tempSampleArray.size() == 0) {
+						tempSampleArray.resize(sampleLength);
+					}
 
-				currentArrayIndex++;
-			} else {
-				// Move on to the next array of samples. This allows blanking to be applied in the case where
-				// a continuous path exits the screen on one side and comes in on the other side of the screen.
-				if (tempSampleArray.size() > 0 && currentArrayIndex > 0) {
-					tempSampleArray.resize(currentArrayIndex);
-					result.push_back(tempSampleArray);
+					Vector2 result2D = PerformViewportTransform(v4, true, VDFrameOutput::DisplayProfile->AspectRatio);
+					tempSampleArray[currentArrayIndex] = VDSample(result2D.x, result2D.y, VD_SAMPLE_3D_BRIGHTNESS(worldSample));
+
+					currentArrayIndex++;
+				} else {
+					// Move on to the next array of samples. This allows blanking to be applied in the case where
+					// a continuous path exits the screen on one side and comes in on the other side of the screen.
+					if (tempSampleArray.size() > 0 && currentArrayIndex > 0) {
+						tempSampleArray.resize(currentArrayIndex);
+						result.push_back(tempSampleArray);
+					}
+					tempSampleArray = PackedVector3Array(); // discard old one
+					currentArrayIndex = 0;
 				}
-				tempSampleArray = PackedVector3Array(); // discard old one
-				currentArrayIndex = 0;
-			}
-		} while (samples3DArray.iter_next(iterator, iter_valid));
+			} while (samples3DArray.iter_next(iterator, iter_valid) && iter_valid);
+		}
 
 		if (tempSampleArray.size() > 0 && currentArrayIndex > 0) {
 			tempSampleArray.resize(currentArrayIndex);
