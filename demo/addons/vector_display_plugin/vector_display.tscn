@@ -17,7 +17,7 @@ script = ExtResource("2_1wxxt")
 [node name="ColorRect" type="ColorRect" parent="VectorDisplayGUI"]
 layout_mode = 2
 offset_right = 852.0
-offset_bottom = 314.0
+offset_bottom = 382.0
 color = Color(0, 0, 0, 0.501961)
 
 [node name="HBoxContainer" type="HBoxContainer" parent="VectorDisplayGUI"]
@@ -73,6 +73,36 @@ Avg:
 Max:
 Total Min:
 Total Avg:
+Total Max:"
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="VectorDisplayGUI/HBoxContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="VBoxContainer" type="VBoxContainer" parent="VectorDisplayGUI/HBoxContainer/VBoxContainer/HBoxContainer2"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VectorDisplayGUI/HBoxContainer/VBoxContainer/HBoxContainer2/VBoxContainer"]
+layout_mode = 2
+text = "ASIO PERIOD:"
+
+[node name="AsioPeriodLabel" type="Label" parent="VectorDisplayGUI/HBoxContainer/VBoxContainer/HBoxContainer2/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Total Min:
+Total Max:"
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="VectorDisplayGUI/HBoxContainer/VBoxContainer/HBoxContainer2"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VectorDisplayGUI/HBoxContainer/VBoxContainer/HBoxContainer2/VBoxContainer2"]
+layout_mode = 2
+text = "ASIO BUFFER COPY:"
+
+[node name="AsioBufferCopyLabel" type="Label" parent="VectorDisplayGUI/HBoxContainer/VBoxContainer/HBoxContainer2/VBoxContainer2"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Total Min:
 Total Max:"
 
 [node name="Button3" type="Button" parent="VectorDisplayGUI/HBoxContainer/VBoxContainer"]

@@ -3,6 +3,8 @@ extends Control
 @onready var log_text: TextEdit = %LogText
 @onready var frame_times_label: Label = %FrameTimesLabel
 @onready var processing_headroom_label: Label = %ProcessingHeadroomLabel
+@onready var asio_period_label: Label = %AsioPeriodLabel
+@onready var asio_buffer_copy_label: Label = %AsioBufferCopyLabel
 
 const FRAME_TIMES_AMOUNT = 100
 
@@ -71,6 +73,8 @@ func clear_logging(only_working: bool) -> void:
 	_working_headroom_cumulation = 0
 
 	if !only_working:
+		var vd: VectorDisplay = GlobalVectorDisplay
+		vd.reset_asio_profiling()
 		_total_avg_count = 0
 
 		_total_min = 99999
@@ -100,6 +104,10 @@ func _process(_delta: float) -> void:
 		var starved_samples: int = vd.get_last_starved_samples()
 		if starved_samples != 0:
 			log_text.insert_line_at(0, "%s: DAC starved of %s samples!!!" % [Time.get_time_string_from_system(), starved_samples])
+
+		if visible:
+			asio_period_label.text = "Total Min: %f ms\nTotal Max: %f ms" % [vd.get_asio_min_time_between_buffer_switch(), vd.get_asio_max_time_between_buffer_switch()]
+			asio_buffer_copy_label.text = "Total Min: %f ms\nTotal Max: %f ms" % [vd.get_asio_min_time_to_copy_buffers(), vd.get_asio_max_time_to_copy_buffers()]
 
 		var frame_time: float = vd.get_previous_frame_time()
 		if frame_time < _working_min:
@@ -135,7 +143,8 @@ func _process(_delta: float) -> void:
 			_total_avg = lerpf(_total_avg, working_avg, 1.0 / _total_avg_count)
 			_total_headroom_avg = lerpf(_total_headroom_avg, working_headroom_avg, 1.0 / _total_avg_count)
 
-			frame_times_label.text = "Min: %f ms\nAvg: %f ms\nMax: %f ms\nTotal Min: %f ms\nTotal Avg: %f ms\nTotal Max: %f ms" % [_working_min * 1000.0, working_avg * 1000.0, _working_max * 1000.0, _total_min * 1000.0, _total_avg * 1000.0, _total_max * 1000.0]
-			processing_headroom_label.text = "Min: %f ms\nAvg: %f ms\nMax: %f ms\nTotal Min: %f ms\nTotal Avg: %f ms\nTotal Max: %f ms" % [_working_headroom_min, working_headroom_avg, _working_headroom_max, _total_headroom_min, _total_headroom_avg, _total_headroom_max]
+			if visible:
+				frame_times_label.text = "Min: %f ms\nAvg: %f ms\nMax: %f ms\nTotal Min: %f ms\nTotal Avg: %f ms\nTotal Max: %f ms" % [_working_min * 1000.0, working_avg * 1000.0, _working_max * 1000.0, _total_min * 1000.0, _total_avg * 1000.0, _total_max * 1000.0]
+				processing_headroom_label.text = "Min: %f ms\nAvg: %f ms\nMax: %f ms\nTotal Min: %f ms\nTotal Avg: %f ms\nTotal Max: %f ms" % [_working_headroom_min, working_headroom_avg, _working_headroom_max, _total_headroom_min, _total_headroom_avg, _total_headroom_max]
 
 			clear_logging(true)

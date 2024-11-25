@@ -54,6 +54,11 @@ public:
 
 	int get_last_starved_samples();
 	double get_previous_frame_headroom();
+	void reset_asio_profiling();
+	double get_asio_min_time_between_buffer_switch();
+	double get_asio_max_time_between_buffer_switch();
+	double get_asio_min_time_to_copy_buffers();
+	double get_asio_max_time_to_copy_buffers();
 };
 
 }

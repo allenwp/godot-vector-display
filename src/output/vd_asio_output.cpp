@@ -167,6 +167,24 @@ const double twoRaisedTo32 = 4294967296.;
 //static ulong frameCount = 0;
 //static bool high = false;
 ASIOTime *VDASIOOutput::bufferSwitchTimeInfo(ASIOTime *timeInfo, long index, ASIOBool processNow) { // the actual processing callback.
+	if (_static_instance->_reset_profiling) {
+		_static_instance->resetProfiling();
+		_static_instance->_reset_profiling = false;
+	}
+
+	int64_t now = VDFrameOutput::get_ticks_now();
+	if (_static_instance->lastBufferSwitchTimestamp != 0) {
+		int64_t ticks_between = now - _static_instance->lastBufferSwitchTimestamp;
+		double ms_between = VDFrameOutput::get_ms_from_ticks(ticks_between);
+		if (ms_between > _static_instance->maxTimeBetweenBufferSwitch) {
+			_static_instance->maxTimeBetweenBufferSwitch = ms_between;
+		}
+		if (ms_between < _static_instance->minTimeBetweenBufferSwitch) {
+			_static_instance->minTimeBetweenBufferSwitch = ms_between;
+		}
+	}
+	_static_instance->lastBufferSwitchTimestamp = now;
+
 	// Beware that this is normally in a seperate thread, hence be sure that you take care
 	// about thread synchronization. This is omitted here for simplicity.
 
@@ -607,6 +625,15 @@ ASIOTime *VDASIOOutput::bufferSwitchTimeInfo(ASIOTime *timeInfo, long index, ASI
 	delete yOutput;
 	delete zOutput;
 
+	int64_t ticksToCopyBuffer = VDFrameOutput::get_ticks_now() - now;
+	double ms_to_copy_buffer = VDFrameOutput::get_ms_from_ticks(ticksToCopyBuffer);
+	if (ms_to_copy_buffer > _static_instance->maxTimeToCopyBuffers) {
+		_static_instance->maxTimeToCopyBuffers = ms_to_copy_buffer;
+	}
+	if (ms_to_copy_buffer < _static_instance->minTimeToCopyBuffers) {
+		_static_instance->minTimeToCopyBuffers = ms_to_copy_buffer;
+	}
+
 	return 0L;
 }
 
@@ -770,12 +797,7 @@ void VDASIOOutput::FeedFloatBuffers(float *xOutput, float *yOutput, float *brigh
 	if (frameIndex == 0) {
 		// We're about to start reading from a new buffer. This is the moment that the previous frame
 		// needs to be ready, so record the headroom at this point.
-		LARGE_INTEGER ticks;
-		if (!QueryPerformanceCounter(&ticks)) {
-			ticks.QuadPart = 0;
-		}
-		LARGE_INTEGER Frequency;
-		QueryPerformanceFrequency(&Frequency); 
+		int64_t now = VDFrameOutput::get_ticks_now();
 
 		int64_t completeTimeStamp;
 		if (ReadState == ReadStateEnum::Buffer1) {
@@ -783,10 +805,8 @@ void VDASIOOutput::FeedFloatBuffers(float *xOutput, float *yOutput, float *brigh
 		} else {
 			completeTimeStamp = VDFrameOutput::Buffer2TimeStamp.load(std::memory_order_acquire);
 		}
-		int64_t headroomTicks = ticks.QuadPart - completeTimeStamp;
-		headroomTicks *= 1000000; // Guard against loss-of-precision by converting to microseconds *before* dividing by ticks-per-second.
-		int64_t headroomMicroseconds = headroomTicks / Frequency.QuadPart;
-		double headroomMilliseconds = headroomMicroseconds / (double)1000.0;
+		int64_t headroomTicks = now - completeTimeStamp;
+		double headroomMilliseconds = VDFrameOutput::get_ms_from_ticks(headroomTicks);
 
 		if (ReadState == ReadStateEnum::Buffer1) {
 			VDFrameOutput::Buffer1Headroom.store(headroomMilliseconds, std::memory_order_release);
@@ -958,4 +978,11 @@ void VDASIOOutput::DebugSaveBuffersToFile(float *x, float *y, float *z, long buf
 			file->store_line(vformat("%f,%f,%f,%d,%d,%d,%d", x[i], y[i], z[i], ASIOSTInt32LSB_0, ASIOSTInt32LSB_1, ASIOSTInt32LSB_2, ASIOSTInt32LSB_3));
 		}
 	}
+}
+
+void VDASIOOutput::resetProfiling() {
+	_static_instance->minTimeBetweenBufferSwitch = 9999.0;
+	_static_instance->maxTimeBetweenBufferSwitch = 0.0;
+	_static_instance->minTimeToCopyBuffers = 9999.0;
+	_static_instance->maxTimeToCopyBuffers = 0.0;
 }

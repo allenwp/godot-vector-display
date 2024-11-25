@@ -3,6 +3,7 @@
 #include "vd_display_profile_Osc_Tek_TAS_465.h"
 #include "vd_display_profile_Osc_Tek_2445.h"
 #include "vd_dac_profile_presonus_studio_26c.h"
+#include "output/vd_asio_output.h" // for QueryPerformanceFrequency. This could be improved.
 
 using namespace vector_display;
 
@@ -84,4 +85,20 @@ int VDFrameOutput::CalibrationDrawPoint(float x, float y, VDSample* buffer, int 
 		buffer[startIndex] = VDSample(x, y, 1.0f);
 	}
 	return finalIndexPlusOne;
+}
+
+int64_t VDFrameOutput::get_ticks_now() {
+	LARGE_INTEGER ticks;
+	if (!QueryPerformanceCounter(&ticks)) {
+		ticks.QuadPart = 0;
+	}
+	return ticks.QuadPart;
+}
+
+double VDFrameOutput::get_ms_from_ticks(int64_t ticks) {
+	LARGE_INTEGER Frequency;
+	QueryPerformanceFrequency(&Frequency); 
+	ticks *= 1000000; // Guard against loss-of-precision by converting to microseconds *before* dividing by ticks-per-second.
+	int64_t usec = ticks / Frequency.QuadPart;
+	return usec / (double)1000.0;
 }

@@ -23,9 +23,16 @@ using namespace vector_display;
 void VectorDisplay::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("start_asio_output"), &VectorDisplay::start_asio_output);
 	ClassDB::bind_method(D_METHOD("is_output_running"), &VectorDisplay::is_output_running);
+
 	ClassDB::bind_method(D_METHOD("get_previous_frame_time"), &VectorDisplay::get_previous_frame_time);
 	ClassDB::bind_method(D_METHOD("get_last_starved_samples"), &VectorDisplay::get_last_starved_samples);
 	ClassDB::bind_method(D_METHOD("get_previous_frame_headroom"), &VectorDisplay::get_previous_frame_headroom);
+
+	ClassDB::bind_method(D_METHOD("reset_asio_profiling"), &VectorDisplay::reset_asio_profiling);
+	ClassDB::bind_method(D_METHOD("get_asio_min_time_between_buffer_switch"), &VectorDisplay::get_asio_min_time_between_buffer_switch);
+	ClassDB::bind_method(D_METHOD("get_asio_max_time_between_buffer_switch"), &VectorDisplay::get_asio_max_time_between_buffer_switch);
+	ClassDB::bind_method(D_METHOD("get_asio_min_time_to_copy_buffers"), &VectorDisplay::get_asio_min_time_to_copy_buffers);
+	ClassDB::bind_method(D_METHOD("get_asio_max_time_to_copy_buffers"), &VectorDisplay::get_asio_max_time_to_copy_buffers);
 }
 
 VectorDisplay::VectorDisplay() {
@@ -100,14 +107,11 @@ void VectorDisplay::_process(double delta) {
 		output->DebugSaveNextFrame = true;
 	}
 
-	LARGE_INTEGER ticks;
-	if (!QueryPerformanceCounter(&ticks)) {
-		ticks.QuadPart = 0;
-	}
+	int64_t ticks = VDFrameOutput::get_ticks_now();
 	if (WriteState == WriteStateEnum::Buffer1) {
-		VDFrameOutput::Buffer1TimeStamp.store(ticks.QuadPart, std::memory_order_release);
+		VDFrameOutput::Buffer1TimeStamp.store(ticks, std::memory_order_release);
 	} else {
-		VDFrameOutput::Buffer2TimeStamp.store(ticks.QuadPart, std::memory_order_release);
+		VDFrameOutput::Buffer2TimeStamp.store(ticks, std::memory_order_release);
 	}
 
 	// Wait for the output to be finished with the buffer we're about to write to
@@ -372,4 +376,42 @@ int VectorDisplay::get_last_starved_samples() {
 
 double VectorDisplay::get_previous_frame_headroom() {
 	return previousHeadroom;
+}
+
+void vector_display::VectorDisplay::reset_asio_profiling() {
+	if (output != nullptr) {
+		output->_reset_profiling = true;
+	}
+}
+
+double VectorDisplay::get_asio_min_time_between_buffer_switch() {
+	if (output != nullptr) {
+		return output->minTimeBetweenBufferSwitch;
+	} else {
+		return 9999;
+	}
+}
+
+double vector_display::VectorDisplay::get_asio_max_time_between_buffer_switch() {
+	if (output != nullptr) {
+		return output->maxTimeBetweenBufferSwitch;
+	} else {
+		return 0;
+	}
+}
+
+double vector_display::VectorDisplay::get_asio_min_time_to_copy_buffers() {
+	if (output != nullptr) {
+		return output->minTimeToCopyBuffers;
+	} else {
+		return 9999;
+	}
+}
+
+double vector_display::VectorDisplay::get_asio_max_time_to_copy_buffers() {
+	if (output != nullptr) {
+		return output->maxTimeToCopyBuffers;
+	} else {
+		return 0;
+	}
 }

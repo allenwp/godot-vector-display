@@ -92,6 +92,9 @@ protected:
 	int blankingChannelDelayBufferLength;
 	bool DebugSaveThisFrame = false;
 
+	int64_t lastBufferSwitchTimestamp = 0;
+	void resetProfiling();
+
 	long init_asio_static_data(DriverInfo *asioDriverInfo);
 	ASIOError create_asio_buffers(DriverInfo *asioDriverInfo);
 
@@ -120,6 +123,11 @@ public:
 	~VDASIOOutput();
 
 	bool DebugSaveNextFrame = false;
+	std::atomic <bool> _reset_profiling = false;
+	double minTimeBetweenBufferSwitch = 9999.0;
+	double maxTimeBetweenBufferSwitch = 0.0;
+	double minTimeToCopyBuffers = 9999.0;
+	double maxTimeToCopyBuffers = 0.0;
 };
 
 } // namespace vector_display
