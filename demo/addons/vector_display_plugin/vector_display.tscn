@@ -1,7 +1,6 @@
-[gd_scene load_steps=3 format=3 uid="uid://6tc6cwnvllci"]
+[gd_scene load_steps=2 format=3 uid="uid://6tc6cwnvllci"]
 
 [ext_resource type="Script" path="res://addons/vector_display_plugin/vector_display_gui.gd" id="2_1wxxt"]
-[ext_resource type="Script" path="res://addons/vector_display_plugin/vsync_test.gd" id="2_vo1i7"]
 
 [node name="VectorDisplay" type="VectorDisplay"]
 process_priority = 2147483647
@@ -14,15 +13,6 @@ offset_bottom = 40.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("2_1wxxt")
-
-[node name="vsync-test" type="ColorRect" parent="VectorDisplayGUI"]
-visible = false
-layout_mode = 0
-offset_right = 20.0
-offset_bottom = 3000.0
-size_flags_vertical = 3
-script = ExtResource("2_vo1i7")
-speed = 3000.0
 
 [node name="ColorRect" type="ColorRect" parent="VectorDisplayGUI"]
 layout_mode = 2
