@@ -60,6 +60,9 @@ TypedArray<PackedVector3Array> VDRenderer::TransformSamples3DToScreen(Camera3D *
 		if (samples3DArray.iter_init(iterator, iter_valid) && iter_valid) {
 			do {
 				VDSample3D worldSample = samples3DArray.iter_get(iterator, iter_valid);
+				if (!iter_valid) {
+					break;
+				}
 				Vector3 worldPos = Vector3(worldSample.x, worldSample.y, worldSample.z);
 				Vector4 v4;
 				// When samples are 0 brightness (disabled), it's the same as when they're clipped
