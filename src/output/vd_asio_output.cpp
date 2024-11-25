@@ -794,27 +794,6 @@ unsigned long VDASIOOutput::get_sys_reference_time() { // get the system referen
 }
 
 void VDASIOOutput::FeedFloatBuffers(float *xOutput, float *yOutput, float *brightnessOutput, int bufferSize, int startIndex) {
-	if (frameIndex == 0) {
-		// We're about to start reading from a new buffer. This is the moment that the previous frame
-		// needs to be ready, so record the headroom at this point.
-		int64_t now = VDFrameOutput::get_ticks_now();
-
-		int64_t completeTimeStamp;
-		if (ReadState == ReadStateEnum::Buffer1) {
-			completeTimeStamp = VDFrameOutput::Buffer1TimeStamp.load(std::memory_order_acquire);
-		} else {
-			completeTimeStamp = VDFrameOutput::Buffer2TimeStamp.load(std::memory_order_acquire);
-		}
-		int64_t headroomTicks = now - completeTimeStamp;
-		double headroomMilliseconds = VDFrameOutput::get_ms_from_ticks(headroomTicks);
-
-		if (ReadState == ReadStateEnum::Buffer1) {
-			VDFrameOutput::Buffer1Headroom.store(headroomMilliseconds, std::memory_order_release);
-		} else {
-			VDFrameOutput::Buffer2Headroom.store(headroomMilliseconds, std::memory_order_release);
-		}
-	}
-
 	VDSample *currentFrameBuffer = nullptr;
 	int currentFrameBufferLength = 0;
 	if (ReadState == ReadStateEnum::Buffer1) {
@@ -826,12 +805,6 @@ void VDASIOOutput::FeedFloatBuffers(float *xOutput, float *yOutput, float *brigh
 	}
 
 	if (currentFrameBuffer == nullptr) {
-		if (ReadState == ReadStateEnum::Buffer1) {
-			VDFrameOutput::Buffer1Headroom.store(0, std::memory_order_release);
-		} else {
-			VDFrameOutput::Buffer2Headroom.store(0, std::memory_order_release);
-		}
-
 		int blankedSampleCount = bufferSize - startIndex;
 		if (!firstFrame) {
 			VDFrameOutput::StarvedSamples += blankedSampleCount;

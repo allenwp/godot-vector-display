@@ -18,6 +18,8 @@ protected:
 	unsigned int totalStarvedSamples = 0;
 	double previousFrameTime = 0;
 	double previousHeadroom = 0;
+	double debug_process_time = 0;
+	int64_t debug_process_timestamp = 0;
 
 	enum WriteStateEnum {
 		Buffer1,
@@ -54,6 +56,7 @@ public:
 
 	int get_last_starved_samples();
 	double get_previous_frame_headroom();
+	double debug_get_process_time();
 	void reset_asio_profiling();
 	double get_asio_min_time_between_buffer_switch();
 	double get_asio_max_time_between_buffer_switch();

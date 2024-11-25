@@ -13,12 +13,8 @@ VDDACProfile *VDFrameOutput::DACProfile = (VDDACProfile*)new VDDACProfilePresonu
 
 std::atomic<VDSample *> VDFrameOutput::Buffer1 = nullptr;
 int VDFrameOutput::Buffer1Length = 0;
-std::atomic<int64_t> VDFrameOutput::Buffer1TimeStamp = 0;
 std::atomic<VDSample *> VDFrameOutput::Buffer2 = nullptr;
 int VDFrameOutput::Buffer2Length = 0;
-std::atomic<int64_t> VDFrameOutput::Buffer2TimeStamp = 0;
-std::atomic<double> VDFrameOutput::Buffer1Headroom = 0;
-std::atomic<double> VDFrameOutput::Buffer2Headroom = 0;
 unsigned int VDFrameOutput::StarvedSamples = 0;
 unsigned long VDFrameOutput::FrameCount = 0;
 bool VDFrameOutput::DebugSaveFrame = false;

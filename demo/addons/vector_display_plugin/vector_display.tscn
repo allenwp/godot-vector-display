@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://6tc6cwnvllci"]
+[gd_scene load_steps=3 format=3 uid="uid://6tc6cwnvllci"]
 
 [ext_resource type="Script" path="res://addons/vector_display_plugin/vector_display_gui.gd" id="2_1wxxt"]
+[ext_resource type="Script" path="res://addons/vector_display_plugin/vsync_test.gd" id="2_vo1i7"]
 
 [node name="VectorDisplay" type="VectorDisplay"]
 process_priority = 2147483647
@@ -14,10 +15,19 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("2_1wxxt")
 
+[node name="vsync-test" type="ColorRect" parent="VectorDisplayGUI"]
+visible = false
+layout_mode = 0
+offset_right = 20.0
+offset_bottom = 3000.0
+size_flags_vertical = 3
+script = ExtResource("2_vo1i7")
+speed = 3000.0
+
 [node name="ColorRect" type="ColorRect" parent="VectorDisplayGUI"]
 layout_mode = 2
 offset_right = 852.0
-offset_bottom = 382.0
+offset_bottom = 480.0
 color = Color(0, 0, 0, 0.501961)
 
 [node name="HBoxContainer" type="HBoxContainer" parent="VectorDisplayGUI"]
@@ -28,6 +38,7 @@ theme_override_constants/separation = 15
 
 [node name="VBoxContainer" type="VBoxContainer" parent="VectorDisplayGUI/HBoxContainer"]
 layout_mode = 2
+theme_override_constants/separation = 9
 
 [node name="Button" type="Button" parent="VectorDisplayGUI/HBoxContainer/VBoxContainer"]
 layout_mode = 2
@@ -73,6 +84,35 @@ Avg:
 Max:
 Total Min:
 Total Avg:
+Total Max:"
+
+[node name="HBoxContainer3" type="HBoxContainer" parent="VectorDisplayGUI/HBoxContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="VBoxContainer" type="VBoxContainer" parent="VectorDisplayGUI/HBoxContainer/VBoxContainer/HBoxContainer3"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VectorDisplayGUI/HBoxContainer/VBoxContainer/HBoxContainer3/VBoxContainer"]
+layout_mode = 2
+text = "PROCESSING TIME:"
+
+[node name="ProcessingTimeLabel" type="Label" parent="VectorDisplayGUI/HBoxContainer/VBoxContainer/HBoxContainer3/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Min:
+Max:"
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="VectorDisplayGUI/HBoxContainer/VBoxContainer/HBoxContainer3"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VectorDisplayGUI/HBoxContainer/VBoxContainer/HBoxContainer3/VBoxContainer2"]
+layout_mode = 2
+
+[node name="ProcessingTimeTotalLabel" type="Label" parent="VectorDisplayGUI/HBoxContainer/VBoxContainer/HBoxContainer3/VBoxContainer2"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Total Min:
 Total Max:"
 
 [node name="HBoxContainer2" type="HBoxContainer" parent="VectorDisplayGUI/HBoxContainer/VBoxContainer"]
