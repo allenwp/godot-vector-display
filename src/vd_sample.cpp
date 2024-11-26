@@ -6,7 +6,7 @@ using namespace vector_display;
 using namespace godot;
 
 VDSample VDSampleHelper::GetBlankingSample() {
-	return VDSample(-1.0f * VDFrameOutput::DisplayProfile->AspectRatio, -1.0f, 0.0f);
+	return VDSample(0, 0, 0);
 }
 
 /// <summary>
