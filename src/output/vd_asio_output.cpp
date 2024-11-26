@@ -796,21 +796,29 @@ unsigned long VDASIOOutput::get_sys_reference_time() { // get the system referen
 void VDASIOOutput::FeedFloatBuffers(float *xOutput, float *yOutput, float *brightnessOutput, int bufferSize, int startIndex) {
 	VDSample *currentFrameBuffer = nullptr;
 	int currentFrameBufferLength = 0;
+	int64_t currentBufferTimestamp = 0;
 	if (ReadState == ReadStateEnum::Buffer1) {
 		currentFrameBuffer = VDFrameOutput::Buffer1.load(std::memory_order_acquire);
 		currentFrameBufferLength = VDFrameOutput::Buffer1Length;
+		currentBufferTimestamp = VDFrameOutput::DebugBuffer1Timestamp;
 	} else {
 		currentFrameBuffer = VDFrameOutput::Buffer2.load(std::memory_order_acquire);
 		currentFrameBufferLength = VDFrameOutput::Buffer2Length;
+		currentBufferTimestamp = VDFrameOutput::DebugBuffer2Timestamp;
 	}
 
 	if (currentFrameBuffer == nullptr) {
 		int blankedSampleCount = bufferSize - startIndex;
 		if (!firstFrame) {
 			VDFrameOutput::StarvedSamples += blankedSampleCount;
-			auto message = vformat("AUDIO BUFFER IS STARVED FOR FRAMES! Blanking for %d samples.", blankedSampleCount);
-			WARN_PRINT_ED(message);
-			UtilityFunctions::printerr(message);
+			// These are now reported in the GUI by keeping track of the StarvedSamples count.
+			//auto message = vformat("AUDIO BUFFER IS STARVED FOR FRAMES! Blanking for %d samples.", blankedSampleCount);
+			//WARN_PRINT_ED(message);
+			//UtilityFunctions::printerr(message);
+
+			if (frameIndex == 0) {
+				DebugRecordHeadroomMilliseconds(0);
+			}
 		}
 		// Clear the rest of the buffer with blanking frames
 		for (int i = startIndex; i < bufferSize; i++) {
@@ -820,6 +828,10 @@ void VDASIOOutput::FeedFloatBuffers(float *xOutput, float *yOutput, float *brigh
 			brightnessOutput[i] = VDFrameOutput::DisplayProfile->ZeroBrightnessOutput;
 		}
 		return;
+	}
+
+	if (frameIndex == 0 && !firstFrame) {
+		DebugRecordHeadroomTimestamp(currentBufferTimestamp);
 	}
 
 	firstFrame = false;
@@ -908,6 +920,20 @@ void VDASIOOutput::ApplyBlankingChannelDelay(float *blankingChannel, int bufferL
 	delete originalStream;
 }
 
+void vector_display::VDASIOOutput::DebugRecordHeadroomTimestamp(int64_t frame_timestamp) {
+	int64_t now = VDFrameOutput::get_ticks_now();
+	DebugRecordHeadroomMilliseconds(VDFrameOutput::get_ms_from_ticks(now - frame_timestamp));
+}
+
+void vector_display::VDASIOOutput::DebugRecordHeadroomMilliseconds(double headroom) {
+	if (headroom > maxHeadroom) {
+		maxHeadroom = headroom;
+	}
+	if (headroom < minHeadroom) {
+		minHeadroom = headroom;
+	}
+}
+
 void VDASIOOutput::DebugSaveBuffersToFile(float *x, float *y, float *z, long buffSize, long asioIndex, const char *path) {
 	Ref<FileAccess> file = FileAccess::open(path, FileAccess::ModeFlags::WRITE);
 	if (file != nullptr) {
@@ -958,4 +984,6 @@ void VDASIOOutput::resetProfiling() {
 	_static_instance->maxTimeBetweenBufferSwitch = 0.0;
 	_static_instance->minTimeToCopyBuffers = 9999.0;
 	_static_instance->maxTimeToCopyBuffers = 0.0;
+	_static_instance->minHeadroom = 999.0;
+	_static_instance->maxHeadroom = 0;
 }

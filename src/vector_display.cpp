@@ -27,7 +27,6 @@ void VectorDisplay::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_previous_frame_time"), &VectorDisplay::get_previous_frame_time);
 
 	ClassDB::bind_method(D_METHOD("debug_get_last_starved_samples"), &VectorDisplay::get_last_starved_samples);
-	ClassDB::bind_method(D_METHOD("debug_get_previous_frame_headroom"), &VectorDisplay::get_previous_frame_headroom);
 	ClassDB::bind_method(D_METHOD("debug_get_process_time"), &VectorDisplay::debug_get_process_time);
 
 	ClassDB::bind_method(D_METHOD("debug_reset_asio_profiling"), &VectorDisplay::reset_asio_profiling);
@@ -35,6 +34,8 @@ void VectorDisplay::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("debug_get_asio_max_time_between_buffer_switch"), &VectorDisplay::get_asio_max_time_between_buffer_switch);
 	ClassDB::bind_method(D_METHOD("debug_get_asio_min_time_to_copy_buffers"), &VectorDisplay::get_asio_min_time_to_copy_buffers);
 	ClassDB::bind_method(D_METHOD("debug_get_asio_max_time_to_copy_buffers"), &VectorDisplay::get_asio_max_time_to_copy_buffers);
+	ClassDB::bind_method(D_METHOD("debug_get_asio_min_headroom"), &VectorDisplay::debug_get_asio_min_headroom);
+	ClassDB::bind_method(D_METHOD("debug_get_asio_max_headroom"), &VectorDisplay::debug_get_asio_max_headroom);
 }
 
 VectorDisplay::VectorDisplay() {
@@ -109,7 +110,9 @@ void VectorDisplay::_process(double delta) {
 		output->DebugSaveNextFrame = true;
 	}
 
-	int64_t before_spin_ticks = VDFrameOutput::get_ticks_now();
+	int64_t frame_ready_timestamp = VDFrameOutput::get_ticks_now();
+	debug_process_time = VDFrameOutput::get_ms_from_ticks(frame_ready_timestamp - debug_process_timestamp);
+
 	// Wait for the output to be finished with the buffer we're about to write to
 	if (!output) {
 		// No need to limit the framerate if there isn't an output consuming the frames.
@@ -128,18 +131,17 @@ void VectorDisplay::_process(double delta) {
 			YieldProcessor();
 		}
 	}
-	int64_t after_sping_ticks = VDFrameOutput::get_ticks_now();
 
-	previousHeadroom = VDFrameOutput::get_ms_from_ticks(after_sping_ticks - before_spin_ticks);
-	debug_process_time = VDFrameOutput::get_ms_from_ticks(before_spin_ticks - debug_process_timestamp);
-	debug_process_timestamp = after_sping_ticks;
+	debug_process_timestamp = VDFrameOutput::get_ticks_now();
 
 	// Assign the buffer and progress the frame buffer write state
 	if (WriteState == WriteStateEnum::Buffer1) {
+		VDFrameOutput::DebugBuffer1Timestamp = frame_ready_timestamp;
 		VDFrameOutput::Buffer1Length = finalBufferLength;
 		VDFrameOutput::Buffer1.store(finalBuffer, std::memory_order_release);
 		WriteState = WriteStateEnum::Buffer2;
 	} else {
+		VDFrameOutput::DebugBuffer2Timestamp = frame_ready_timestamp;
 		VDFrameOutput::Buffer2Length = finalBufferLength;
 		VDFrameOutput::Buffer2.store(finalBuffer, std::memory_order_release);
 		WriteState = WriteStateEnum::Buffer1;
@@ -373,10 +375,6 @@ int VectorDisplay::get_last_starved_samples() {
 	return thisFrameStarvedSamples;
 }
 
-double VectorDisplay::get_previous_frame_headroom() {
-	return previousHeadroom;
-}
-
 void vector_display::VectorDisplay::reset_asio_profiling() {
 	if (output != nullptr) {
 		output->_reset_profiling = true;
@@ -410,6 +408,22 @@ double vector_display::VectorDisplay::get_asio_min_time_to_copy_buffers() {
 double vector_display::VectorDisplay::get_asio_max_time_to_copy_buffers() {
 	if (output != nullptr) {
 		return output->maxTimeToCopyBuffers;
+	} else {
+		return 0;
+	}
+}
+
+double vector_display::VectorDisplay::debug_get_asio_min_headroom() {
+	if (output != nullptr) {
+		return output->minHeadroom;
+	} else {
+		return 0;
+	}
+}
+
+double vector_display::VectorDisplay::debug_get_asio_max_headroom() {
+	if (output != nullptr) {
+		return output->maxHeadroom;
 	} else {
 		return 0;
 	}

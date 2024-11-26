@@ -45,64 +45,51 @@ theme_override_constants/separation = 20
 [node name="VBoxContainer" type="VBoxContainer" parent="VectorDisplayGUI/HBoxContainer/VBoxContainer/HBoxContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="VectorDisplayGUI/HBoxContainer/VBoxContainer/HBoxContainer/VBoxContainer"]
-layout_mode = 2
-text = "FRAME TIMES:"
-
-[node name="FrameTimesLabel" type="Label" parent="VectorDisplayGUI/HBoxContainer/VBoxContainer/HBoxContainer/VBoxContainer"]
-unique_name_in_owner = true
-layout_mode = 2
-text = "Min:
-Avg:
-Max:
-Total Min:
-Total Avg:
-Total Max:"
-
-[node name="VBoxContainer2" type="VBoxContainer" parent="VectorDisplayGUI/HBoxContainer/VBoxContainer/HBoxContainer"]
-layout_mode = 2
-
-[node name="Label" type="Label" parent="VectorDisplayGUI/HBoxContainer/VBoxContainer/HBoxContainer/VBoxContainer2"]
+[node name="Label2" type="Label" parent="VectorDisplayGUI/HBoxContainer/VBoxContainer/HBoxContainer/VBoxContainer"]
 layout_mode = 2
 text = "PROCESSING HEADROOM:"
 
-[node name="ProcessingHeadroomLabel" type="Label" parent="VectorDisplayGUI/HBoxContainer/VBoxContainer/HBoxContainer/VBoxContainer2"]
+[node name="ProcessingHeadroomLabel" type="Label" parent="VectorDisplayGUI/HBoxContainer/VBoxContainer/HBoxContainer/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "Min:
-Avg:
-Max:
-Total Min:
-Total Avg:
+text = "Total Min:
 Total Max:"
 
 [node name="HBoxContainer3" type="HBoxContainer" parent="VectorDisplayGUI/HBoxContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_constants/separation = 20
 
-[node name="VBoxContainer" type="VBoxContainer" parent="VectorDisplayGUI/HBoxContainer/VBoxContainer/HBoxContainer3"]
-layout_mode = 2
-
-[node name="Label" type="Label" parent="VectorDisplayGUI/HBoxContainer/VBoxContainer/HBoxContainer3/VBoxContainer"]
-layout_mode = 2
-text = "PROCESSING TIME:"
-
-[node name="ProcessingTimeLabel" type="Label" parent="VectorDisplayGUI/HBoxContainer/VBoxContainer/HBoxContainer3/VBoxContainer"]
-unique_name_in_owner = true
-layout_mode = 2
-text = "Min:
-Max:"
-
 [node name="VBoxContainer2" type="VBoxContainer" parent="VectorDisplayGUI/HBoxContainer/VBoxContainer/HBoxContainer3"]
 layout_mode = 2
 
 [node name="Label" type="Label" parent="VectorDisplayGUI/HBoxContainer/VBoxContainer/HBoxContainer3/VBoxContainer2"]
 layout_mode = 2
+text = "PROCESSING TIMES:"
 
-[node name="ProcessingTimeTotalLabel" type="Label" parent="VectorDisplayGUI/HBoxContainer/VBoxContainer/HBoxContainer3/VBoxContainer2"]
+[node name="ProcessingTimeLabel" type="Label" parent="VectorDisplayGUI/HBoxContainer/VBoxContainer/HBoxContainer3/VBoxContainer2"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "Total Min:
+text = "Min:
+Max:
+
+Total Min:
+Total Max:"
+
+[node name="VBoxContainer" type="VBoxContainer" parent="VectorDisplayGUI/HBoxContainer/VBoxContainer/HBoxContainer3"]
+layout_mode = 2
+
+[node name="Label2" type="Label" parent="VectorDisplayGUI/HBoxContainer/VBoxContainer/HBoxContainer3/VBoxContainer"]
+layout_mode = 2
+text = "FRAME TIMES:"
+
+[node name="FrameTimesLabel" type="Label" parent="VectorDisplayGUI/HBoxContainer/VBoxContainer/HBoxContainer3/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Min:
+Avg:
+Max:
+Total Min:
+Total Avg:
 Total Max:"
 
 [node name="HBoxContainer2" type="HBoxContainer" parent="VectorDisplayGUI/HBoxContainer/VBoxContainer"]

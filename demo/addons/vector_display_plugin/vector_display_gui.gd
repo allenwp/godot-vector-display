@@ -6,7 +6,6 @@ extends Control
 @onready var asio_period_label: Label = %AsioPeriodLabel
 @onready var asio_buffer_copy_label: Label = %AsioBufferCopyLabel
 @onready var processing_time_label: Label = %ProcessingTimeLabel
-@onready var processing_time_total_label: Label = %ProcessingTimeTotalLabel
 
 const FRAME_TIMES_AMOUNT = 100
 
@@ -22,19 +21,15 @@ var _working_min: float
 var _working_max: float
 var _working_cumulation: float
 
-var _total_headroom_min: float
-var _total_headroom_max: float
-var _total_headroom_avg: float
-var _working_headroom_min: float
-var _working_headroom_max: float
-var _working_headroom_cumulation: float
-
 var _total_process_time_min: float
 var _total_process_time_max: float
+var _total_process_time_avg: float
 var _working_process_time_min: float
 var _working_process_time_max: float
+var _working_process_time_cumulation: float
 
 var _timer: Timer = null
+
 
 func _ready() -> void:
 	clear_logging(false)
@@ -73,12 +68,9 @@ func clear_logging(only_working: bool) -> void:
 	_working_max = 0
 	_working_cumulation = 0
 
-	_working_headroom_min = 99999
-	_working_headroom_max = 0
-	_working_headroom_cumulation = 0
-
 	_working_process_time_max = 0
 	_working_process_time_min = 99999
+	_working_process_time_cumulation = 0
 
 	if !only_working:
 		var vd: VectorDisplay = GlobalVectorDisplay
@@ -89,18 +81,14 @@ func clear_logging(only_working: bool) -> void:
 		_total_max = 0
 		_total_avg = 0
 
-		_total_headroom_min = 99999
-		_total_headroom_max = 0
-		_total_headroom_avg = 0
-
-		_total_process_time_max = 0
 		_total_process_time_min = 99999
+		_total_process_time_max = 0
+		_total_process_time_avg = 0
 
 		log_text.clear()
 		frame_times_label.text = "\n\n\n\n\n\n"
 		processing_headroom_label.text = "\n\n\n\n\n\n"
-		processing_time_label.text = "\n\n"
-		processing_time_total_label.text = "\n\n"
+		processing_time_label.text = "\n\n\n\n\n\n"
 
 
 func _process(_delta: float) -> void:
@@ -121,6 +109,7 @@ func _process(_delta: float) -> void:
 		if visible:
 			asio_period_label.text = "Total Min: %f ms\nTotal Max: %f ms" % [vd.debug_get_asio_min_time_between_buffer_switch(), vd.debug_get_asio_max_time_between_buffer_switch()]
 			asio_buffer_copy_label.text = "Total Min: %f ms\nTotal Max: %f ms" % [vd.debug_get_asio_min_time_to_copy_buffers(), vd.debug_get_asio_max_time_to_copy_buffers()]
+			processing_headroom_label.text = "Total Min: %f ms\nTotal Max: %f ms" % [vd.debug_get_asio_min_headroom(), vd.debug_get_asio_max_headroom()]
 
 		var frame_time: float = vd.get_previous_frame_time()
 		if frame_time < _working_min:
@@ -129,35 +118,23 @@ func _process(_delta: float) -> void:
 			_working_max = frame_time
 		_working_cumulation += frame_time
 
-		var headroom: float = vd.debug_get_previous_frame_headroom()
-		if headroom < _working_headroom_min:
-			_working_headroom_min = headroom
-		if headroom > _working_headroom_max:
-			_working_headroom_max = headroom
-		_working_headroom_cumulation += headroom
-
 		var processing_time: float = vd.debug_get_process_time()
 		if processing_time < _working_process_time_min:
 			_working_process_time_min = processing_time
 		if processing_time > _working_process_time_max:
 			_working_process_time_max = processing_time
+		_working_process_time_cumulation += processing_time
 
 		_working_count += 1
 
 		if (_working_count == FRAME_TIMES_AMOUNT):
 			var working_avg: float = _working_cumulation / FRAME_TIMES_AMOUNT
-			var working_headroom_avg: float = _working_headroom_cumulation / FRAME_TIMES_AMOUNT
-
 			if _working_min < _total_min:
 				_total_min = _working_min
 			if _working_max > _total_max:
 				_total_max = _working_max
 
-			if _working_headroom_min < _total_headroom_min:
-				_total_headroom_min = _working_headroom_min
-			if _working_headroom_max > _total_headroom_max:
-				_total_headroom_max = _working_headroom_max
-
+			var working_process_time_avg: float = _working_process_time_cumulation / FRAME_TIMES_AMOUNT
 			if _working_process_time_min < _total_process_time_min:
 				_total_process_time_min = _working_process_time_min
 			if _working_process_time_max > _total_process_time_max:
@@ -165,12 +142,10 @@ func _process(_delta: float) -> void:
 
 			_total_avg_count += 1
 			_total_avg = lerpf(_total_avg, working_avg, 1.0 / _total_avg_count)
-			_total_headroom_avg = lerpf(_total_headroom_avg, working_headroom_avg, 1.0 / _total_avg_count)
+			_total_process_time_avg = lerpf(_total_process_time_avg, working_process_time_avg, 1.0 / _total_avg_count)
 
 			if visible:
 				frame_times_label.text = "Min: %f ms\nAvg: %f ms\nMax: %f ms\nTotal Min: %f ms\nTotal Avg: %f ms\nTotal Max: %f ms" % [_working_min * 1000.0, working_avg * 1000.0, _working_max * 1000.0, _total_min * 1000.0, _total_avg * 1000.0, _total_max * 1000.0]
-				processing_headroom_label.text = "Min: %f ms\nAvg: %f ms\nMax: %f ms\nTotal Min: %f ms\nTotal Avg: %f ms\nTotal Max: %f ms" % [_working_headroom_min, working_headroom_avg, _working_headroom_max, _total_headroom_min, _total_headroom_avg, _total_headroom_max]
-				processing_time_label.text = "Min: %f ms\nMax: %f ms" % [_working_process_time_min, _working_process_time_max]
-				processing_time_total_label.text = "Total Min: %f ms\nTotal Max: %f ms" % [_total_process_time_min, _total_process_time_max]
+				processing_time_label.text = "Min: %f ms\nAvg: %f ms\nMax: %f ms\nTotal Min: %f ms\nTotal Avg: %f ms\nTotal Max: %f ms" % [_working_process_time_min, working_process_time_avg, _working_process_time_max, _total_process_time_min, _total_process_time_avg, _total_process_time_max]
 
 			clear_logging(true)

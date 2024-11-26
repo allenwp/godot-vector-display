@@ -107,6 +107,9 @@ protected:
 	static VDSample PrepareSampleForScreen(VDSample sample);
 	void ApplyBlankingChannelDelay(float *blankingChannel, int bufferLength);
 
+	void DebugRecordHeadroomTimestamp(int64_t frame_timestamp);
+	void DebugRecordHeadroomMilliseconds(double headroom);
+
 	/// <param name="asioIndex">If -1, INT32 buffer won't be written</param>
 	static void DebugSaveBuffersToFile(float *x, float *y, float *z, long buffSize, long asioIndex, const char *path);
 
@@ -123,11 +126,13 @@ public:
 	~VDASIOOutput();
 
 	bool DebugSaveNextFrame = false;
-	std::atomic <bool> _reset_profiling = false;
+	bool _reset_profiling = false;
 	double minTimeBetweenBufferSwitch = 9999.0;
 	double maxTimeBetweenBufferSwitch = 0.0;
 	double minTimeToCopyBuffers = 9999.0;
 	double maxTimeToCopyBuffers = 0.0;
+	double minHeadroom = 9999.0;
+	double maxHeadroom = 0.0;
 };
 
 } // namespace vector_display

@@ -30,12 +30,14 @@ public:
 	/// </summary>
 	static std::atomic<VDSample *> Buffer1;
 	static int Buffer1Length;
+	static int64_t DebugBuffer1Timestamp;
 	/// <summary>
 	/// Output should delete and set to null when it's finished reading.
 	/// VectorDisplay::_process waits until it's null before writting.
 	/// </summary>
 	static std::atomic<VDSample *> Buffer2;
 	static int Buffer2Length;
+	static int64_t DebugBuffer2Timestamp;
 
 	static unsigned int StarvedSamples;
 
