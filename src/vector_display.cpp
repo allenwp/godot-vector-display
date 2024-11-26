@@ -177,10 +177,10 @@ void VectorDisplay::_process(double delta) {
 TypedArray<PackedVector3Array> VectorDisplay::GetScreenSpaceSamples(TypedArray<PackedVector4Array> &worldSpaceResult) {
 	TypedArray<PackedVector3Array> result;
 
+	Window *root = get_tree()->get_root();
 	Camera3D *camera = get_viewport()->get_camera_3d();
-	// TODO: for each camera?
+	// TODO: for each camera
 	if (camera != nullptr) {
-		Window *root = get_tree()->get_root();
 		TypedArray<Node> shapeNodes = root->find_children("*", "VDShape3D", true, false); // owned must be false, but I don't understand why.
 
 		worldSpaceResult = TypedArray<PackedVector4Array>();
@@ -217,10 +217,10 @@ TypedArray<PackedVector3Array> VectorDisplay::GetScreenSpaceSamples(TypedArray<P
 		result.append_array(screenSpaceResult);
 	}
 
-	// Final post processing applies after all per-camera post processing
-	TypedArray<Node> children = get_children();
-	for (int i = 0; i < children.size(); i++) {
-		VDPostProcessor2D *pp = Object::cast_to<VDPostProcessor2D>(children[i]);
+	// Global post processing applies after all per-camera post processing
+	TypedArray<Node> global_pp_roots = root->find_children("*", "VDGlobalPostProcessingRoot", true, false); // owned must be false, but I don't understand why.
+	for (int i = 0; i < global_pp_roots.size(); i++) {
+		VDPostProcessor2D *pp = Object::cast_to<VDPostProcessor2D>(global_pp_roots[i]);
 		if (pp && pp->can_process()) {
 			pp->process_samples_2d(result);
 		}
