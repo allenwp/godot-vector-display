@@ -5,6 +5,10 @@
 using namespace godot;
 using namespace vector_display;
 
+bool vector_display::VDRenderer::ShouldCull(Camera3D *camera, VDShape3D *shape) {
+	return !shape->is_on_screen(); // this uses void RendererSceneCull::_scene_cull under the hood.
+}
+
 TypedArray<PackedVector4Array> VDRenderer::GetSample3Ds(Camera3D *camera, VDShape3D *shape) {
 	float fidelity;
 	if (camera->get_projection() == Camera3D::PROJECTION_PERSPECTIVE) {

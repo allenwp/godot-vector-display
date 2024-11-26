@@ -180,7 +180,7 @@ TypedArray<PackedVector3Array> VectorDisplay::GetScreenSpaceSamples(TypedArray<P
 	Window *root = get_tree()->get_root();
 	Camera3D *camera = get_viewport()->get_camera_3d();
 	// TODO: for each camera
-	if (camera != nullptr) {
+	if (camera != nullptr && camera->is_visible_in_tree()) {
 		TypedArray<Node> shapeNodes = root->find_children("*", "VDShape3D", true, false); // owned must be false, but I don't understand why.
 
 		worldSpaceResult = TypedArray<PackedVector4Array>();
@@ -189,7 +189,7 @@ TypedArray<PackedVector3Array> VectorDisplay::GetScreenSpaceSamples(TypedArray<P
 			VDShape3D *shape = Object::cast_to<VDShape3D>(shapeNodes[i]);
 			if (shape) {
 				// TODO: multi-thread this:
-				if (shape->is_visible_in_tree()) {
+				if (!VDRenderer::ShouldCull(camera, shape)) {
 					worldSpaceResult.append_array(VDRenderer::GetSample3Ds(camera, shape));
 				}
 			}

@@ -6,10 +6,12 @@ using namespace vector_display;
 
 void VDShape3D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_samples_3d", "fidelity"), &VDShape3D::get_samples_3d);
+	ClassDB::bind_method(D_METHOD("update_aabb"), &VDShape3D::update_aabb);
 	ClassDB::bind_method(D_METHOD("get_samples_3d_global", "fidelity"), &VDShape3D::get_samples_3d_global);
 	ClassDB::bind_method(D_METHOD("apply_global_transform", "samples3D"), &VDShape3D::apply_global_transform);
 
 	GDVIRTUAL_BIND(_get_samples_3d, "fidelity");
+	GDVIRTUAL_BIND(_update_aabb);
 }
 
 VDShape3D::VDShape3D() {}
@@ -21,6 +23,10 @@ TypedArray<PackedVector4Array> VDShape3D::get_samples_3d(float fidelity) {
 		return ret;
 	}
 	return ret;
+}
+
+void vector_display::VDShape3D::update_aabb() {
+	GDVIRTUAL_CALL(_update_aabb);
 }
 
 TypedArray<PackedVector4Array> VDShape3D::get_samples_3d_global(float fidelity) {
