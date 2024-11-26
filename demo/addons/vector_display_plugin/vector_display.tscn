@@ -80,7 +80,7 @@ layout_mode = 2
 
 [node name="Label2" type="Label" parent="VectorDisplayGUI/HBoxContainer/VBoxContainer/HBoxContainer3/VBoxContainer"]
 layout_mode = 2
-text = "FRAME TIMES:"
+text = "REFRESH TIMES:"
 
 [node name="FrameTimesLabel" type="Label" parent="VectorDisplayGUI/HBoxContainer/VBoxContainer/HBoxContainer3/VBoxContainer"]
 unique_name_in_owner = true

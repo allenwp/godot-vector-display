@@ -111,7 +111,7 @@ func _process(_delta: float) -> void:
 			asio_buffer_copy_label.text = "Total Min: %f ms\nTotal Max: %f ms" % [vd.debug_get_asio_min_time_to_copy_buffers(), vd.debug_get_asio_max_time_to_copy_buffers()]
 			processing_headroom_label.text = "Total Min: %f ms\nTotal Max: %f ms" % [vd.debug_get_asio_min_headroom(), vd.debug_get_asio_max_headroom()]
 
-		var frame_time: float = vd.get_previous_frame_time()
+		var frame_time: float = vd.get_previous_refresh_time()
 		if frame_time < _working_min:
 			_working_min = frame_time
 		if frame_time > _working_max:

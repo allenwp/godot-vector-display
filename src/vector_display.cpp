@@ -24,7 +24,7 @@ void VectorDisplay::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("start_asio_output"), &VectorDisplay::start_asio_output);
 	ClassDB::bind_method(D_METHOD("is_output_running"), &VectorDisplay::is_output_running);
 
-	ClassDB::bind_method(D_METHOD("get_previous_frame_time"), &VectorDisplay::get_previous_frame_time);
+	ClassDB::bind_method(D_METHOD("get_previous_refresh_time"), &VectorDisplay::get_previous_frame_time);
 
 	ClassDB::bind_method(D_METHOD("debug_get_last_starved_samples"), &VectorDisplay::get_last_starved_samples);
 	ClassDB::bind_method(D_METHOD("debug_get_process_time"), &VectorDisplay::debug_get_process_time);
