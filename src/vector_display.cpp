@@ -220,9 +220,13 @@ TypedArray<PackedVector3Array> VectorDisplay::GetScreenSpaceSamples(TypedArray<P
 	// Global post processing applies after all per-camera post processing
 	TypedArray<Node> global_pp_roots = root->find_children("*", "VDGlobalPostProcessingRoot", true, false); // owned must be false, but I don't understand why.
 	for (int i = 0; i < global_pp_roots.size(); i++) {
-		VDPostProcessor2D *pp = Object::cast_to<VDPostProcessor2D>(global_pp_roots[i]);
-		if (pp && pp->can_process()) {
-			pp->process_samples_2d(result);
+		Node* pp_root = Object::cast_to<Node>(global_pp_roots[i]);
+		TypedArray<Node> children = pp_root->get_children();
+		for (int j = 0; j < children.size(); j++) {
+			VDPostProcessor2D *pp = Object::cast_to<VDPostProcessor2D>(children[j]);
+			if (pp && pp->can_process()) {
+				pp->process_samples_2d(result);
+			}
 		}
 	}
 
