@@ -16,9 +16,6 @@ int VDDACProfilePresonusStudio26c::BlankingLength(VDSample sample1, VDSample sam
 	// blankingLength is the number of samples for each blank at a distance of 1 unit between samples
 	float blankingLength = 14.0f;
 
-	// Clamp these because that's what's going to happen at output time anyway
-	sample1 = VDSampleHelper::Clamp(sample1);
-	sample2 = VDSampleHelper::Clamp(sample2);
 	float distance = VDSampleHelper::DistanceBetweenSamples(sample1, sample2);
 	if (distance < 0.01f) {
 		// they're so close together, no blanking is needed.

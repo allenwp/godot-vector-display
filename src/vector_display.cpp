@@ -277,7 +277,8 @@ VDSample *VectorDisplay::CreateFrameBuffer(TypedArray<PackedVector3Array> sample
 	for (int i = 0; i < samples.size(); i++) {
 		sampleCount += (int)(samples[i].call("size"));
 	}
-	int worstCaseBlankingLength = VDFrameOutput::DACProfile->BlankingLength(VDSample(-1.0f, -1.0f, 0.0f), VDSample(1.0f, 1.0f, 0.0f));
+	float max_value = max(VDFrameOutput::DisplayProfile->AspectRatio, 1.0);
+	int worstCaseBlankingLength = VDFrameOutput::DACProfile->BlankingLength(VDSample(-1.0f * max_value, -1.0f * max_value, 0.0f), VDSample(max_value, max_value, 0.0f));
 	int worstCaseSampleCount = sampleCount + (samples.size() * worstCaseBlankingLength) + worstCaseBlankingLength + 1; // one more on the end to return to blanking point.
 	worstCaseSampleCount = MAX(VDFrameOutput::GetTargetBufferSize(), worstCaseSampleCount);
 

@@ -26,11 +26,6 @@ typedef Vector3 VDSample;
 class VDSampleHelper {
 public:
 	static VDSample GetBlankingSample();
-	
-	/// <summary>
-	/// Clamps the sample to (-1, -1) and (1, 1)
-	/// </summary>
-	static VDSample Clamp(VDSample sample);
 
 	static float DistanceBetweenSamples(VDSample sample1, VDSample sample2);
 };
