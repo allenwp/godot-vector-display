@@ -4,12 +4,16 @@
 #include "vd_sample.h"
 #include "vd_display_profile.h"
 #include "vd_dac_profile.h"
+#include <godot_cpp/core/object.hpp>
 
 namespace vector_display {
 
-class VDFrameOutput {
+class VDFrameOutput : public Object {
+	GDCLASS(VDFrameOutput, Object)
 private:
 protected:
+	static void _bind_methods();
+
 public:
 	VDFrameOutput();
 	~VDFrameOutput();
@@ -20,6 +24,8 @@ public:
 	/// Setting this too low will cause flickering.
 	/// </summary>
 	static float MaxFramesPerSecond;
+	static void set_max_refresh_rate(float rate_in_hz);
+	static float get_max_refresh_rate();
 
 	static VDDisplayProfile* DisplayProfile;
 	static VDDACProfile *DACProfile;
@@ -40,11 +46,6 @@ public:
 	static int64_t DebugBuffer2Timestamp;
 
 	static unsigned int StarvedSamples;
-
-	/// <summary>
-	/// This will eventually overflow and loop back to 0.
-	/// </summary>
-	static unsigned long FrameCount;
 
 	static bool DebugSaveFrame;
 

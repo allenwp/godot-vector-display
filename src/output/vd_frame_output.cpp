@@ -1,4 +1,5 @@
 #include "vd_frame_output.h"
+#include <godot_cpp/core/class_db.hpp>
 #include "godot_cpp/core/math.hpp"
 #include "vd_display_profile_Osc_Tek_TAS_465.h"
 #include "vd_display_profile_Osc_Tek_2445.h"
@@ -18,13 +19,26 @@ std::atomic<VDSample *> VDFrameOutput::Buffer2 = nullptr;
 int VDFrameOutput::Buffer2Length = 0;
 int64_t VDFrameOutput::DebugBuffer2Timestamp = 0;
 unsigned int VDFrameOutput::StarvedSamples = 0;
-unsigned long VDFrameOutput::FrameCount = 0;
 bool VDFrameOutput::DebugSaveFrame = false;
+
+void VDFrameOutput::_bind_methods() {
+	ClassDB::bind_static_method("VDFrameOutput", D_METHOD("set_max_refresh_rate", "rate_in_hz"), &VDFrameOutput::set_max_refresh_rate);
+	ClassDB::bind_static_method("VDFrameOutput", D_METHOD("get_max_refresh_rate"), &VDFrameOutput::get_max_refresh_rate);
+	ClassDB::bind_static_method("VDFrameOutput", D_METHOD("get_target_buffer_size"), &VDFrameOutput::GetTargetBufferSize);
+}
 
 VDFrameOutput::VDFrameOutput() {
 }
 
 VDFrameOutput::~VDFrameOutput() {
+}
+
+void vector_display::VDFrameOutput::set_max_refresh_rate(float rate_in_hz) {
+	MaxFramesPerSecond = rate_in_hz;
+}
+
+float vector_display::VDFrameOutput::get_max_refresh_rate() {
+	return MaxFramesPerSecond;
 }
 
 int VDFrameOutput::GetTargetBufferSize() {

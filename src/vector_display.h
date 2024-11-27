@@ -20,6 +20,8 @@ protected:
 	double previousHeadroom = 0;
 	double debug_process_time = 0;
 	int64_t debug_process_timestamp = 0;
+	int blankingSampleCount = 0;
+	int wastedSampleCount = 0;
 
 	enum WriteStateEnum {
 		Buffer1,
@@ -63,6 +65,8 @@ public:
 	double get_asio_max_time_to_copy_buffers();
 	double debug_get_asio_min_headroom();
 	double debug_get_asio_max_headroom();
+	int debug_get_blanking_sample_count();
+	int debug_get_wasted_sample_count();
 };
 
 }

@@ -36,6 +36,8 @@ void VectorDisplay::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("debug_get_asio_max_time_to_copy_buffers"), &VectorDisplay::get_asio_max_time_to_copy_buffers);
 	ClassDB::bind_method(D_METHOD("debug_get_asio_min_headroom"), &VectorDisplay::debug_get_asio_min_headroom);
 	ClassDB::bind_method(D_METHOD("debug_get_asio_max_headroom"), &VectorDisplay::debug_get_asio_max_headroom);
+	ClassDB::bind_method(D_METHOD("debug_get_blanking_sample_count"), &VectorDisplay::debug_get_blanking_sample_count);
+	ClassDB::bind_method(D_METHOD("debug_get_wasted_sample_count"), &VectorDisplay::debug_get_wasted_sample_count);
 }
 
 VectorDisplay::VectorDisplay() {
@@ -88,21 +90,13 @@ void VectorDisplay::_process(double delta) {
 	TypedArray<PackedVector3Array> screenSpaceSamples = GetScreenSpaceSamples(worldSpaceResult);
 
 	// Finally, prepare and fill the FrameOutput buffer:
-	int blankingSampleCount;
-	int wastedSampleCount;
+
 	int finalBufferLength;
 	VDSample *finalBuffer = CreateFrameBuffer(screenSpaceSamples, previousFinalSample, blankingSampleCount, wastedSampleCount, finalBufferLength); // VDFrameOutput::GetCalibrationFrame(finalBufferLength);
 	if (finalBufferLength > 0) {
 		previousFinalSample = finalBuffer[finalBufferLength - 1];
 	}
 	previousFrameTime = (double)finalBufferLength / VDFrameOutput::DACProfile->samples_per_second;
-
-	//// Debug test code to simulate tricky double buffer situations
-	//RandomNumberGenerator rand;
-	//if (rand.randi_range(0, 60) == 0) {
-	//	UtilityFunctions::print("Sleeping to simulate a long frame time.");
-	//	Sleep(8);
-	//}
 
 	if (VDFrameOutput::DebugSaveFrame) {
 		VDFrameOutput::DebugSaveBufferToFile(finalBuffer, finalBufferLength, "Frame Snapshot.csv");
@@ -152,14 +146,6 @@ void VectorDisplay::_process(double delta) {
 	unsigned int starvedSamplesSnapshot = VDFrameOutput::StarvedSamples;
 	thisFrameStarvedSamples = starvedSamplesSnapshot - totalStarvedSamples;
 	totalStarvedSamples = starvedSamplesSnapshot;
-
-	VDFrameOutput::FrameCount++;
-
-	if (VDFrameOutput::FrameCount % 100 == 0) {
-		// TODO: write framerate?
-		//int frameRate = (int)round(1 / ((float)GameTime.LastFrameSampleCount / VDFrameOutput::SAMPLES_PER_SECOND));
-		//Console.WriteLine(" " + finalBuffer.Length + " + " + starvedSamples + " starved samples = " + frameRate + " fps (" + blankingSampleCount + " blanking between shapes, " + wastedSampleCount + " wasted) | Frame worst: " + frameTimePerf.worst + " best: " + frameTimePerf.best + " avg: " + frameTimePerf.average + " | Output Sync longest: " + syncOverheadTime.worst + " shortest: " + syncOverheadTime.best + " avg: " + syncOverheadTime.average + " | Host worst: " + hostTimePerf.worst + " best: " + hostTimePerf.best + " avg: " + hostTimePerf.average);
-	}
 
 	if (Engine::get_singleton()->is_editor_hint()) {
 		TypedArray<Node> children = get_children();
@@ -234,6 +220,7 @@ TypedArray<PackedVector3Array> VectorDisplay::GetScreenSpaceSamples(TypedArray<P
 }
 
 VDSample *VectorDisplay::CreateFrameBuffer(TypedArray<PackedVector3Array> samples, VDSample previousFrameEndSample, int &blankingSamplesOut, int &wastedSamplesOut, int &bufferLengthOut) {
+#pragma region Disabled Sorting Code
 	// Sorting (Disabled code)
 	// Sorting has the advantage of reducing beam overshooting between shapes.
 	// It is disabled because it makes it worse! Here's why:
@@ -283,6 +270,7 @@ VDSample *VectorDisplay::CreateFrameBuffer(TypedArray<PackedVector3Array> sample
 	//sortedSamples.Add(samples[0]);
 	//
 	//samples = sortedSamples;
+#pragma endregion
 
 	// Find out how many samples we have in the full set
 	int sampleCount = 0;
@@ -431,6 +419,14 @@ double vector_display::VectorDisplay::debug_get_asio_max_headroom() {
 	} else {
 		return 0;
 	}
+}
+
+int vector_display::VectorDisplay::debug_get_blanking_sample_count() {
+	return blankingSampleCount;
+}
+
+int vector_display::VectorDisplay::debug_get_wasted_sample_count() {
+	return wastedSampleCount;
 }
 
 double vector_display::VectorDisplay::debug_get_process_time() {
