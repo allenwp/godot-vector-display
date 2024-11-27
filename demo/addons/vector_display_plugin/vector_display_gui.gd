@@ -169,6 +169,6 @@ func _process(_delta: float) -> void:
 
 			if visible:
 				frame_times_label.text = "Min: %.2f ms (%.1f Hz)\nAvg: %.2f ms (%.1f Hz)\nMax: %.2f ms (%.1f Hz)\nTotal Min: %.2f ms (%.1f Hz)\nTotal Avg: %.2f ms (%.1f Hz)\n*Total Max: %.2f ms (%.1f Hz)" % [_working_min * 1000.0, 1.0 / _working_min, working_avg * 1000.0, 1.0 / working_avg, _working_max * 1000.0, 1.0 / _working_max, _total_min * 1000.0, 1.0 / _total_min, _total_avg * 1000.0, 1.0 / _total_avg, _total_max * 1000.0, 1.0 / _total_max]
-				processing_time_label.text = "Min: %.2f ms\nAvg: %.2f ms\nMax: %.2f ms\nTotal Min: %.2f ms\nTotal Avg: %.2f ms\nTotal Max: %.2f ms" % [_working_process_time_min, working_process_time_avg, _working_process_time_max, _total_process_time_min, _total_process_time_avg, _total_process_time_max]
+				processing_time_label.text = "Min: %.2f ms\nAvg: %.2f ms\nMax: %.2f ms\nTotal Min: %.2f ms\nTotal Avg: %.2f ms\n*Total Max: %.2f ms" % [_working_process_time_min, working_process_time_avg, _working_process_time_max, _total_process_time_min, _total_process_time_avg, _total_process_time_max]
 
 			clear_logging(true)

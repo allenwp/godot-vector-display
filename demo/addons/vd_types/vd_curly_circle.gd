@@ -4,8 +4,8 @@ class_name VDCurlyCircle extends VDShape3D
 @export var CurlCount: int = 20
 @export var CurlSize: float = 0.2
 @export var AnimationSpeed: float = 0.1
-@export var AnimationOffset: float = 0
 @export var base_sample_count: int = 3000
+var AnimationOffset: float = 0
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
