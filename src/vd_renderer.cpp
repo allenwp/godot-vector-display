@@ -6,6 +6,7 @@ using namespace godot;
 using namespace vector_display;
 
 bool vector_display::VDRenderer::ShouldCull(Camera3D *camera, VDShape3D *shape) {
+	// shape->update_aabb(); // This could be called here if there are problems that arise from only calling it in VDShape3D::_ready
 	return !shape->is_on_screen(); // this uses void RendererSceneCull::_scene_cull under the hood.
 }
 

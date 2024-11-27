@@ -21,6 +21,8 @@ public:
 	VDShape3D();
 	~VDShape3D();
 
+	virtual void _ready() override;
+
 	/// <summary>
 	/// This gets the raw samples with no transforms (local or global) applied.
 	/// </summary>

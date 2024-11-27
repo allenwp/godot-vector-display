@@ -17,6 +17,10 @@ void VDShape3D::_bind_methods() {
 VDShape3D::VDShape3D() {}
 VDShape3D::~VDShape3D() {}
 
+void vector_display::VDShape3D::_ready() {
+	update_aabb();
+}
+
 TypedArray<PackedVector4Array> VDShape3D::get_samples_3d(float fidelity) {
 	TypedArray<PackedVector4Array> ret;
 	if (GDVIRTUAL_CALL(_get_samples_3d, fidelity, ret)) {

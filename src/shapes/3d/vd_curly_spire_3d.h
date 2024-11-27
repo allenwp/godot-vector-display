@@ -26,6 +26,7 @@ public:
 	int get_curl_count() const;
 
 	virtual TypedArray<PackedVector4Array> get_samples_3d(float fidelity) override;
+	virtual void update_aabb() override;
 };
 
 } // namespace vector_display

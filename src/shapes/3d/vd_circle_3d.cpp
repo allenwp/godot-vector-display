@@ -44,3 +44,8 @@ TypedArray<PackedVector4Array> VDCircle3D::get_samples_3d(float fidelity) {
 
 	return result;
 }
+
+void vector_display::VDCircle3D::update_aabb() {
+	set_aabb(AABB(Vector3(-1, -1, 0), Vector3(2, 2, 0)));
+	GDVIRTUAL_CALL(_update_aabb);
+}

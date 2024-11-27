@@ -61,6 +61,11 @@ TypedArray<PackedVector4Array> VDHelixCircle3D::get_samples_3d(float fidelity) {
 	return result;
 }
 
+void vector_display::VDHelixCircle3D::update_aabb() {
+	set_aabb(AABB(Vector3(-1.0 - thickness, -1.0 - thickness, -1.0 * thickness), Vector3((1.0 + thickness) * 2, (1.0 + thickness) * 2, thickness * 2.0)));
+	GDVIRTUAL_CALL(_update_aabb);
+}
+
 PackedVector4Array VDHelixCircle3D::get_coil(int sample_count, bool inverse) {
 	PackedVector4Array sample3DArray;
 	sample3DArray.resize(sample_count);

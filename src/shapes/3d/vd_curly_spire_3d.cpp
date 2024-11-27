@@ -66,3 +66,8 @@ TypedArray<PackedVector4Array> VDCurlySpire3D::get_samples_3d(float fidelity) {
 
 	return result;
 }
+
+void vector_display::VDCurlySpire3D::update_aabb() {
+	set_aabb(AABB(Vector3(-1.0, 0, -1.0), Vector3(2.0, 1.0, 2.0)));
+	GDVIRTUAL_CALL(_update_aabb);
+}

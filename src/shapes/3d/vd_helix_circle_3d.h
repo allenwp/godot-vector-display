@@ -30,6 +30,7 @@ public:
 	float get_thickness() const;
 
 	virtual TypedArray<PackedVector4Array> get_samples_3d(float fidelity) override;
+	virtual void update_aabb() override;
 
 	PackedVector4Array get_coil(int sample_count, bool inverse);
 };

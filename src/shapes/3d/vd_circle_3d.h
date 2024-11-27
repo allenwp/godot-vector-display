@@ -23,6 +23,7 @@ public:
 
 	void _process(double delta) override;
 	virtual TypedArray<PackedVector4Array> get_samples_3d(float fidelity) override;
+	virtual void update_aabb() override;
 };
 
 } // namespace vector_display

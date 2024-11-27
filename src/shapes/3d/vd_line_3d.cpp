@@ -68,3 +68,11 @@ TypedArray<PackedVector4Array> VDLine3D::get_samples_3d(float fidelity) {
 
 	return result;
 }
+
+void vector_display::VDLine3D::update_aabb() {
+	AABB aabb;
+	aabb.position = start;
+	aabb.expand_to(end);
+	set_aabb(aabb);
+	GDVIRTUAL_CALL(_update_aabb);
+}

@@ -40,3 +40,8 @@ TypedArray<PackedVector4Array> VDDot3D::get_samples_3d(float fidelity) {
 
 	return result;
 }
+
+void vector_display::VDDot3D::update_aabb() {
+	set_aabb(AABB(Vector3(0, 0 , 0), Vector3(0, 0, 0)));
+	GDVIRTUAL_CALL(_update_aabb);
+}
