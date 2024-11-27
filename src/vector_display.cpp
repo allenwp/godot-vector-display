@@ -331,6 +331,8 @@ VDSample *VectorDisplay::CreateFrameBuffer(TypedArray<PackedVector3Array> sample
 		finalSampleCount = destinationIndex;
 	}
 
+	CRASH_BAD_INDEX_MSG(destinationIndex - 1, worstCaseSampleCount, "Vector Display buffer has written outside of its bounds! The calculation for worstCaseSampleCount must have been wrong.");
+
 	// Set up the final buffer with the correct sample length after dynamic blanking has been performed
 	// This is variable (variable frame rate based on paramenters in FrameOutput class)
 	blankingSamplesOut = finalSampleCount - sampleCount;
