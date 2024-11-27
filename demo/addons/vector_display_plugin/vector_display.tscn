@@ -38,6 +38,18 @@ text = "Start ASIO Output"
 layout_mode = 2
 text = "Hide GUI (G+H+K)"
 
+[node name="MaxRefreshRateHSlider" type="HSlider" parent="VectorDisplayGUI/HBoxContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+tooltip_text = "Max refresh rate (Hz)"
+min_value = 30.0
+max_value = 240.0
+value = 30.0
+allow_greater = true
+allow_lesser = true
+tick_count = 10
+ticks_on_borders = true
+
 [node name="HBoxContainer" type="HBoxContainer" parent="VectorDisplayGUI/HBoxContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_constants/separation = 20
@@ -54,6 +66,20 @@ unique_name_in_owner = true
 layout_mode = 2
 text = "Total Min:
 Total Max:"
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="VectorDisplayGUI/HBoxContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+
+[node name="SamplesHeaderLabel" type="Label" parent="VectorDisplayGUI/HBoxContainer/VBoxContainer/HBoxContainer/VBoxContainer2"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "SAMPLES / 2400:"
+
+[node name="SamplesStatsLabel" type="Label" parent="VectorDisplayGUI/HBoxContainer/VBoxContainer/HBoxContainer/VBoxContainer2"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Headroom: x | min: x
+Blanking: x | max: x"
 
 [node name="HBoxContainer3" type="HBoxContainer" parent="VectorDisplayGUI/HBoxContainer/VBoxContainer"]
 layout_mode = 2
@@ -78,9 +104,10 @@ Total Max:"
 [node name="VBoxContainer" type="VBoxContainer" parent="VectorDisplayGUI/HBoxContainer/VBoxContainer/HBoxContainer3"]
 layout_mode = 2
 
-[node name="Label2" type="Label" parent="VectorDisplayGUI/HBoxContainer/VBoxContainer/HBoxContainer3/VBoxContainer"]
+[node name="RefreshHeaderLabel" type="Label" parent="VectorDisplayGUI/HBoxContainer/VBoxContainer/HBoxContainer3/VBoxContainer"]
+unique_name_in_owner = true
 layout_mode = 2
-text = "REFRESH TIMES:"
+text = "REFRESH TIME / 12.50 ms (80.0 Hz):"
 
 [node name="FrameTimesLabel" type="Label" parent="VectorDisplayGUI/HBoxContainer/VBoxContainer/HBoxContainer3/VBoxContainer"]
 unique_name_in_owner = true
@@ -134,4 +161,5 @@ placeholder_text = "No starved samples yet..."
 
 [connection signal="pressed" from="VectorDisplayGUI/HBoxContainer/VBoxContainer/Button" to="VectorDisplayGUI" method="start_asio"]
 [connection signal="pressed" from="VectorDisplayGUI/HBoxContainer/VBoxContainer/Button2" to="VectorDisplayGUI" method="set_visible" binds= [false]]
+[connection signal="value_changed" from="VectorDisplayGUI/HBoxContainer/VBoxContainer/MaxRefreshRateHSlider" to="VectorDisplayGUI" method="set_max_refresh_rate"]
 [connection signal="pressed" from="VectorDisplayGUI/HBoxContainer/VBoxContainer/Button3" to="VectorDisplayGUI" method="clear_logging" binds= [false]]

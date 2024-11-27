@@ -6,6 +6,10 @@ extends Control
 @onready var asio_period_label: Label = %AsioPeriodLabel
 @onready var asio_buffer_copy_label: Label = %AsioBufferCopyLabel
 @onready var processing_time_label: Label = %ProcessingTimeLabel
+@onready var samples_stats_label: Label = %SamplesStatsLabel
+@onready var max_refresh_rate_h_slider: HSlider = %MaxRefreshRateHSlider
+@onready var samples_header_label: Label = %SamplesHeaderLabel
+@onready var refresh_header_label: Label = %RefreshHeaderLabel
 
 const FRAME_TIMES_AMOUNT = 100
 
@@ -28,10 +32,14 @@ var _working_process_time_min: float
 var _working_process_time_max: float
 var _working_process_time_cumulation: float
 
+var _total_min_samples_headroom: int
+var _total_max_blanking: int
+
 var _timer: Timer = null
 
 
 func _ready() -> void:
+	max_refresh_rate_h_slider.value = VDFrameOutput.get_max_refresh_rate()
 	clear_logging(false)
 
 
@@ -40,6 +48,10 @@ func _notification(what: int) -> void:
 		NOTIFICATION_VISIBILITY_CHANGED:
 			if visible:
 				$"../..".move_child.call_deferred($"..", -1)
+
+
+func set_max_refresh_rate(value: float) -> void:
+	VDFrameOutput.set_max_refresh_rate(value)
 
 
 func start_asio() -> void:
@@ -85,6 +97,9 @@ func clear_logging(only_working: bool) -> void:
 		_total_process_time_max = 0
 		_total_process_time_avg = 0
 
+		_total_max_blanking = 0
+		_total_min_samples_headroom = 99999999
+
 		log_text.clear()
 		frame_times_label.text = "\n\n\n\n\n\n"
 		processing_headroom_label.text = "\n\n\n\n\n\n"
@@ -106,10 +121,18 @@ func _process(_delta: float) -> void:
 		if starved_samples != 0:
 			log_text.insert_line_at(0, "%s: DAC starved of %s samples!!!" % [Time.get_time_string_from_system(), starved_samples])
 
+		if vd.debug_get_blanking_sample_count() > _total_max_blanking:
+			_total_max_blanking = vd.debug_get_blanking_sample_count()
+		if vd.debug_get_wasted_sample_count() < _total_min_samples_headroom:
+			_total_min_samples_headroom = vd.debug_get_wasted_sample_count()
+
 		if visible:
-			asio_period_label.text = "Total Min: %f ms\nTotal Max: %f ms" % [vd.debug_get_asio_min_time_between_buffer_switch(), vd.debug_get_asio_max_time_between_buffer_switch()]
-			asio_buffer_copy_label.text = "Total Min: %f ms\nTotal Max: %f ms" % [vd.debug_get_asio_min_time_to_copy_buffers(), vd.debug_get_asio_max_time_to_copy_buffers()]
-			processing_headroom_label.text = "Total Min: %f ms\nTotal Max: %f ms" % [vd.debug_get_asio_min_headroom(), vd.debug_get_asio_max_headroom()]
+			asio_period_label.text = "Total Min: %.3f ms\nTotal Max: %.3f ms" % [vd.debug_get_asio_min_time_between_buffer_switch(), vd.debug_get_asio_max_time_between_buffer_switch()]
+			asio_buffer_copy_label.text = "Total Min: %.3f ms\nTotal Max: %.3f ms" % [vd.debug_get_asio_min_time_to_copy_buffers(), vd.debug_get_asio_max_time_to_copy_buffers()]
+			processing_headroom_label.text = "*Total Min: %.2f ms\nTotal Max: %.2f ms" % [vd.debug_get_asio_min_headroom(), vd.debug_get_asio_max_headroom()]
+			samples_header_label.text = "SAMPLES / %d:" % VDFrameOutput.get_target_buffer_size()
+			samples_stats_label.text = "Headroom: %d | min: %d\nBlanking: %d | max: %d\n" % [vd.debug_get_wasted_sample_count(), _total_min_samples_headroom, vd.debug_get_blanking_sample_count(), _total_max_blanking]
+			refresh_header_label.text = "REFRESH TIME / %.2f ms (%.1f Hz)" % [1000.0 / VDFrameOutput.get_max_refresh_rate(), VDFrameOutput.get_max_refresh_rate()]
 
 		var frame_time: float = vd.get_previous_refresh_time()
 		if frame_time < _working_min:
@@ -145,7 +168,7 @@ func _process(_delta: float) -> void:
 			_total_process_time_avg = lerpf(_total_process_time_avg, working_process_time_avg, 1.0 / _total_avg_count)
 
 			if visible:
-				frame_times_label.text = "Min: %f ms\nAvg: %f ms\nMax: %f ms\nTotal Min: %f ms\nTotal Avg: %f ms\nTotal Max: %f ms" % [_working_min * 1000.0, working_avg * 1000.0, _working_max * 1000.0, _total_min * 1000.0, _total_avg * 1000.0, _total_max * 1000.0]
-				processing_time_label.text = "Min: %f ms\nAvg: %f ms\nMax: %f ms\nTotal Min: %f ms\nTotal Avg: %f ms\nTotal Max: %f ms" % [_working_process_time_min, working_process_time_avg, _working_process_time_max, _total_process_time_min, _total_process_time_avg, _total_process_time_max]
+				frame_times_label.text = "Min: %.2f ms (%.1f Hz)\nAvg: %.2f ms (%.1f Hz)\nMax: %.2f ms (%.1f Hz)\nTotal Min: %.2f ms (%.1f Hz)\nTotal Avg: %.2f ms (%.1f Hz)\n*Total Max: %.2f ms (%.1f Hz)" % [_working_min * 1000.0, 1.0 / _working_min, working_avg * 1000.0, 1.0 / working_avg, _working_max * 1000.0, 1.0 / _working_max, _total_min * 1000.0, 1.0 / _total_min, _total_avg * 1000.0, 1.0 / _total_avg, _total_max * 1000.0, 1.0 / _total_max]
+				processing_time_label.text = "Min: %.2f ms\nAvg: %.2f ms\nMax: %.2f ms\nTotal Min: %.2f ms\nTotal Avg: %.2f ms\nTotal Max: %.2f ms" % [_working_process_time_min, working_process_time_avg, _working_process_time_max, _total_process_time_min, _total_process_time_avg, _total_process_time_max]
 
 			clear_logging(true)
