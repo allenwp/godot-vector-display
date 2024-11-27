@@ -7,9 +7,15 @@ class_name VDCurlyCircle extends VDShape3D
 @export var AnimationOffset: float = 0
 @export var base_sample_count: int = 3000
 
+
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _physics_process(_delta: float) -> void:
 	AnimationOffset += AnimationSpeed / 100
+
+
+func _update_aabb() -> void:
+	aabb = AABB(Vector3(-1.0 - absf(CurlSize), -1.0 - absf(CurlSize), 0), Vector3(2.0 + absf(CurlSize * 2), 2.0 + absf(CurlSize * 2), 0))
+
 
 func _get_samples_3d(fidelity: float) -> Array[PackedVector4Array]:
 	var result: Array[PackedVector4Array]
@@ -32,6 +38,7 @@ func _get_samples_3d(fidelity: float) -> Array[PackedVector4Array]:
 		sample3DArray[i] = Vector4(point3D.x, point3D.y, point3D.z, 1)
 	result.push_back(sample3DArray)
 	return result
+
 
 static func ease_out_power(progress: float, power: int) -> float:
 	var pos_neg_sign: int = -1 if power % 2 == 0 else 1
