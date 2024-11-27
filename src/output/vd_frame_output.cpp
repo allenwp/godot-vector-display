@@ -50,7 +50,7 @@ int VDFrameOutput::GetTargetBufferSize() {
 }
 
 void VDFrameOutput::ClearBuffer(VDSample *buffer, int bufferLength, int startIndex) {
-	VDSample blank = VDSampleHelper::GetBlankingSample();
+	VDSample blank = DisplayProfile->GetBlankingSample();
 	for (int i = startIndex; i < bufferLength; i++) {
 		buffer[i] = blank;
 	}

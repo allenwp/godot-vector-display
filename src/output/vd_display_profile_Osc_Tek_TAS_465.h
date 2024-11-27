@@ -12,6 +12,8 @@ class VDDisplayProfileOscTekTAS465 : VDDisplayProfile {
 public:
 	VDDisplayProfileOscTekTAS465();
 	~VDDisplayProfileOscTekTAS465();
+
+	virtual VDSample GetBlankingSample();
 };
 
 } // namespace vector_display

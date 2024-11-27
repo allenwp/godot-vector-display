@@ -823,9 +823,10 @@ void VDASIOOutput::FeedFloatBuffers(float *xOutput, float *yOutput, float *brigh
 		// Clear the rest of the buffer with blanking frames
 		for (int i = startIndex; i < bufferSize; i++) {
 			// TODO: this should probably just pause on the last position instead (which might be blanking position, but might not be)
-			xOutput[i] = -1.0f;
-			yOutput[i] = -1.0f;
-			brightnessOutput[i] = VDFrameOutput::DisplayProfile->ZeroBrightnessOutput;
+			VDSample adjustedSample = PrepareSampleForScreen(VDFrameOutput::DisplayProfile->GetBlankingSample());
+			xOutput[i] = adjustedSample.x;
+			yOutput[i] = adjustedSample.y;
+			brightnessOutput[i] = VD_SAMPLE_BRIGHTNESS(adjustedSample);
 		}
 		return;
 	}

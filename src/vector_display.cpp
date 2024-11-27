@@ -66,7 +66,7 @@ void VectorDisplay::start_asio_output() {
 
 void VectorDisplay::reset_buffers() {
 	WriteState = WriteStateEnum::Buffer1;
-	previousFinalSample = VDSampleHelper::GetBlankingSample();
+	previousFinalSample = VDFrameOutput::DisplayProfile->GetBlankingSample();
 	VDSample *buffer = nullptr;
 	buffer = VDFrameOutput::Buffer1.load(std::memory_order_acquire);
 	VDFrameOutput::Buffer1.store(nullptr, std::memory_order_release);
@@ -277,7 +277,7 @@ VDSample *VectorDisplay::CreateFrameBuffer(TypedArray<PackedVector3Array> sample
 	for (int i = 0; i < samples.size(); i++) {
 		sampleCount += (int)(samples[i].call("size"));
 	}
-	float max_value = max(VDFrameOutput::DisplayProfile->AspectRatio, 1.0);
+	float max_value = MAX(VDFrameOutput::DisplayProfile->AspectRatio, 1.0);
 	int worstCaseBlankingLength = VDFrameOutput::DACProfile->BlankingLength(VDSample(-1.0f * max_value, -1.0f * max_value, 0.0f), VDSample(max_value, max_value, 0.0f));
 	int worstCaseSampleCount = sampleCount + (samples.size() * worstCaseBlankingLength) + worstCaseBlankingLength + 1; // one more on the end to return to blanking point.
 	worstCaseSampleCount = MAX(VDFrameOutput::GetTargetBufferSize(), worstCaseSampleCount);
@@ -326,7 +326,7 @@ VDSample *VectorDisplay::CreateFrameBuffer(TypedArray<PackedVector3Array> sample
 	if (finalSampleCount < VDFrameOutput::GetTargetBufferSize()) {
 		// Since we're going to be blanking for the end of this frame, we need to do the same easeinout blanking before we get to the rest postition.
 		PackedVector3Array newSampleArray;
-		newSampleArray.push_back(VDSampleHelper::GetBlankingSample());
+		newSampleArray.push_back(VDFrameOutput::DisplayProfile->GetBlankingSample());
 		addSamples(newSampleArray);
 		finalSampleCount = destinationIndex;
 	}

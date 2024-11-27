@@ -12,6 +12,8 @@ class VDDisplayProfileOscTek2445 : VDDisplayProfile {
 public:
 	VDDisplayProfileOscTek2445();
 	~VDDisplayProfileOscTek2445();
+
+	virtual VDSample GetBlankingSample();
 };
 
 } // namespace vector_display

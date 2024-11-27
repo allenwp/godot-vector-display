@@ -32,7 +32,13 @@ public:
 	/// to scale the output to the visible range.
 	/// </summary>
 	float XYScale = 1.0f;
-};
+
+	/// <summary>
+	/// A blanking sample in VDSample's coordinate system ("screen space").
+	/// See "vd_sample.h" for notes on this coordinate system.
+	/// </summary>
+	virtual VDSample GetBlankingSample() = 0;
+	};
 
 } // namespace vector_display
 #endif
