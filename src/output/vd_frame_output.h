@@ -60,6 +60,9 @@ public:
 	/// <returns>Next safe index to write to</returns>
 	static int CalibrationDrawPoint(float x, float y, VDSample *buffer, int numSamples, int startIndex);
 
+	/// <returns>Next safe index to write to</returns>
+	static int CalibrationDrawLine(float startX, float startY, float endX, float endY, VDSample *buffer, int numSamples, int startIndex);
+
 	static int64_t get_ticks_now();
 	static double get_ms_from_ticks(int64_t ticks);
 };

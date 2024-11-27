@@ -68,9 +68,10 @@ void VDFrameOutput::DebugSaveBufferToFile(VDSample* buffer, int bufferLength, co
 
 //TODO : Move calibration stuff to a separate project
 VDSample* VDFrameOutput::GetCalibrationFrame(int& bufferLengthOut) {
-	int brightestSampleCount = 300;
+	int brightestSampleCount = 200;
+	int lineSampleCount = 70;
 
-	bufferLengthOut = brightestSampleCount * 8;
+	bufferLengthOut = brightestSampleCount * 9 + lineSampleCount * 8;
 	VDSample *buffer = new VDSample[bufferLengthOut];
 	ClearBuffer(buffer, bufferLengthOut, 0);
 
@@ -79,13 +80,30 @@ VDSample* VDFrameOutput::GetCalibrationFrame(int& bufferLengthOut) {
 	float aspectRatio = DisplayProfile->AspectRatio;
 
 	bufferIndex = CalibrationDrawPoint(-aspectRatio, -1, buffer, brightestSampleCount, bufferIndex);
+	bufferIndex = CalibrationDrawLine(-aspectRatio, -1, -aspectRatio, 0, buffer, lineSampleCount, bufferIndex);
+
 	bufferIndex = CalibrationDrawPoint(-aspectRatio, 0, buffer, brightestSampleCount, bufferIndex);
+	bufferIndex = CalibrationDrawLine(-aspectRatio, 0, -aspectRatio, 1, buffer, lineSampleCount, bufferIndex);
+
 	bufferIndex = CalibrationDrawPoint(-aspectRatio, 1, buffer, brightestSampleCount, bufferIndex);
+	bufferIndex = CalibrationDrawLine(-aspectRatio, 1, 0, 1, buffer, lineSampleCount, bufferIndex);
+
 	bufferIndex = CalibrationDrawPoint(0, 1, buffer, brightestSampleCount, bufferIndex);
+	bufferIndex = CalibrationDrawLine(0, 1, aspectRatio, 1, buffer, lineSampleCount, bufferIndex);
+
 	bufferIndex = CalibrationDrawPoint(aspectRatio, 1, buffer, brightestSampleCount, bufferIndex);
+	bufferIndex = CalibrationDrawLine(aspectRatio, 1, aspectRatio, 0, buffer, lineSampleCount, bufferIndex);
+
 	bufferIndex = CalibrationDrawPoint(aspectRatio, 0, buffer, brightestSampleCount, bufferIndex);
+	bufferIndex = CalibrationDrawLine(aspectRatio, 0, aspectRatio, -1, buffer, lineSampleCount, bufferIndex);
+
 	bufferIndex = CalibrationDrawPoint(aspectRatio, -1, buffer, brightestSampleCount, bufferIndex);
+	bufferIndex = CalibrationDrawLine(aspectRatio, -1, 0, -1, buffer, lineSampleCount, bufferIndex);
+
 	bufferIndex = CalibrationDrawPoint(0, -1, buffer, brightestSampleCount, bufferIndex);
+	bufferIndex = CalibrationDrawLine(0, -1, -aspectRatio, -1, buffer, lineSampleCount, bufferIndex);
+
+	bufferIndex = CalibrationDrawPoint(0, 0, buffer, brightestSampleCount, bufferIndex);
 
 	return buffer;
 }
@@ -95,6 +113,16 @@ int VDFrameOutput::CalibrationDrawPoint(float x, float y, VDSample* buffer, int 
 	int finalIndexPlusOne = startIndex + numSamples;
 	for (; startIndex < finalIndexPlusOne; startIndex++) {
 		buffer[startIndex] = VDSample(x, y, 1.0f);
+	}
+	return finalIndexPlusOne;
+}
+
+/// <returns>Next safe index to write to</returns>
+int VDFrameOutput::CalibrationDrawLine(float startX, float startY, float endX, float endY, VDSample *buffer, int numSamples, int startIndex) {
+	int finalIndexPlusOne = startIndex + numSamples;
+	for (int i = startIndex; i < finalIndexPlusOne; i++) {
+		float value = (i - startIndex) / (float)numSamples;
+		buffer[i] = VDSample(Math::lerp(startX, endX, value), Math::lerp(startY, endY, value), 1.0f);
 	}
 	return finalIndexPlusOne;
 }
