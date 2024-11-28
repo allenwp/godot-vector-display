@@ -17,7 +17,7 @@ script = ExtResource("2_1wxxt")
 [node name="ColorRect" type="ColorRect" parent="VectorDisplayGUI"]
 layout_mode = 2
 offset_right = 899.0
-offset_bottom = 607.0
+offset_bottom = 663.0
 color = Color(0, 0, 0, 0.501961)
 
 [node name="HBoxContainer" type="HBoxContainer" parent="VectorDisplayGUI"]
@@ -158,6 +158,19 @@ Total Max:"
 layout_mode = 2
 text = "Clear Logging"
 
+[node name="FloatPropertySlider" type="HSlider" parent="VectorDisplayGUI/HBoxContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+min_value = 0.5
+max_value = 1.0
+step = 0.001
+allow_greater = true
+allow_lesser = true
+
+[node name="FloatPropertyLabel" type="Label" parent="VectorDisplayGUI/HBoxContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+
 [node name="LogText" type="TextEdit" parent="VectorDisplayGUI/HBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
@@ -168,3 +181,5 @@ placeholder_text = "No starved samples yet..."
 [connection signal="toggled" from="VectorDisplayGUI/HBoxContainer/VBoxContainer/HBoxContainer4/CheckButton" to="." method="debug_set_calibration_enabled"]
 [connection signal="value_changed" from="VectorDisplayGUI/HBoxContainer/VBoxContainer/MaxRefreshRateHSlider" to="VectorDisplayGUI" method="set_max_refresh_rate"]
 [connection signal="pressed" from="VectorDisplayGUI/HBoxContainer/VBoxContainer/Button3" to="VectorDisplayGUI" method="clear_logging" binds= [false]]
+[connection signal="value_changed" from="VectorDisplayGUI/HBoxContainer/VBoxContainer/FloatPropertySlider" to="." method="debug_set_float_property"]
+[connection signal="value_changed" from="VectorDisplayGUI/HBoxContainer/VBoxContainer/FloatPropertySlider" to="VectorDisplayGUI" method="_on_float_property_slider_value_changed"]

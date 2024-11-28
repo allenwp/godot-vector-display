@@ -13,6 +13,8 @@ const MAX_INT: int = 9223372036854775807
 @onready var samples_header_label: Label = %SamplesHeaderLabel
 @onready var refresh_header_label: Label = %RefreshHeaderLabel
 @onready var render_screen_space_samples: Label = %RenderScreenSpaceSamples
+@onready var float_property_slider: HSlider = %FloatPropertySlider
+@onready var float_property_label: Label = %FloatPropertyLabel
 
 const FRAME_TIMES_AMOUNT = 100
 
@@ -53,8 +55,10 @@ var _timer: Timer = null
 
 
 func _ready() -> void:
+	var vd: VectorDisplay = GlobalVectorDisplay
 	visible = OS.is_debug_build()
 	max_refresh_rate_h_slider.value = VDFrameOutput.get_max_refresh_rate()
+	float_property_slider.value = vd.debug_float_property
 	clear_logging(false)
 	if _timer == null:
 		_timer = Timer.new()
@@ -212,3 +216,7 @@ func _process(_delta: float) -> void:
 				render_screen_space_samples.text = "Min: %.2f ms (3D: %d)\nAvg: %.2f ms\nMax: %.2f ms (3D: %d)\nTotal Min: %.2f ms (3D: %d)\nTotal Avg: %.2f ms\n*Total Max: %.2f ms (3D: %d)" % [_working_samples_time_min, _working_3d_sample_count_min, working_samples_time_avg, _working_samples_time_max, _working_3d_sample_count_max, _total_samples_time_min, _total_3d_sample_count_min, _total_samples_time_avg, _total_samples_time_max, _total_3d_sample_count_max]
 
 			clear_logging(true)
+
+
+func _on_float_property_slider_value_changed(value: float) -> void:
+	float_property_label.text = "%f" % value

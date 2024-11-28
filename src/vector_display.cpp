@@ -44,6 +44,10 @@ void VectorDisplay::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("debug_set_calibration_enabled", "enabled"), &VectorDisplay::debug_set_calibration_enabled);
 	ClassDB::bind_method(D_METHOD("debug_get_calibration_enabled"), &VectorDisplay::debug_get_calibration_enabled);
 	ClassDB::add_property("VectorDisplay", PropertyInfo(Variant::BOOL, "debug_calibration_enabled"), "debug_set_calibration_enabled", "debug_get_calibration_enabled");
+
+	ClassDB::bind_method(D_METHOD("debug_set_float_property", "value"), &VectorDisplay::debug_set_float_property);
+	ClassDB::bind_method(D_METHOD("debug_get_float_property"), &VectorDisplay::debug_get_float_property);
+	ClassDB::add_property("VectorDisplay", PropertyInfo(Variant::FLOAT, "debug_float_property"), "debug_set_float_property", "debug_get_float_property");
 }
 
 VectorDisplay::VectorDisplay() {
@@ -465,4 +469,11 @@ int vector_display::VectorDisplay::debug_get_samples_3d_count() {
 
 bool vector_display::VectorDisplay::debug_get_calibration_enabled() {
 	return debug_calibration_enabled;
+}
+
+void vector_display::VectorDisplay::debug_set_float_property(double value) {
+}
+
+double vector_display::VectorDisplay::debug_get_float_property() {
+	return 0;
 }

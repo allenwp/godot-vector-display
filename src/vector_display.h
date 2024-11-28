@@ -74,6 +74,8 @@ public:
 	double debug_get_render_time();
 	int debug_get_samples_3d_count();
 	bool debug_get_calibration_enabled();
+	void debug_set_float_property(double value);
+	double debug_get_float_property();
 };
 
 }
