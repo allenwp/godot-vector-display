@@ -7,7 +7,7 @@ VDDisplayProfileOscTekTAS465::VDDisplayProfileOscTekTAS465() {
 	AspectRatio = 10.0f / 8.0f;
 	FullBrightnessOutput = 0.832f;
 	ZeroBrightnessOutput = 1.0f;
-	XYScale = 0.72f;
+	XYScale = 0.751f;
 }
 
 VDDisplayProfileOscTekTAS465::~VDDisplayProfileOscTekTAS465() {
