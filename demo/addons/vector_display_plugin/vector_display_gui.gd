@@ -1,5 +1,7 @@
 extends Control
 
+const MAX_INT: int = 9223372036854775807
+
 @onready var log_text: TextEdit = %LogText
 @onready var frame_times_label: Label = %FrameTimesLabel
 @onready var processing_headroom_label: Label = %ProcessingHeadroomLabel
@@ -10,6 +12,7 @@ extends Control
 @onready var max_refresh_rate_h_slider: HSlider = %MaxRefreshRateHSlider
 @onready var samples_header_label: Label = %SamplesHeaderLabel
 @onready var refresh_header_label: Label = %RefreshHeaderLabel
+@onready var render_screen_space_samples: Label = %RenderScreenSpaceSamples
 
 const FRAME_TIMES_AMOUNT = 100
 
@@ -32,6 +35,17 @@ var _working_process_time_min: float
 var _working_process_time_max: float
 var _working_process_time_cumulation: float
 
+var _total_samples_time_min: float
+var _total_samples_time_max: float
+var _total_samples_time_avg: float
+var _working_samples_time_min: float
+var _working_samples_time_max: float
+var _working_samples_time_cumulation: float
+var _total_3d_sample_count_min: int
+var _total_3d_sample_count_max: int
+var _working_3d_sample_count_min: int
+var _working_3d_sample_count_max: int
+
 var _total_min_samples_headroom: int
 var _total_max_blanking: int
 
@@ -39,8 +53,15 @@ var _timer: Timer = null
 
 
 func _ready() -> void:
+	visible = OS.is_debug_build()
 	max_refresh_rate_h_slider.value = VDFrameOutput.get_max_refresh_rate()
 	clear_logging(false)
+	if _timer == null:
+		_timer = Timer.new()
+		_timer.timeout.connect(clear_logging_timer_timeout)
+		_timer.one_shot = true
+		add_child(_timer)
+		_timer.start(1)
 
 
 func _notification(what: int) -> void:
@@ -50,27 +71,15 @@ func _notification(what: int) -> void:
 				$"../..".move_child.call_deferred($"..", -1)
 
 
-func set_max_refresh_rate(value: float) -> void:
-	VDFrameOutput.set_max_refresh_rate(value)
-
-
-func start_asio() -> void:
-	var vd: VectorDisplay = GlobalVectorDisplay
-	vd.start_asio_output()
-
-	if _timer == null:
-		_timer = Timer.new()
-		_timer.timeout.connect(clear_logging_timer_timeout)
-		_timer.one_shot = true
-		add_child(_timer)
-		_timer.start(1)
-
-
 func clear_logging_timer_timeout() -> void:
 	clear_logging(false)
 	if _timer:
 		_timer.queue_free()
 		_timer = null
+
+
+func set_max_refresh_rate(value: float) -> void:
+	VDFrameOutput.set_max_refresh_rate(value)
 
 
 func clear_logging(only_working: bool) -> void:
@@ -84,6 +93,12 @@ func clear_logging(only_working: bool) -> void:
 	_working_process_time_min = 99999
 	_working_process_time_cumulation = 0
 
+	_working_samples_time_max = 0
+	_working_samples_time_min = 99999
+	_working_samples_time_cumulation = 0
+	_working_3d_sample_count_max = 0
+	_working_3d_sample_count_min = MAX_INT
+
 	if !only_working:
 		var vd: VectorDisplay = GlobalVectorDisplay
 		vd.debug_reset_asio_profiling()
@@ -96,6 +111,12 @@ func clear_logging(only_working: bool) -> void:
 		_total_process_time_min = 99999
 		_total_process_time_max = 0
 		_total_process_time_avg = 0
+
+		_total_samples_time_min = 99999
+		_total_samples_time_max = 0
+		_total_samples_time_avg = 0
+		_total_3d_sample_count_max = 0
+		_total_3d_sample_count_min = MAX_INT
 
 		_total_max_blanking = 0
 		_total_min_samples_headroom = 99999999
@@ -148,6 +169,15 @@ func _process(_delta: float) -> void:
 			_working_process_time_max = processing_time
 		_working_process_time_cumulation += processing_time
 
+		var samples_time: float = vd.debug_get_render_time()
+		if samples_time < _working_samples_time_min:
+			_working_samples_time_min = samples_time
+			_working_3d_sample_count_min = vd.debug_get_samples_3d_count()
+		if samples_time > _working_samples_time_max:
+			_working_samples_time_max = samples_time
+			_working_3d_sample_count_max = vd.debug_get_samples_3d_count()
+		_working_samples_time_cumulation += samples_time
+
 		_working_count += 1
 
 		if (_working_count == FRAME_TIMES_AMOUNT):
@@ -163,12 +193,22 @@ func _process(_delta: float) -> void:
 			if _working_process_time_max > _total_process_time_max:
 				_total_process_time_max = _working_process_time_max
 
+			var working_samples_time_avg: float = _working_samples_time_cumulation / FRAME_TIMES_AMOUNT
+			if _working_samples_time_min < _total_samples_time_min:
+				_total_samples_time_min = _working_samples_time_min
+				_total_3d_sample_count_min = _working_3d_sample_count_min
+			if _working_samples_time_max > _total_samples_time_max:
+				_total_samples_time_max = _working_samples_time_max
+				_total_3d_sample_count_max = _working_3d_sample_count_max
+
 			_total_avg_count += 1
 			_total_avg = lerpf(_total_avg, working_avg, 1.0 / _total_avg_count)
 			_total_process_time_avg = lerpf(_total_process_time_avg, working_process_time_avg, 1.0 / _total_avg_count)
+			_total_samples_time_avg = lerpf(_total_samples_time_avg, working_samples_time_avg, 1.0 / _total_avg_count)
 
 			if visible:
 				frame_times_label.text = "Min: %.2f ms (%.1f Hz)\nAvg: %.2f ms (%.1f Hz)\nMax: %.2f ms (%.1f Hz)\nTotal Min: %.2f ms (%.1f Hz)\nTotal Avg: %.2f ms (%.1f Hz)\n*Total Max: %.2f ms (%.1f Hz)" % [_working_min * 1000.0, 1.0 / _working_min, working_avg * 1000.0, 1.0 / working_avg, _working_max * 1000.0, 1.0 / _working_max, _total_min * 1000.0, 1.0 / _total_min, _total_avg * 1000.0, 1.0 / _total_avg, _total_max * 1000.0, 1.0 / _total_max]
 				processing_time_label.text = "Min: %.2f ms\nAvg: %.2f ms\nMax: %.2f ms\nTotal Min: %.2f ms\nTotal Avg: %.2f ms\n*Total Max: %.2f ms" % [_working_process_time_min, working_process_time_avg, _working_process_time_max, _total_process_time_min, _total_process_time_avg, _total_process_time_max]
+				render_screen_space_samples.text = "Min: %.2f ms (3D: %d)\nAvg: %.2f ms\nMax: %.2f ms (3D: %d)\nTotal Min: %.2f ms (3D: %d)\nTotal Avg: %.2f ms\n*Total Max: %.2f ms (3D: %d)" % [_working_samples_time_min, _working_3d_sample_count_min, working_samples_time_avg, _working_samples_time_max, _working_3d_sample_count_max, _total_samples_time_min, _total_3d_sample_count_min, _total_samples_time_avg, _total_samples_time_max, _total_3d_sample_count_max]
 
 			clear_logging(true)

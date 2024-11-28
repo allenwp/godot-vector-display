@@ -38,6 +38,12 @@ void VectorDisplay::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("debug_get_asio_max_headroom"), &VectorDisplay::debug_get_asio_max_headroom);
 	ClassDB::bind_method(D_METHOD("debug_get_blanking_sample_count"), &VectorDisplay::debug_get_blanking_sample_count);
 	ClassDB::bind_method(D_METHOD("debug_get_wasted_sample_count"), &VectorDisplay::debug_get_wasted_sample_count);
+	ClassDB::bind_method(D_METHOD("debug_get_render_time"), &VectorDisplay::debug_get_render_time);
+	ClassDB::bind_method(D_METHOD("debug_get_samples_3d_count"), &VectorDisplay::debug_get_samples_3d_count);
+
+	ClassDB::bind_method(D_METHOD("debug_set_calibration_enabled", "enabled"), &VectorDisplay::debug_set_calibration_enabled);
+	ClassDB::bind_method(D_METHOD("debug_get_calibration_enabled"), &VectorDisplay::debug_get_calibration_enabled);
+	ClassDB::add_property("VectorDisplay", PropertyInfo(Variant::BOOL, "debug_calibration_enabled"), "debug_set_calibration_enabled", "debug_get_calibration_enabled");
 }
 
 VectorDisplay::VectorDisplay() {
@@ -82,17 +88,20 @@ void VectorDisplay::reset_buffers() {
 
 void VectorDisplay::_ready() {
 	set_process_priority(INT32_MAX);
+	start_asio_output();
 }
 
 //double value = 0;
 void VectorDisplay::_process(double delta) {
+	int64_t before_render_timestamp = VDFrameOutput::get_ticks_now();
 	TypedArray<PackedVector4Array> worldSpaceResult = TypedArray<PackedVector4Array>();
-	TypedArray<PackedVector3Array> screenSpaceSamples = GetScreenSpaceSamples(worldSpaceResult);
+	TypedArray<PackedVector3Array> screenSpaceSamples = RenderScreenSpaceSamples(worldSpaceResult);
+	int64_t after_render_timestamp = VDFrameOutput::get_ticks_now();
 
 	// Finally, prepare and fill the FrameOutput buffer:
 
 	int finalBufferLength;
-	VDSample *finalBuffer = CreateFrameBuffer(screenSpaceSamples, previousFinalSample, blankingSampleCount, wastedSampleCount, finalBufferLength); // VDFrameOutput::GetCalibrationFrame(finalBufferLength);
+	VDSample *finalBuffer = debug_calibration_enabled ? VDFrameOutput::GetCalibrationFrame(finalBufferLength) : CreateFrameBuffer(screenSpaceSamples, previousFinalSample, blankingSampleCount, wastedSampleCount, finalBufferLength);
 	if (finalBufferLength > 0) {
 		previousFinalSample = finalBuffer[finalBufferLength - 1];
 	}
@@ -106,6 +115,7 @@ void VectorDisplay::_process(double delta) {
 
 	int64_t frame_ready_timestamp = VDFrameOutput::get_ticks_now();
 	debug_process_time = VDFrameOutput::get_ms_from_ticks(frame_ready_timestamp - debug_process_timestamp);
+	debug_render_time = VDFrameOutput::get_ms_from_ticks(after_render_timestamp - before_render_timestamp);
 
 	// Wait for the output to be finished with the buffer we're about to write to
 	if (!output) {
@@ -160,8 +170,9 @@ void VectorDisplay::_process(double delta) {
 }
 
 // This function is similar to the original SamplerSystem::Tick() method
-TypedArray<PackedVector3Array> VectorDisplay::GetScreenSpaceSamples(TypedArray<PackedVector4Array> &worldSpaceResult) {
+TypedArray<PackedVector3Array> VectorDisplay::RenderScreenSpaceSamples(TypedArray<PackedVector4Array> &worldSpaceResult) {
 	TypedArray<PackedVector3Array> result;
+	debug_samples_3d_count = 0;
 
 	Window *root = get_tree()->get_root();
 	Camera3D *camera = get_viewport()->get_camera_3d();
@@ -176,11 +187,14 @@ TypedArray<PackedVector3Array> VectorDisplay::GetScreenSpaceSamples(TypedArray<P
 			if (shape) {
 				// TODO: multi-thread this:
 				if (!VDRenderer::ShouldCull(camera, shape)) {
-					worldSpaceResult.append_array(VDRenderer::GetSample3Ds(camera, shape));
+					int samples_count = 0;
+					worldSpaceResult.append_array(VDRenderer::GetSample3Ds(camera, shape, samples_count));
+					debug_samples_3d_count += samples_count;
 				}
 			}
 		}
 
+		// Apply camera post processing (world space)
 		TypedArray<Node> children = camera->get_children();
 		for (int i = 0; i < children.size(); i++) {
 			VDPostProcessor3D *pp = Object::cast_to<VDPostProcessor3D>(children[i]);
@@ -192,6 +206,7 @@ TypedArray<PackedVector3Array> VectorDisplay::GetScreenSpaceSamples(TypedArray<P
 		// World space samples are now ready to be translated to the screen!
 		TypedArray<PackedVector3Array> screenSpaceResult = VDRenderer::TransformSamples3DToScreen(camera, worldSpaceResult);
 
+		// Apply camera post processing (screen space)
 		children = camera->get_children();
 		for (int i = 0; i < children.size(); i++) {
 			VDPostProcessor2D *pp = Object::cast_to<VDPostProcessor2D>(children[i]);
@@ -203,7 +218,7 @@ TypedArray<PackedVector3Array> VectorDisplay::GetScreenSpaceSamples(TypedArray<P
 		result.append_array(screenSpaceResult);
 	}
 
-	// Global post processing applies after all per-camera post processing
+	// Global screen space post processing applies after all per-camera post processing
 	TypedArray<Node> global_pp_roots = root->find_children("*", "VDGlobalPostProcessingRoot", true, false); // owned must be false, but I don't understand why.
 	for (int i = 0; i < global_pp_roots.size(); i++) {
 		Node* pp_root = Object::cast_to<Node>(global_pp_roots[i]);
@@ -370,6 +385,10 @@ int VectorDisplay::get_last_starved_samples() {
 	return thisFrameStarvedSamples;
 }
 
+double vector_display::VectorDisplay::debug_get_process_time() {
+	return debug_process_time;
+}
+
 void vector_display::VectorDisplay::reset_asio_profiling() {
 	if (output != nullptr) {
 		output->_reset_profiling = true;
@@ -432,6 +451,18 @@ int vector_display::VectorDisplay::debug_get_wasted_sample_count() {
 	return wastedSampleCount;
 }
 
-double vector_display::VectorDisplay::debug_get_process_time() {
-	return debug_process_time;
+void vector_display::VectorDisplay::debug_set_calibration_enabled(bool value) {
+	debug_calibration_enabled = value;
+}
+
+double vector_display::VectorDisplay::debug_get_render_time() {
+	return debug_render_time;
+}
+
+int vector_display::VectorDisplay::debug_get_samples_3d_count() {
+	return debug_samples_3d_count;
+}
+
+bool vector_display::VectorDisplay::debug_get_calibration_enabled() {
+	return debug_calibration_enabled;
 }

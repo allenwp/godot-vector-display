@@ -10,7 +10,8 @@ bool vector_display::VDRenderer::ShouldCull(Camera3D *camera, VDShape3D *shape) 
 	return !shape->is_on_screen(); // this uses void RendererSceneCull::_scene_cull under the hood.
 }
 
-TypedArray<PackedVector4Array> VDRenderer::GetSample3Ds(Camera3D *camera, VDShape3D *shape) {
+TypedArray<PackedVector4Array> VDRenderer::GetSample3Ds(Camera3D *camera, VDShape3D *shape, int& samples_count) {
+	samples_count = 0;
 	float fidelity;
 	if (camera->get_projection() == Camera3D::PROJECTION_PERSPECTIVE) {
 		float distanceFromCamera = abs(shape->get_global_position().distance_to(camera->get_global_position()));
@@ -39,6 +40,12 @@ TypedArray<PackedVector4Array> VDRenderer::GetSample3Ds(Camera3D *camera, VDShap
 	// Now we have the fidelity for this shape. Get the samples:
 	TypedArray<PackedVector4Array> samples3D = shape->get_samples_3d(fidelity);
 
+	// Count these samples for debugging/profiling:
+	for (int i = 0; i < samples3D.size(); i++) {
+		samples_count += ((PackedVector4Array)samples3D[i]).size();
+	}
+
+	// Apply world space post processing on this shape
 	TypedArray<Node> children = shape->get_children();
 	for (int i = 0; i < children.size(); i++) {
 		VDPostProcessor3D *pp = Object::cast_to<VDPostProcessor3D>(children[i]);

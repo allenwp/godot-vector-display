@@ -60,6 +60,7 @@ base_sample_count = 700
 curl_count = 15
 thickness = 0.065
 transform = Transform3D(1.16, 0, 0, 0, 1.16, 0, 0, 0, 1.16, 0, 0, 0)
+aabb = AABB(-1.065, -1.065, -0.065, 2.13, 2.13, 0.13)
 
 [node name="Rotate" type="Node" parent="VDHelixCircle3D"]
 script = ExtResource("1_6v63e")
@@ -71,13 +72,14 @@ script = ExtResource("4_vnik4")
 
 [node name="VDStrobePostProcessor" type="VDPostProcessor3D" parent="VDHelixCircle3D"]
 script = ExtResource("2_iepbh")
-AnimationValue = 0.083218
+AnimationValue = 0.851318
 AnimationSpeed = 4.085
 Scale = 7.885
 
 [node name="VDCurlySpire3D" type="VDCurlySpire3D" parent="."]
 base_sample_count = 600
 transform = Transform3D(0.617353, -0.330951, 0, 0.125602, 1.62667, 0, 0, 0, 0.63, 0, -0.858, 0)
+aabb = AABB(-1, 0, -1, 2, 1, 2)
 
 [node name="Rotate" type="Node" parent="VDCurlySpire3D"]
 script = ExtResource("1_6v63e")
@@ -88,8 +90,8 @@ script = ExtResource("4_vnik4")
 
 [node name="VDCurlyCircle" type="VDShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.271779)
+aabb = AABB(-1.2, -1.2, 0, 2.4, 2.4, 0)
 script = ExtResource("5_k8qr0")
-AnimationOffset = 41.699
 
 [node name="Node" type="Node" parent="VDCurlyCircle"]
 script = ExtResource("1_6v63e")

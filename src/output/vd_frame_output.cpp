@@ -71,7 +71,7 @@ VDSample* VDFrameOutput::GetCalibrationFrame(int& bufferLengthOut) {
 	int brightestSampleCount = 200;
 	int lineSampleCount = 70;
 
-	bufferLengthOut = brightestSampleCount * 9 + lineSampleCount * 8;
+	bufferLengthOut = brightestSampleCount * 10 + lineSampleCount * 8;
 	VDSample *buffer = new VDSample[bufferLengthOut];
 	ClearBuffer(buffer, bufferLengthOut, 0);
 
@@ -103,7 +103,14 @@ VDSample* VDFrameOutput::GetCalibrationFrame(int& bufferLengthOut) {
 	bufferIndex = CalibrationDrawPoint(0, -1, buffer, brightestSampleCount, bufferIndex);
 	bufferIndex = CalibrationDrawLine(0, -1, -aspectRatio, -1, buffer, lineSampleCount, bufferIndex);
 
+	// Maybe add blaking around the center dot and also some extra dots for adjusting focus?
+
+	// centre
 	bufferIndex = CalibrationDrawPoint(0, 0, buffer, brightestSampleCount, bufferIndex);
+
+	// blanking (but at max brightness so that it's easy to verify that it is fully off screen)
+	VDSample blank = DisplayProfile->GetBlankingSample();
+	bufferIndex = CalibrationDrawPoint(blank.x, blank.y, buffer, brightestSampleCount, bufferIndex);
 
 	return buffer;
 }

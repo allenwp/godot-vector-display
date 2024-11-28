@@ -22,6 +22,9 @@ protected:
 	int64_t debug_process_timestamp = 0;
 	int blankingSampleCount = 0;
 	int wastedSampleCount = 0;
+	double debug_render_time = 0;
+	int debug_samples_3d_count = 0;
+	bool debug_calibration_enabled = false;
 
 	enum WriteStateEnum {
 		Buffer1,
@@ -36,7 +39,7 @@ protected:
 
 	void reset_buffers();
 
-	TypedArray<PackedVector3Array> GetScreenSpaceSamples(TypedArray<PackedVector4Array> &worldSpaceResult);
+	TypedArray<PackedVector3Array> RenderScreenSpaceSamples(TypedArray<PackedVector4Array> &worldSpaceResult);
 
 	/// <param name="previousFrameEndSample">The sample that was drawn right before starting to draw this frame. (Last sample from the previous frame)</param>
 	VDSample *CreateFrameBuffer(TypedArray<PackedVector3Array> samples, VDSample previousFrameEndSample, int &blankingSamplesOut, int &wastedSamplesOut, int &bufferLengthOut);
@@ -67,6 +70,10 @@ public:
 	double debug_get_asio_max_headroom();
 	int debug_get_blanking_sample_count();
 	int debug_get_wasted_sample_count();
+	void debug_set_calibration_enabled(bool value);
+	double debug_get_render_time();
+	int debug_get_samples_3d_count();
+	bool debug_get_calibration_enabled();
 };
 
 }
