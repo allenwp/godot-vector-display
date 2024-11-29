@@ -42,7 +42,7 @@ light_bake_mode = 1
 shadow_enabled = true
 directional_shadow_max_distance = 251.2
 
-[node name="MainCamera" type="Camera3D" parent="."]
+[node name="MainCamera" type="VDCamera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.92403)
 
 [node name="VDStrobePostProcessor" type="VDPostProcessor3D" parent="MainCamera"]

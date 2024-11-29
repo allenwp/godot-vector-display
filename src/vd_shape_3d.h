@@ -5,6 +5,8 @@
 #include "vd_sample.h"
 #include <godot_cpp/core/gdvirtual.gen.inc>
 
+#define VD_SHAPE_3D_GROUP_NAME "vd_shape_3d"
+
 using namespace godot;
 
 namespace vector_display {
@@ -18,10 +20,8 @@ protected:
 	static void _bind_methods();
 
 public:
-	VDShape3D();
-	~VDShape3D();
-
 	virtual void _ready() override;
+	virtual void _enter_tree() override;
 
 	/// <summary>
 	/// This gets the raw samples with no transforms (local or global) applied.

@@ -141,6 +141,7 @@
     <ClInclude Include="src\shapes\3d\vd_dot_3d.h" />
     <ClInclude Include="src\shapes\3d\vd_helix_circle_3d.h" />
     <ClInclude Include="src\shapes\3d\vd_line_3d.h" />
+    <ClInclude Include="src\vd_camera_3d.h" />
     <ClInclude Include="src\vd_editor_preview_3d.h" />
     <ClInclude Include="src\vd_global_post_processing_root.h" />
     <ClInclude Include="src\vd_post_processor_2d.h" />
@@ -162,6 +163,7 @@
     <ClCompile Include="src\shapes\3d\vd_dot_3d.cpp" />
     <ClCompile Include="src\shapes\3d\vd_helix_circle_3d.cpp" />
     <ClCompile Include="src\shapes\3d\vd_line_3d.cpp" />
+    <ClCompile Include="src\vd_camera_3d.cpp" />
     <ClCompile Include="src\vd_editor_preview_3d.cpp" />
     <ClCompile Include="src\vd_global_post_processing_root.cpp" />
     <ClCompile Include="src\vd_post_processor_2d.cpp" />

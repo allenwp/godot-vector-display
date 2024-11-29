@@ -14,11 +14,14 @@ void VDShape3D::_bind_methods() {
 	GDVIRTUAL_BIND(_update_aabb);
 }
 
-VDShape3D::VDShape3D() {}
-VDShape3D::~VDShape3D() {}
-
 void vector_display::VDShape3D::_ready() {
+	VisibleOnScreenNotifier3D::_ready();
 	update_aabb();
+}
+
+void vector_display::VDShape3D::_enter_tree() {
+	VisibleOnScreenNotifier3D::_enter_tree();
+	add_to_group(StringName(VD_SHAPE_3D_GROUP_NAME));
 }
 
 TypedArray<PackedVector4Array> VDShape3D::get_samples_3d(float fidelity) {

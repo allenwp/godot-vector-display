@@ -154,7 +154,7 @@ mesh = SubResource("BoxMesh_jrn63")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -90, 0, 0)
 mesh = SubResource("BoxMesh_jrn63")
 
-[node name="PlayerCamera" type="Camera3D" parent="Dolly"]
+[node name="PlayerCamera" type="VDCamera3D" parent="Dolly"]
 unique_name_in_owner = true
 fov = 50.0
 

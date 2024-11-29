@@ -2,6 +2,7 @@
 
 #include "output/vd_frame_output.h"
 #include "vector_display.h"
+#include "vd_camera_3d.h"
 #include "vd_shape_3d.h"
 #include "vd_post_processor_3d.h"
 #include "vd_post_processor_2d.h"
@@ -28,6 +29,7 @@ void initialize_vector_display_module(ModuleInitializationLevel p_level) {
 
 	ClassDB::register_abstract_class<VDFrameOutput>();
 	ClassDB::register_class<VectorDisplay>();
+	ClassDB::register_class<VDCamera3D>();
 	ClassDB::register_class<VDShape3D>();
 	ClassDB::register_class<VDPostProcessor3D>();
 	ClassDB::register_class<VDPostProcessor2D>();

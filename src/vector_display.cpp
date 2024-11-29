@@ -6,6 +6,7 @@
 #include "godot_cpp/variant/utility_functions.hpp"
 #include "godot_cpp/classes/project_settings.hpp"
 #include "godot_cpp/classes/viewport.hpp"
+#include "vd_camera_3d.h"
 #include "vd_shape_3d.h"
 #include "vd_renderer.h"
 #include "godot_cpp/classes/scene_tree.hpp"
@@ -14,6 +15,7 @@
 #include "vd_editor_preview_3d.h"
 #include "vd_post_processor_3d.h"
 #include "vd_post_processor_2d.h"
+#include "vd_global_post_processing_root.h"
 #include <chrono>
 #include <thread>
 
@@ -92,7 +94,9 @@ void VectorDisplay::reset_buffers() {
 
 void VectorDisplay::_ready() {
 	set_process_priority(INT32_MAX);
-	start_asio_output();
+	if (!Engine::get_singleton()->is_editor_hint()) {
+		start_asio_output();
+	}
 }
 
 //double value = 0;
@@ -178,52 +182,57 @@ TypedArray<PackedVector3Array> VectorDisplay::RenderScreenSpaceSamples(TypedArra
 	TypedArray<PackedVector3Array> result;
 	debug_samples_3d_count = 0;
 
-	Window *root = get_tree()->get_root();
-	Camera3D *camera = get_viewport()->get_camera_3d();
-	// TODO: for each camera
-	if (camera != nullptr && camera->is_visible_in_tree()) {
-		TypedArray<Node> shapeNodes = root->find_children("*", "VDShape3D", true, false); // owned must be false, but I don't understand why.
+	SceneTree *scene_tree = get_tree();
+	Window *root = scene_tree->get_root();
+	// TODO: Control rendering support (camera independent)
+	// TODO: Camera2D support (just like 3D support below)
+	TypedArray<Node> camera_3ds = scene_tree->get_nodes_in_group(StringName(VD_CAMERA_3D_GROUP_NAME));
+	for (int c = 0; c < camera_3ds.size(); c++) {
+		VDCamera3D *camera = Object::cast_to<VDCamera3D>(camera_3ds[c]);
+		if (camera != nullptr && camera->is_visible_in_tree()) {
+			TypedArray<Node> shapeNodes = scene_tree->get_nodes_in_group(StringName(VD_SHAPE_3D_GROUP_NAME));
 
-		worldSpaceResult = TypedArray<PackedVector4Array>();
+			worldSpaceResult = TypedArray<PackedVector4Array>();
 
-		for (int i = 0; i < shapeNodes.size(); i++) {
-			VDShape3D *shape = Object::cast_to<VDShape3D>(shapeNodes[i]);
-			if (shape) {
-				// TODO: multi-thread this:
-				if (!VDRenderer::ShouldCull(camera, shape)) {
-					int samples_count = 0;
-					worldSpaceResult.append_array(VDRenderer::GetSample3Ds(camera, shape, samples_count));
-					debug_samples_3d_count += samples_count;
+			for (int i = 0; i < shapeNodes.size(); i++) {
+				VDShape3D *shape = Object::cast_to<VDShape3D>(shapeNodes[i]);
+				if (shape) {
+					// TODO: multi-thread this:
+					if (!VDRenderer::ShouldCull(camera, shape)) {
+						int samples_count = 0;
+						worldSpaceResult.append_array(VDRenderer::GetSample3Ds(camera, shape, samples_count));
+						debug_samples_3d_count += samples_count;
+					}
 				}
 			}
-		}
 
-		// Apply camera post processing (world space)
-		TypedArray<Node> children = camera->get_children();
-		for (int i = 0; i < children.size(); i++) {
-			VDPostProcessor3D *pp = Object::cast_to<VDPostProcessor3D>(children[i]);
-			if (pp && pp->can_process()) {
-				pp->process_samples_3d(worldSpaceResult);
+			// Apply camera post processing (world space)
+			TypedArray<Node> children = camera->get_children();
+			for (int i = 0; i < children.size(); i++) {
+				VDPostProcessor3D *pp = Object::cast_to<VDPostProcessor3D>(children[i]);
+				if (pp && pp->can_process()) {
+					pp->process_samples_3d(worldSpaceResult);
+				}
 			}
-		}
 
-		// World space samples are now ready to be translated to the screen!
-		TypedArray<PackedVector3Array> screenSpaceResult = VDRenderer::TransformSamples3DToScreen(camera, worldSpaceResult);
+			// World space samples are now ready to be translated to the screen!
+			TypedArray<PackedVector3Array> screenSpaceResult = VDRenderer::TransformSamples3DToScreen(camera, worldSpaceResult);
 
-		// Apply camera post processing (screen space)
-		children = camera->get_children();
-		for (int i = 0; i < children.size(); i++) {
-			VDPostProcessor2D *pp = Object::cast_to<VDPostProcessor2D>(children[i]);
-			if (pp && pp->can_process()) {
-				pp->process_samples_2d(screenSpaceResult);
+			// Apply camera post processing (screen space)
+			children = camera->get_children();
+			for (int i = 0; i < children.size(); i++) {
+				VDPostProcessor2D *pp = Object::cast_to<VDPostProcessor2D>(children[i]);
+				if (pp && pp->can_process()) {
+					pp->process_samples_2d(screenSpaceResult);
+				}
 			}
-		}
 
-		result.append_array(screenSpaceResult);
+			result.append_array(screenSpaceResult);
+		}
 	}
 
 	// Global screen space post processing applies after all per-camera post processing
-	TypedArray<Node> global_pp_roots = root->find_children("*", "VDGlobalPostProcessingRoot", true, false); // owned must be false, but I don't understand why.
+	TypedArray<Node> global_pp_roots = scene_tree->get_nodes_in_group("VDGlobalPostProcessingRoot::group_name");
 	for (int i = 0; i < global_pp_roots.size(); i++) {
 		Node* pp_root = Object::cast_to<Node>(global_pp_roots[i]);
 		TypedArray<Node> children = pp_root->get_children();
