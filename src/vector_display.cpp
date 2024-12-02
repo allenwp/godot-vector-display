@@ -189,7 +189,7 @@ TypedArray<PackedVector3Array> VectorDisplay::RenderScreenSpaceSamples(TypedArra
 	TypedArray<Node> camera_3ds = scene_tree->get_nodes_in_group(StringName(VD_CAMERA_3D_GROUP_NAME));
 	for (int c = 0; c < camera_3ds.size(); c++) {
 		VDCamera3D *camera = Object::cast_to<VDCamera3D>(camera_3ds[c]);
-		if (camera != nullptr && camera->is_visible_in_tree()) {
+		if (camera != nullptr && camera->is_current()) {
 			TypedArray<Node> shapeNodes = scene_tree->get_nodes_in_group(StringName(VD_SHAPE_3D_GROUP_NAME));
 
 			worldSpaceResult = TypedArray<PackedVector4Array>();

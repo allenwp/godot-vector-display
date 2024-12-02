@@ -7,6 +7,9 @@ using namespace vector_display;
 
 bool vector_display::VDRenderer::ShouldCull(Camera3D *camera, VDShape3D *shape) {
 	// shape->update_aabb(); // This could be called here if there are problems that arise from only calling it in VDShape3D::_ready
+	
+	// TODO: Somehow do this based on the camera. This implementation means that if *any* camera sees the shape, it will not cull.
+	// I've asked about this here: https://forum.godotengine.org/t/camera-information-for-visibleonscreennotifier3d/93456
 	return !shape->is_on_screen(); // this uses void RendererSceneCull::_scene_cull under the hood.
 }
 
