@@ -253,7 +253,7 @@ TypedArray<PackedVector3Array> VectorDisplay::RenderScreenSpaceSamples(TypedArra
 	}
 
 	// Global screen space post processing applies after all per-camera post processing
-	TypedArray<Node> global_pp_roots = scene_tree->get_nodes_in_group("VDGlobalPostProcessingRoot::group_name");
+	TypedArray<Node> global_pp_roots = scene_tree->get_nodes_in_group(StringName(VD_GLOBAL_POST_PROCESSING_ROOT_GROUP_NAME));
 	for (int i = 0; i < global_pp_roots.size(); i++) {
 		Node* pp_root = Object::cast_to<Node>(global_pp_roots[i]);
 		TypedArray<Node> children = pp_root->get_children();
