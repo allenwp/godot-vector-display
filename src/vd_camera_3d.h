@@ -16,6 +16,7 @@ protected:
 	static void _bind_methods();
 
 public:
+	VDCamera3D();
 	virtual void _enter_tree() override;
 };
 

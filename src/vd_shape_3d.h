@@ -20,6 +20,7 @@ protected:
 	static void _bind_methods();
 
 public:
+	VDShape3D();
 	virtual void _ready() override;
 	virtual void _enter_tree() override;
 

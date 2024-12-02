@@ -156,6 +156,7 @@ mesh = SubResource("BoxMesh_jrn63")
 
 [node name="PlayerCamera" type="VDCamera3D" parent="Dolly"]
 unique_name_in_owner = true
+cull_mask = 1048575
 fov = 50.0
 
 [node name="environment_spawner" type="Node3D" parent="Dolly"]

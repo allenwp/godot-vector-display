@@ -14,6 +14,12 @@ void VDShape3D::_bind_methods() {
 	GDVIRTUAL_BIND(_update_aabb);
 }
 
+vector_display::VDShape3D::VDShape3D() :
+		VisibleOnScreenNotifier3D() {
+	// See VDCamera3D for why VDShape3D should not default to layer 1.
+	set_layer_mask(1 << (11 - 1));
+}
+
 void vector_display::VDShape3D::_ready() {
 	VisibleOnScreenNotifier3D::_ready();
 	update_aabb();
