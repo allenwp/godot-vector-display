@@ -18,6 +18,7 @@
 #include "vd_global_post_processing_root.h"
 #include <chrono>
 #include <thread>
+#include <godot_cpp/classes/sub_viewport.hpp>
 
 using namespace godot;
 using namespace vector_display;
@@ -190,6 +191,26 @@ TypedArray<PackedVector3Array> VectorDisplay::RenderScreenSpaceSamples(TypedArra
 	for (int c = 0; c < camera_3ds.size(); c++) {
 		VDCamera3D *camera = Object::cast_to<VDCamera3D>(camera_3ds[c]);
 		if (camera != nullptr && camera->is_current()) {
+			if (!Engine::get_singleton()->is_editor_hint()) {
+				float aspect_ratio = VDFrameOutput::DisplayProfile->AspectRatio;
+				Vector2i size = Vector2i(1, -1);
+				Window *window = Object::cast_to<Window>(camera->get_viewport());
+				if (window != nullptr) {
+					size = window->get_size();
+				} else {
+					SubViewport *viewport = Object::cast_to<SubViewport>(camera->get_viewport());
+					if (viewport != nullptr) {
+						size = viewport->get_size();
+					} else {
+						WARN_PRINT_ONCE_ED("Camera viewport is not a Window or SubViewport, so its aspect ratio cannot be determined.");
+					}
+				}
+				float viewport_aspect_ratio = (float)size.x / (float)size.y;
+				if (!Math::is_equal_approx(aspect_ratio, viewport_aspect_ratio, 0.005f)) {
+					WARN_PRINT_ONCE_ED(vformat("VDCamera3D's viewport aspect ratio is %f, but the dector display profile's aspect ratio is %f. This will result in the image being stretched on the vector display output!", viewport_aspect_ratio, aspect_ratio));
+				}
+			}
+
 			TypedArray<Node> shapeNodes = scene_tree->get_nodes_in_group(StringName(VD_SHAPE_3D_GROUP_NAME));
 
 			worldSpaceResult = TypedArray<PackedVector4Array>();
