@@ -8,6 +8,7 @@ func _enter_tree() -> void:
 	add_custom_type("Scramble3dPostProcessor", "VDPostProcessor3D", preload("vd_scramble_3d_post_processor.gd"), preload("vd_shape.png"))
 
 	add_custom_type("Scramble2dPostProcessor", "VDPostProcessor2D", preload("vd_scramble_2d_post_processor.gd"), preload("vd_shape.png"))
+	add_custom_type("VDCrossfadePostProcessor", "VDPostProcessor2D", preload("res://addons/vd_types/vd_pp2d_crossfade.gd"), preload("vd_shape.png"))
 
 func _exit_tree() -> void:
 	remove_custom_type("VDScriptLine3D")
