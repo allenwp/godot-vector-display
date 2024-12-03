@@ -40,7 +40,8 @@ static func add_samples_as_lines(samples: Array[PackedVector4Array], gizmo: Edit
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_PREDELETE:
-		cleanup()
+		GizmoUpdater.gizmo = null
+		GizmoUpdater.gizmo_plugin = null
 
 func cleanup() -> void:
 	GizmoUpdater.gizmo = null
